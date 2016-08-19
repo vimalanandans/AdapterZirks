@@ -1,0 +1,25 @@
+# Gradle
+.gradle
+build/
+gradle.properties
+local.properties
+
+# Database files, scan image files
+data/
+*.db
+*.sqlite
+*_scan_qr.jpg
+
+# Mac 
+.DS_Store
+
+# IntelliJ specific fields
+.idea/
+
+# File-based project format
+*.ipr
+*.iws
+*.iml
+
+# log files
+logs/
