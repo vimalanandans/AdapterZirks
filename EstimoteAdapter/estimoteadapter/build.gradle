@@ -31,9 +31,6 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:24.1.1'
     compile 'com.estimote:sdk:0.10.4@aar'
-    compile('com.bezirk:android-zirk-proxy:3.0.0-alpha-mvp+012@aar') {
-        transitive = true
-        exclude group: 'ch.qos.logback'
-    }
+    compile 'com.bezirk:bezirk-middleware-api:3.0.0-alpha+016'
     compile 'com.bezirk:HardwareEvents:0.0.17'
 }
