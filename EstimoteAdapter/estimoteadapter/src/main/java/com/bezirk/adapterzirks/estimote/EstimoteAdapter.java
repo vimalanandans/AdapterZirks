@@ -1,6 +1,7 @@
-package com.bezirk.adapterzirks.estimotetest;
+package com.bezirk.adapterzirks.estimote;
 
 import android.app.Activity;
+import android.content.Context;
 
 import com.bezirk.hardwareevents.beacon.Beacon;
 import com.bezirk.hardwareevents.beacon.BeaconsDetectedEvt;
@@ -16,11 +17,10 @@ public class EstimoteAdapter {
     private Bezirk bezirk;
     private BeaconManager beaconManager;
     private String scanId;
-    private Activity mainActivity;
 
-    public EstimoteAdapter(final Bezirk bezirk, Activity activity) {
+    public EstimoteAdapter(final Bezirk bezirk, Context applicationContext) {
         this.bezirk = bezirk;
-        beaconManager = new BeaconManager(activity.getApplicationContext());
+        beaconManager = new BeaconManager(applicationContext);
         beaconManager.setNearableListener(new BeaconManager.NearableListener() {
             @Override
             public void onNearablesDiscovered(List<Nearable> nearables) {
@@ -59,7 +59,7 @@ public class EstimoteAdapter {
         beaconManager.stopNearableDiscovery(scanId);
     }
 
-    public void onResume() {
+    public void resume(Activity mainActivity) {
         SystemRequirementsChecker.checkWithDefaultDialogs(mainActivity);
     }
 }

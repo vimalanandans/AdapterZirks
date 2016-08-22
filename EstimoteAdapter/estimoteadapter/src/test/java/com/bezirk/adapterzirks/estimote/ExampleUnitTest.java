@@ -1,4 +1,4 @@
-package com.bezirk.adapterzirks.estimotetest;
+package com.bezirk.adapterzirks.estimote;
 
 import org.junit.Test;
 

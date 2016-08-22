@@ -40,5 +40,5 @@ dependencies {
     compile('com.bezirk:android-zirk-proxy:3.0.0-alpha-mvp+012@aar') {
         transitive = true
     }
-    compile 'com.bezirk:HardwareEvents:0.0.15'
+    compile 'com.bezirk:HardwareEvents:0.0.16'
 }
