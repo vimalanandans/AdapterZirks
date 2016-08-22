@@ -14,20 +14,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EstimoteAdapter {
-    private Bezirk bezirk;
     private BeaconManager beaconManager;
     private String scanId;
 
     public EstimoteAdapter(final Bezirk bezirk, Context applicationContext) {
-        this.bezirk = bezirk;
         beaconManager = new BeaconManager(applicationContext);
         beaconManager.setNearableListener(new BeaconManager.NearableListener() {
             @Override
             public void onNearablesDiscovered(List<Nearable> nearables) {
-                ArrayList beacons = new ArrayList<Beacon>();
-                String s = "";
+                List<Beacon> beacons = new ArrayList<>();
                 for (int i = 0; i < nearables.size(); i++) {
-                    Nearable nearable = (Nearable)nearables.get(i);
+                    Nearable nearable = nearables.get(i);
                     Beacon beacon = new Beacon();
                     beacon.id = nearable.identifier;
                     beacon.batteryLevelEnum = Beacon.BatteryLevelEnum.values()[nearable.batteryLevel.ordinal()];
@@ -38,10 +35,6 @@ public class EstimoteAdapter {
                 }
                 bezirk.sendEvent(new BeaconsDetectedEvt(beacons));
                 System.out.println("Sent beacons detected event");
-                /*
-                showNotification("nearables", nearables.toString());
-
-                */
             }
         });
     }

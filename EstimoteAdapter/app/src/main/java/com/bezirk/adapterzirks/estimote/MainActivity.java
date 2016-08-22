@@ -20,8 +20,6 @@ import com.bezirk.middleware.messages.EventSet;
 import com.bezirk.middleware.proxy.android.BezirkMiddleware;
 
 public class MainActivity extends AppCompatActivity {
-
-    private Bezirk bezirk;
     private EstimoteAdapter estimoteAdapter;
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -34,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
         final TextView statusTxtView = (TextView) findViewById(R.id.statusTxtView);
 
         AppManager.getAppManager().startBezirk(this, true, "Integrated Bezirk", null);
-        bezirk = BezirkMiddleware.registerZirk(this, "Estimote Adapter Test");
+        final Bezirk bezirk = BezirkMiddleware.registerZirk(this, "Estimote Adapter Test");
 
         estimoteAdapter = new EstimoteAdapter(bezirk, getApplicationContext());
 
@@ -47,10 +45,10 @@ public class MainActivity extends AppCompatActivity {
                     boolean foundMyCar = false;
                     for (int i = 0; i < beaconsDetectedEvt.beacons.size(); i++) {
                         Beacon beacon = beaconsDetectedEvt.beacons.get(i);
-                        //if (closestBeacon.id.equals("7d8fc2d3b67ea8a0")) {
                         if ("fc37428c16376665".equals(beacon.id)) {
                             System.out.println("Found my car!");
                             statusTxtView.setText("Found my car!");
+                            foundMyCar = true;
                         }
                     }
                     if (!foundMyCar) {
@@ -103,7 +101,6 @@ public class MainActivity extends AppCompatActivity {
                     });
                     builder.show();
                 }
-                return;
             }
         }
     }
