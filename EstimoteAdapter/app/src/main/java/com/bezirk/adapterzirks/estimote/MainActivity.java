@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        TextView statusTxtView = (TextView) findViewById(R.id.statusTxtView);
+        final TextView statusTxtView = (TextView) findViewById(R.id.statusTxtView);
 
         AppManager.getAppManager().startBezirk(this, true, "Integrated Bezirk", null);
         bezirk = BezirkMiddleware.registerZirk(this, "Estimote Adapter Test");
@@ -43,11 +43,20 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void receiveEvent(Event event, ZirkEndPoint zirkEndPoint) {
                 if (event instanceof BeaconsDetectedEvt) {
-                    BeaconsDetectedEvt beaconsDetectedEvt = (BeaconsDetectedEvt)event;
-                    Beacon closestBeacon = beaconsDetectedEvt.beacons.get(0);
-                    if (closestBeacon.id.equals("7d8fc2d3b67ea8a0")) {
-                        System.out.println("Found my bed!");
+                    BeaconsDetectedEvt beaconsDetectedEvt = (BeaconsDetectedEvt) event;
+                    boolean foundMyCar = false;
+                    for (int i = 0; i < beaconsDetectedEvt.beacons.size(); i++) {
+                        Beacon beacon = beaconsDetectedEvt.beacons.get(i);
+                        //if (closestBeacon.id.equals("7d8fc2d3b67ea8a0")) {
+                        if ("fc37428c16376665".equals(beacon.id)) {
+                            System.out.println("Found my car!");
+                            statusTxtView.setText("Found my car!");
+                        }
                     }
+                    if (!foundMyCar) {
+                        statusTxtView.setText("Lost my car!");
+                    }
+
                 }
             }
         });
