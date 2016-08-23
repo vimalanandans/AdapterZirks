@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EstimoteAdapter {
-    private BeaconManager beaconManager;
+    private final BeaconManager beaconManager;
     private String scanId;
 
     public EstimoteAdapter(final Bezirk bezirk, Context applicationContext) {
@@ -22,16 +22,15 @@ public class EstimoteAdapter {
         beaconManager.setNearableListener(new BeaconManager.NearableListener() {
             @Override
             public void onNearablesDiscovered(List<Nearable> nearables) {
-                List<Beacon> beacons = new ArrayList<>();
-                for (int i = 0; i < nearables.size(); i++) {
-                    Nearable nearable = nearables.get(i);
+                final List<Beacon> beacons = new ArrayList<>();
+                for (Nearable nearable : nearables) {
                     Beacon beacon = new Beacon();
                     beacon.id = nearable.identifier;
                     beacon.batteryLevelEnum = Beacon.BatteryLevelEnum.values()[nearable.batteryLevel.ordinal()];
                     beacon.isMoving = nearable.isMoving;
                     beacon.tempFaren = 9*nearable.temperature/5 + 32;
                     beacons.add(beacon);
-                    System.out.println(String.format("Estimote nearable detected: %s", beacon.toString()));
+                    System.out.format("Estimote nearable detected: %s%n", beacon.toString());
                 }
                 bezirk.sendEvent(new BeaconsDetectedEvt(beacons));
                 System.out.println("Sent beacons detected event");

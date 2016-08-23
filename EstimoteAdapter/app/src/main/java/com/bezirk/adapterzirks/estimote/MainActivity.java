@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,9 +21,10 @@ import com.bezirk.middleware.messages.EventSet;
 import com.bezirk.middleware.proxy.android.BezirkMiddleware;
 
 public class MainActivity extends AppCompatActivity {
-    private EstimoteAdapter estimoteAdapter;
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
-    private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String TAG = MainActivity.class.getName();
+
+    private EstimoteAdapter estimoteAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,20 +43,24 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void receiveEvent(Event event, ZirkEndPoint zirkEndPoint) {
                 if (event instanceof BeaconsDetectedEvt) {
-                    BeaconsDetectedEvt beaconsDetectedEvt = (BeaconsDetectedEvt) event;
+                    final BeaconsDetectedEvt beaconsDetectedEvt = (BeaconsDetectedEvt) event;
                     boolean foundMyCar = false;
-                    for (int i = 0; i < beaconsDetectedEvt.beacons.size(); i++) {
-                        Beacon beacon = beaconsDetectedEvt.beacons.get(i);
+                    for (Beacon beacon : beaconsDetectedEvt.beacons) {
                         if ("fc37428c16376665".equals(beacon.id)) {
-                            System.out.println("Found my car!");
-                            statusTxtView.setText("Found my car!");
+                            final String foundCar = getString(R.string.found_car);
+
+                            Log.d(TAG, foundCar);
+                            statusTxtView.setText(foundCar);
                             foundMyCar = true;
                         }
                     }
-                    if (!foundMyCar) {
-                        statusTxtView.setText("Lost my car!");
-                    }
 
+                    if (!foundMyCar) {
+                        final String lostCar = getString(R.string.lost_car);
+
+                        Log.d(TAG, lostCar);
+                        statusTxtView.setText(lostCar);
+                    }
                 }
             }
         });
@@ -82,7 +88,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+                                           @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
         switch (requestCode) {
             case PERMISSION_REQUEST_COARSE_LOCATION: {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -90,7 +97,8 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     final AlertDialog.Builder builder = new AlertDialog.Builder(this);
                     builder.setTitle("Functionality limited");
-                    builder.setMessage("Since location access has not been granted, this app will not be able to discover beacons when in the background.");
+                    builder.setMessage("Since location access has not been granted, this app will " +
+                            "not be able to discover beacons when in the background.");
                     builder.setPositiveButton(android.R.string.ok, null);
                     builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
 
@@ -104,7 +112,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
 
     @Override
     public void onStart() {

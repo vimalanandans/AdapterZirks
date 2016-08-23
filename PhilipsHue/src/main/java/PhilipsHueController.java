@@ -1,11 +1,14 @@
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class PhilipsHueController {
+    private static final Logger logger = LoggerFactory.getLogger(PhilipsHueController.class);
 
     public void turnLightOn() {
         String payload = "{\"on\":true}";
@@ -23,36 +26,35 @@ public class PhilipsHueController {
     }
 
     private void sendPayload(String payload) {
-        URL url = null;
+        final URL url;
 
         try {
             url = new URL("http://192.168.1.30/api/oFZsQakh9XzQiVhkIuuv83xsycRsmfgcEn5eBvjm/lights/2/state");
-        } catch (MalformedURLException exception) {
-            exception.printStackTrace();
+        } catch (MalformedURLException e) {
+            logger.error("Invalid URL for Philips Hue bridge, payload meant for bridge will " +
+                    "not be sent", e);
+            return;
         }
 
-        HttpURLConnection httpURLConnection = null;
-        DataOutputStream dataOutputStream = null;
-
         try {
-            httpURLConnection = (HttpURLConnection) url.openConnection();
-            httpURLConnection.setRequestProperty("Content-Type", "application/json");
-            httpURLConnection.setRequestProperty("Accept", "application/json");
-            httpURLConnection.setRequestMethod("PUT");
-            httpURLConnection.setDoOutput(true);
-            httpURLConnection.setDoInput(true);
-            OutputStreamWriter osw = new OutputStreamWriter(httpURLConnection.getOutputStream());
+            final HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
+            httpConnection.setRequestProperty("Content-Type", "application/json");
+            httpConnection.setRequestProperty("Accept", "application/json");
+            httpConnection.setRequestMethod("PUT");
+            httpConnection.setDoOutput(true);
+            httpConnection.setDoInput(true);
+
+            final OutputStreamWriter osw = new OutputStreamWriter(httpConnection.getOutputStream());
             osw.write(payload);
             osw.flush();
             osw.close();
-            System.err.println(httpURLConnection.getResponseMessage());
 
-            System.out.println("Sent to Hue Bridge: " + payload);
+            logger.trace("Bridge's payload response: {}", httpConnection.getResponseMessage());
+            logger.trace("Sent to Hue bridge: {}", payload);
 
-        } catch (IOException exception) {
-            exception.printStackTrace();
+        } catch (IOException e) {
+            logger.error("Error sending payload to Hue bridge", e);
         }
     }
-
 
 }
