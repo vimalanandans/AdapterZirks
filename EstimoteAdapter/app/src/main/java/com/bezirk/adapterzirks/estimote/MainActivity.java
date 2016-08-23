@@ -119,6 +119,8 @@ public class MainActivity extends AppCompatActivity {
         estimoteAdapter.start();
     }
 
+    // Use onDestroy instead if the app should keep receiving beacon notifications
+    // while not in the foreground or when the screen is off.
     @Override
     public void onStop() {
         super.onStop();
