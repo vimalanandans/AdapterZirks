@@ -1,3 +1,5 @@
+package com.bezirk.adapter.philips.hue;
+
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
@@ -20,8 +22,14 @@ public class PhilipsHueController {
         sendPayload(payload);
     }
 
+    public void setLightBrightness(byte brightnessLevel) {
+        String payload = String.format("{\"bri\":%d}", brightnessLevel);
+        sendPayload(payload);
+    }
+
     public void setLightColorHSV(int h, int s, int v) {
-        String payload = "{\"on\":true, \"hue\":" + h + ", \"sat\":" + s + ", \"bri\":" + v + "}";
+        String payload = String.format("{\"on\":true, \"hue\":%d, \"sat\":%d, \"bri\":%d}",
+                h, s, v);
         sendPayload(payload);
     }
 

@@ -17,6 +17,6 @@ dependencies {
     compile(group: 'com.bezirk', name: 'bezirk', version: '3.0.0-alpha-mvp+012')
     compile(group: 'com.bezirk', name: 'commons', version: '3.0.0-alpha-mvp+012')
 
-    compile(group: 'com.bezirk', name: 'HardwareEvents', version: '0.0.18')
+    compile(group: 'com.bezirk', name: 'HardwareEvents', version: '0.0.19')
 
 }
