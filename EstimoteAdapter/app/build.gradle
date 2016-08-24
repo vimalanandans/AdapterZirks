@@ -35,5 +35,5 @@ dependencies {
         exclude group: 'ch.qos.logback'
     }
     compile project(':estimoteadapter')
-    compile 'com.bezirk:HardwareEvents:0.0.19'
+    compile 'com.bezirk:HardwareEvents:0.0.21'
 }

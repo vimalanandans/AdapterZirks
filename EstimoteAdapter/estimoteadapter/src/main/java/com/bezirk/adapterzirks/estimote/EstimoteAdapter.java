@@ -2,9 +2,11 @@ package com.bezirk.adapterzirks.estimote;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 
 import com.bezirk.hardwareevents.beacon.Beacon;
 import com.bezirk.hardwareevents.beacon.BeaconsDetectedEvt;
+import com.bezirk.hardwareevents.environment.Temperature;
 import com.bezirk.middleware.Bezirk;
 import com.estimote.sdk.BeaconManager;
 import com.estimote.sdk.Nearable;
@@ -14,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EstimoteAdapter {
+    private static final String TAG = EstimoteAdapter.class.getName();
+
     private final BeaconManager beaconManager;
     private String scanId;
 
@@ -24,16 +28,14 @@ public class EstimoteAdapter {
             public void onNearablesDiscovered(List<Nearable> nearables) {
                 final List<Beacon> beacons = new ArrayList<>();
                 for (Nearable nearable : nearables) {
-                    Beacon beacon = new Beacon();
-                    beacon.id = nearable.identifier;
-                    beacon.batteryLevelEnum = Beacon.BatteryLevelEnum.values()[nearable.batteryLevel.ordinal()];
-                    beacon.isMoving = nearable.isMoving;
-                    beacon.tempFaren = 9*nearable.temperature/5 + 32;
+                    Beacon beacon = new Beacon(nearable.identifier,
+                            Beacon.BatteryLevel.values()[nearable.batteryLevel.ordinal()],
+                           new Temperature(nearable.temperature, Temperature.TemperatureUnit.CELSIUS));
                     beacons.add(beacon);
-                    System.out.format("Estimote nearable detected: %s%n", beacon.toString());
+                    Log.d(TAG, String.format("Estimote nearable detected: %s%n", beacon.toString()));
                 }
                 bezirk.sendEvent(new BeaconsDetectedEvt(beacons));
-                System.out.println("Sent beacons detected event");
+                Log.v(TAG, "Sent beacons detected event");
             }
         });
     }

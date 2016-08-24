@@ -4,10 +4,10 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -45,8 +45,8 @@ public class MainActivity extends AppCompatActivity {
                 if (event instanceof BeaconsDetectedEvt) {
                     final BeaconsDetectedEvt beaconsDetectedEvt = (BeaconsDetectedEvt) event;
                     boolean foundMyCar = false;
-                    for (Beacon beacon : beaconsDetectedEvt.beacons) {
-                        if ("fc37428c16376665".equals(beacon.id)) {
+                    for (Beacon beacon : beaconsDetectedEvt.getBeacons()) {
+                        if ("9fd9a34e0dd90566".equals(beacon.getId())) {
                             final String foundCar = getString(R.string.found_car);
 
                             Log.d(TAG, foundCar);
