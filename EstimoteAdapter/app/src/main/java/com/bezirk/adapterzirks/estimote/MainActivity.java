@@ -13,12 +13,15 @@ import android.widget.TextView;
 
 import com.bezirk.componentManager.AppManager;
 import com.bezirk.hardwareevents.beacon.Beacon;
-import com.bezirk.hardwareevents.beacon.BeaconsDetectedEvt;
+import com.bezirk.hardwareevents.beacon.BeaconsDetectedEvent;
+import com.bezirk.hardwareevents.beacon.GetBeaconAttributesEvent;
 import com.bezirk.middleware.Bezirk;
 import com.bezirk.middleware.addressing.ZirkEndPoint;
 import com.bezirk.middleware.messages.Event;
 import com.bezirk.middleware.messages.EventSet;
 import com.bezirk.middleware.proxy.android.BezirkMiddleware;
+
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
@@ -38,15 +41,23 @@ public class MainActivity extends AppCompatActivity {
 
         estimoteAdapter = new EstimoteAdapter(bezirk, getApplicationContext());
 
-        EventSet eventSet = new EventSet(BeaconsDetectedEvt.class);
+        final EventSet eventSet = new EventSet(BeaconsDetectedEvent.class,
+                EstimoteBeaconAttributesEvent.class);
+
         eventSet.setEventReceiver(new EventSet.EventReceiver() {
             @Override
-            public void receiveEvent(Event event, ZirkEndPoint zirkEndPoint) {
-                if (event instanceof BeaconsDetectedEvt) {
-                    final BeaconsDetectedEvt beaconsDetectedEvt = (BeaconsDetectedEvt) event;
+            public void receiveEvent(Event event, ZirkEndPoint sender) {
+                if (event instanceof BeaconsDetectedEvent) {
+                    final BeaconsDetectedEvent beaconsDetectedEvt = (BeaconsDetectedEvent) event;
                     boolean foundMyCar = false;
                     for (Beacon beacon : beaconsDetectedEvt.getBeacons()) {
                         if ("9fd9a34e0dd90566".equals(beacon.getId())) {
+                            if (EstimoteAdapter.MANUFACTURER_ESTIMOTE.equals(beacon.getManufacturer())) {
+                                bezirk.sendEvent(sender, new GetBeaconAttributesEvent(beacon.getId(),
+                                        beacon.getManufacturer()));
+                                Log.v(TAG, "Detected estimote beacon, requested estimote attributes");
+                            }
+
                             final String foundCar = getString(R.string.found_car);
 
                             Log.d(TAG, foundCar);
@@ -61,6 +72,16 @@ public class MainActivity extends AppCompatActivity {
                         Log.d(TAG, lostCar);
                         statusTxtView.setText(lostCar);
                     }
+                } else if (event instanceof EstimoteBeaconAttributesEvent) {
+                    EstimoteBeaconAttributesEvent beaconAttributes =
+                            (EstimoteBeaconAttributesEvent) event;
+
+                    statusTxtView.setText(String.format(Locale.getDefault(),
+                            "%s%nCar isMoving: %s, xAcceleration: %f, yAcceleration: %f, " +
+                                    "zAcceleration: %f",
+                            statusTxtView.getText(), beaconAttributes.isMoving(),
+                            beaconAttributes.getXAcceleration(), beaconAttributes.getYAcceleration(),
+                            beaconAttributes.getZAcceleration()));
                 }
             }
         });
