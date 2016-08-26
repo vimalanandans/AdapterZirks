@@ -1,12 +1,14 @@
 package com.bezirk.adapter.philips.hue;
 
 import com.bezirk.hardwareevents.HexColor;
-import com.bezirk.hardwareevents.light.GetLightColorEvent;
+import com.bezirk.hardwareevents.light.CurrentLightStateEvent;
+import com.bezirk.hardwareevents.light.GetLightStateEvent;
 import com.bezirk.hardwareevents.light.LightEvent;
-import com.bezirk.hardwareevents.light.SetLightBrightnessEvt;
-import com.bezirk.hardwareevents.light.SetLightColorEvt;
-import com.bezirk.hardwareevents.light.TurnLightOffEvt;
-import com.bezirk.hardwareevents.light.TurnLightOnEvt;
+import com.bezirk.hardwareevents.light.LightsDetectedEvent;
+import com.bezirk.hardwareevents.light.SetLightBrightnessEvent;
+import com.bezirk.hardwareevents.light.SetLightColorEvent;
+import com.bezirk.hardwareevents.light.TurnLightOffEvent;
+import com.bezirk.hardwareevents.light.TurnLightOnEvent;
 import com.bezirk.middleware.Bezirk;
 import com.bezirk.middleware.addressing.ZirkEndPoint;
 import com.bezirk.middleware.messages.Event;
@@ -15,7 +17,6 @@ import com.bezirk.middleware.messages.EventSet;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,8 +43,8 @@ public class PhilipsHueAdapter {
     public PhilipsHueAdapter(Bezirk bezirk, String hueBridgeUrl, String hueBridgeApiKey) throws MalformedURLException {
         philipsHueController = new PhilipsHueController(hueBridgeUrl, hueBridgeApiKey);
 
-        final EventSet lightEventSet = new EventSet(TurnLightOnEvt.class, TurnLightOffEvt.class,
-                SetLightBrightnessEvt.class, SetLightColorEvt.class, GetLightColorEvent.class);
+        final EventSet lightEventSet = new EventSet(TurnLightOnEvent.class, TurnLightOffEvent.class,
+                SetLightBrightnessEvent.class, SetLightColorEvent.class, GetLightStateEvent.class);
 
         lightEventSet.setEventReceiver(new EventSet.EventReceiver() {
             @Override
@@ -51,22 +52,26 @@ public class PhilipsHueAdapter {
                 if (event instanceof LightEvent) {
                     final String lightId = ((LightEvent) event).getId();
 
-                    if (event instanceof TurnLightOnEvt) {
+                    if (event instanceof TurnLightOnEvent) {
                         philipsHueController.turnLightOn(lightId);
-                    } else if (event instanceof TurnLightOffEvt) {
+                    } else if (event instanceof TurnLightOffEvent) {
                         philipsHueController.turnLightOff(lightId);
-                    } else if (event instanceof SetLightBrightnessEvt) {
-                        SetLightBrightnessEvt brightnessEvt = (SetLightBrightnessEvt) event;
+                    } else if (event instanceof SetLightBrightnessEvent) {
+                        SetLightBrightnessEvent brightnessEvt = (SetLightBrightnessEvent) event;
                         logger.trace(brightnessEvt.toString());
 
                         philipsHueController.setLightBrightness(lightId, brightnessEvt.getBrightnessLevel());
-                    } else if (event instanceof SetLightColorEvt) {
-                        SetLightColorEvt colorEvent = (SetLightColorEvt) event;
+                    } else if (event instanceof SetLightColorEvent) {
+                        final SetLightColorEvent colorEvent = (SetLightColorEvent) event;
                         logger.trace(colorEvent.toString());
 
                         setLightColor(lightId, colorEvent.getColor());
-                    } else if (event instanceof GetLightColorEvent) {
-                        // TODO: implement me
+                    } else if (event instanceof GetLightStateEvent) {
+                        final CurrentLightStateEvent lightStateEvent =
+                                philipsHueController.getLightState(lightId);
+
+                        if (lightEventSet != null)
+                            bezirk.sendEvent(sender, lightStateEvent);
                     }
                 }
             }
@@ -74,17 +79,9 @@ public class PhilipsHueAdapter {
 
         bezirk.subscribe(lightEventSet);
         logger.trace("Listening for hue light events");
-    }
 
-    private void setLightColor(String lightId, HexColor hexColor) {
-        final Color color = Color.decode(hexColor.getHexString());
-        final float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
-        final int hue = (int)(hsb[0]*65535);
-        final int sat = (int)(hsb[1]*255);
-        final int bri = (int)(hsb[2]*255);
-
-        logger.trace("H: {} S: {} b: {}", hue, sat, bri);
-        philipsHueController.setLightColorHSV(lightId, hue, sat, bri);
+        bezirk.sendEvent(new LightsDetectedEvent(philipsHueController.findLights()));
+        logger.trace("Sent discovered lights event");
     }
 
     /**
@@ -220,5 +217,16 @@ public class PhilipsHueAdapter {
         }
 
         return "";
+    }
+
+    private void setLightColor(String lightId, HexColor hexColor) {
+        final Color color = Color.decode(hexColor.getHexString());
+        final float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
+        final int hue = (int) (hsb[0] * 65535);
+        final int sat = (int) (hsb[1] * 255);
+        final int bri = (int) (hsb[2] * 255);
+
+        logger.trace("H: {} S: {} b: {}", hue, sat, bri);
+        philipsHueController.setLightColorHSV(lightId, hue, sat, bri);
     }
 }
