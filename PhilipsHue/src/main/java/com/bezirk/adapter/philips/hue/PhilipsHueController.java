@@ -1,51 +1,50 @@
 package com.bezirk.adapter.philips.hue;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class PhilipsHueController {
     private static final Logger logger = LoggerFactory.getLogger(PhilipsHueController.class);
+    private final String baseBridgeUrl;
 
-    public void turnLightOn() {
+    public PhilipsHueController(String hueBridgeUrl, String apiKey) {
+       this.baseBridgeUrl = String.format("%sapi/%s/", hueBridgeUrl, apiKey);
+    }
+
+    public void turnLightOn(String id) {
         String payload = "{\"on\":true}";
-        sendPayload(payload);
+        sendPayload(String.format("%s%s/%s/%s", baseBridgeUrl, "lights", id, "state"), payload);
     }
 
-    public void turnLightOff() {
+    public void turnLightOff(String id) {
+        System.out.println(String.format("%s%s/%s/%s", baseBridgeUrl, "lights", id, "state"));
+
         String payload = "{\"on\":false}";
-        sendPayload(payload);
+        sendPayload(String.format("%s%s/%s/%s", baseBridgeUrl, "lights", id, "state"), payload);
     }
 
-    public void setLightBrightness(byte brightnessLevel) {
+    public void setLightBrightness(String id, byte brightnessLevel) {
         String payload = String.format("{\"bri\":%d}", brightnessLevel);
-        sendPayload(payload);
+        sendPayload(String.format("%s%s/%s/%s", baseBridgeUrl, "lights", id, "state"), payload);
     }
 
-    public void setLightColorHSV(int h, int s, int v) {
+    public void setLightColorHSV(String id, int h, int s, int v) {
         String payload = String.format("{\"on\":true, \"hue\":%d, \"sat\":%d, \"bri\":%d}",
                 h, s, v);
-        sendPayload(payload);
+        sendPayload(String.format("%s%s/%s/%s", baseBridgeUrl, "lights", id, "state"), payload);
     }
 
-    private void sendPayload(String payload) {
-        final URL url;
-
+    private void sendPayload(String url, String payload) {
         try {
-            url = new URL("http://192.168.1.30/api/oFZsQakh9XzQiVhkIuuv83xsycRsmfgcEn5eBvjm/lights/2/state");
-        } catch (MalformedURLException e) {
-            logger.error("Invalid URL for Philips Hue bridge, payload meant for bridge will " +
-                    "not be sent", e);
-            return;
-        }
+            final URL requestUrl = new URL(url);
 
-        try {
-            final HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
+            final HttpURLConnection httpConnection = (HttpURLConnection) requestUrl.openConnection();
             httpConnection.setRequestProperty("Content-Type", "application/json");
             httpConnection.setRequestProperty("Accept", "application/json");
             httpConnection.setRequestMethod("PUT");
@@ -64,5 +63,4 @@ public class PhilipsHueController {
             logger.error("Error sending payload to Hue bridge", e);
         }
     }
-
 }

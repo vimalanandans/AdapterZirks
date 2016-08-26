@@ -11,11 +11,13 @@ dependencies {
     // The production code uses the SLF4J logging API at compile time
     compile 'org.slf4j:slf4j-api:1.7.21'
 
+    compile 'com.googlecode.json-simple:json-simple:1.1.1'
+
     compile(group: 'com.bezirk', name: 'java-zirk-proxy', version: '3.0.0-alpha-mvp+012')
     compile(group: 'com.bezirk', name: 'bezirk-middleware-api', version: '3.0.0-alpha-mvp+012')
     compile(group: 'com.bezirk', name: 'bezirk', version: '3.0.0-alpha-mvp+012')
     compile(group: 'com.bezirk', name: 'commons', version: '3.0.0-alpha-mvp+012')
-    compile(group: 'com.bezirk', name: 'HardwareEvents', version: '0.0.22')
+    compile(group: 'com.bezirk', name: 'HardwareEvents', version: '0.0.23')
 
     testCompile 'junit:junit:4.12'
 }
