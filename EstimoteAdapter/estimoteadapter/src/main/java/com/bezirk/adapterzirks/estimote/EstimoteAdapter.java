@@ -22,13 +22,27 @@ import java.util.List;
 import java.util.Map;
 
 public class EstimoteAdapter {
-    public static final String MANUFACTURER_ESTIMOTE = "estimote";
-
     private static final String TAG = EstimoteAdapter.class.getName();
 
     private final BeaconManager beaconManager;
     private final Map<String, Nearable> beaconsSeen = new HashMap<>();
     private String scanId;
+
+    public enum Hardware {
+        MANUFACTURER("estimote"),
+        HARDWARE_NEARABLE("estimote.nearable");
+
+        private final String text;
+
+        Hardware(final String text) {
+            this.text = text;
+        }
+
+        @Override
+        public String toString() {
+            return text;
+        }
+    }
 
     public EstimoteAdapter(final Bezirk bezirk, Context applicationContext) {
         beaconManager = new BeaconManager(applicationContext);
@@ -40,7 +54,7 @@ public class EstimoteAdapter {
                     Beacon beacon = new Beacon(nearable.identifier,
                             Beacon.BatteryLevel.values()[nearable.batteryLevel.ordinal()],
                             new Temperature(nearable.temperature, Temperature.TemperatureUnit.CELSIUS),
-                            MANUFACTURER_ESTIMOTE);
+                            Hardware.HARDWARE_NEARABLE.toString());
                     beacons.add(beacon);
 
                     beaconsSeen.put(nearable.identifier, nearable);
@@ -61,7 +75,7 @@ public class EstimoteAdapter {
                     GetBeaconAttributesEvent beaconAttributesEvent =
                             (GetBeaconAttributesEvent) event;
 
-                    if (MANUFACTURER_ESTIMOTE.equals(beaconAttributesEvent.getManufacturer()) &&
+                    if (Hardware.HARDWARE_NEARABLE.toString().equalsIgnoreCase(beaconAttributesEvent.getHardwareName()) &&
                             beaconsSeen.containsKey(beaconAttributesEvent.getId())) {
                         final Nearable requestedNearable = beaconsSeen.get(beaconAttributesEvent.getId());
 

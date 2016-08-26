@@ -52,9 +52,9 @@ public class MainActivity extends AppCompatActivity {
                     boolean foundMyCar = false;
                     for (Beacon beacon : beaconsDetectedEvt.getBeacons()) {
                         if ("9fd9a34e0dd90566".equals(beacon.getId())) {
-                            if (EstimoteAdapter.MANUFACTURER_ESTIMOTE.equals(beacon.getManufacturer())) {
+                            if (EstimoteAdapter.Hardware.HARDWARE_NEARABLE.toString().equalsIgnoreCase(beacon.getHardwareName())) {
                                 bezirk.sendEvent(sender, new GetBeaconAttributesEvent(beacon.getId(),
-                                        beacon.getManufacturer()));
+                                        beacon.getHardwareName()));
                                 Log.v(TAG, "Detected estimote beacon, requested estimote attributes");
                             }
 
