@@ -1,0 +1,48 @@
+apply plugin: 'com.android.library'
+apply plugin: 'com.jfrog.artifactory'
+apply plugin: 'maven-publish'
+
+publishing {
+    publications {
+        bezirkPublication(MavenPublication) {
+
+            artifact "${project.buildDir}/outputs/aar/${project.name}-debug.aar"
+            artifact "${project.buildDir}/outputs/aar/${project.name}-release.aar"
+
+            pom.withXml {
+                def dependencies = asNode().appendNode('dependencies')
+                configurations.getByName("_releaseCompile").getResolvedConfiguration().getFirstLevelModuleDependencies().each {
+                    def dependency = dependencies.appendNode('dependency')
+                    dependency.appendNode('groupId', it.moduleGroup)
+                    dependency.appendNode('artifactId', it.moduleName)
+                    dependency.appendNode('version', it.moduleVersion)
+
+                    //TODO automatically find android library projects and set their type attribute to aar
+                    //android libraries added as aar dependencies for transitive resolution through pom.xml
+                    if(it.moduleName == "android-comms-zyre-jni" || it.moduleName == "zyre-jni" || it.moduleName == "android-starter"){
+                        dependency.appendNode('type', 'aar')
+                    }
+
+                }
+            }
+        }
+    }
+}
+
+
+
+artifactory {
+    contextUrl = 'https://bezirk.artifactoryonline.com/bezirk'
+    publish {
+        repository {
+            repoKey = 'libs-release-local' // The Artifactory repository key to publish to
+            username = "${artifactory_user}" // The publisher user name
+            password = "${artifactory_password}" // The publisher password
+        }
+        defaults {
+            publications('bezirkPublication')
+            publishArtifacts = true
+            publishPom = true
+        }
+    }
+}

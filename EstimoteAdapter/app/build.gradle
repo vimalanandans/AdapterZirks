@@ -20,13 +20,6 @@ android {
     }
 }
 
-repositories {
-    jcenter()
-    maven {
-        url "https://bezirk.artifactoryonline.com/bezirk/libs-release-local/"
-    }
-}
-
 dependencies {
     testCompile 'junit:junit:4.12'
 

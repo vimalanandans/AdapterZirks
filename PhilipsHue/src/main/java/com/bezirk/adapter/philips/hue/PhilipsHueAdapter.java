@@ -1,5 +1,6 @@
 package com.bezirk.adapter.philips.hue;
 
+import com.bezirk.adapter.upnp.UpnpDiscovery;
 import com.bezirk.hardwareevents.HexColor;
 import com.bezirk.hardwareevents.light.CurrentLightStateEvent;
 import com.bezirk.hardwareevents.light.GetLightStateEvent;
@@ -25,11 +26,7 @@ import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.MalformedURLException;
-import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashSet;
@@ -104,61 +101,24 @@ public class PhilipsHueAdapter {
     }
 
     private static Set<String> discoverBridgesUpnp(int upnpTimeout /* ms */) {
-        String mSearch = "M-SEARCH * HTTP/1.1\r\nHOST: 239.255.255.250:1900\r\n" +
-                "MAN: \"ssdp:discover\"\r\nMX: 5\r\nST: ssdp:all\r\n\r\n";
-        final byte[] sendData = mSearch.getBytes();
+        final UpnpDiscovery discovery = new UpnpDiscovery(5000, ".*IpBridge.*");
+        final Set<String> locations = discovery.discoverDevices();
 
         final Set<String> bridgeBaseUrls = new HashSet<>();
 
-        try {
-            final DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length,
-                    InetAddress.getByName("239.255.255.250"), 1900);
+        for (String location : locations) {
+            if (logger.isTraceEnabled())
+                logger.trace("Found potential Hue bridge: {}", location);
 
-            final DatagramSocket clientSocket = new DatagramSocket();
-            clientSocket.setSoTimeout(upnpTimeout); // Set based on MX timeout (5 seconds)
-            clientSocket.send(sendPacket);
+            final String deviceDescription = getHttpResponse(location);
 
-            final long start = System.currentTimeMillis();
-            while (System.currentTimeMillis() - start < upnpTimeout) {
-                final byte[] receiveData = new byte[1024];
-                DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-
-                try {
-                    clientSocket.receive(receivePacket);
-                } catch (SocketTimeoutException ste) {
-                    logger.trace("Hue SSDP client timed out", ste);
-                }
-
-                final String response = new String(receivePacket.getData());
-
-                if (response.length() > 0 && response.contains("IpBridge")) {
-                    final String deviceLocation = parseUpnpLocation(response);
-
-                    if (logger.isTraceEnabled())
-                        logger.trace("Found potential Hue bridge: {}", deviceLocation);
-
-                    final String deviceDescription = getHttpResponse(parseUpnpLocation(response));
-
-                    if (isHueBridge(deviceDescription)) {
-                        final String urlBase = parseUrlBase(deviceDescription);
-                        bridgeBaseUrls.add(urlBase);
-                    }
-                }
+            if (isHueBridge(deviceDescription)) {
+                final String urlBase = parseUrlBase(deviceDescription);
+                bridgeBaseUrls.add(urlBase);
             }
-        } catch (IOException e) {
-            logger.error("Hue SSDP discover failed", e);
         }
 
         return bridgeBaseUrls;
-    }
-
-    private static String parseUpnpLocation(String upnpResponse) {
-        final String locationLabel = "LOCATION:";
-        final int locationStart = upnpResponse.toUpperCase().indexOf(locationLabel) +
-                locationLabel.length();
-        final int endLine = upnpResponse.indexOf('\n', locationStart);
-
-        return upnpResponse.substring(locationStart, endLine).trim();
     }
 
     private static boolean isHueBridge(String deviceDescription) {

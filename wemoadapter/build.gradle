@@ -1,22 +1,11 @@
 apply plugin: 'java'
-apply from: "${rootDir}/artifactory.gradle"
-group = 'com.bezirk'
-version = "0.0.1"
-
-sourceCompatibility=1.7
-targetCompatibility=1.7
 
 dependencies {
-    compile 'org.slf4j:slf4j-api:1.7.21'
-
-    compile 'com.googlecode.json-simple:json-simple:1.1.1'
-
     compile project(':upnpdiscovery')
+
     compile(group: 'com.bezirk', name: 'java-zirk-proxy', version: '3.0.0-alpha-mvp+012')
     compile(group: 'com.bezirk', name: 'bezirk-middleware-api', version: '3.0.0-alpha-mvp+012')
     compile(group: 'com.bezirk', name: 'bezirk', version: '3.0.0-alpha-mvp+012')
     compile(group: 'com.bezirk', name: 'commons', version: '3.0.0-alpha-mvp+012')
     compile(group: 'com.bezirk', name: 'HardwareEvents', version: '0.0.23')
-
-    testCompile 'junit:junit:4.12'
 }
