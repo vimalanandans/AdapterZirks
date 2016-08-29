@@ -53,7 +53,7 @@ public class UpnpDiscovery {
                 try {
                     clientSocket.receive(receivePacket);
                 } catch (SocketTimeoutException ste) {
-                    logger.trace("Hue SSDP client timed out", ste);
+                    logger.trace("SSDP client timed out", ste);
                 }
 
                 final String response = new String(receivePacket.getData());
@@ -65,7 +65,7 @@ public class UpnpDiscovery {
                 }
             }
         } catch (IOException e) {
-            logger.error("Hue SSDP discover failed", e);
+            logger.error("SSDP discover failed", e);
         }
 
         return deviceLocations;

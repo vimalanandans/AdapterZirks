@@ -172,7 +172,7 @@ public class PhilipsHueAdapter {
         } catch (MalformedURLException e) {
             logger.error("Malformed URL for Hue discovery", e);
         } catch (IOException e) {
-            logger.error("Hue discovery failed", e);
+            logger.error("Hue discovery to get device description for " + url, e);
         }
 
         return "";
