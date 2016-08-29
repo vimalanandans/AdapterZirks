@@ -1,4 +1,7 @@
 apply plugin: 'java'
+apply from: "${rootDir}/artifactory.gradle"
+group = 'com.bezirk'
+version = "0.0.1"
 
 repositories {
     jcenter()
@@ -6,6 +9,9 @@ repositories {
         url "https://bezirk.artifactoryonline.com/bezirk/libs-release-local/"
     }
 }
+
+sourceCompatibility=1.7
+targetCompatibility=1.7
 
 dependencies {
     // The production code uses the SLF4J logging API at compile time

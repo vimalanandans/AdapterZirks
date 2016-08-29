@@ -35,7 +35,7 @@ public class PhilipsHueZirkTest {
                 if (event instanceof LightsDetectedEvent) {
                     Set<Light> lights = ((LightsDetectedEvent) event).getLights();
 
-                    for (Light light : lights) {
+                    for (final Light light : lights) {
                         bezirk.sendEvent(new GetLightStateEvent(light.getId()));
                         bezirk.sendEvent(new TurnLightOnEvent(light.getId()));
 

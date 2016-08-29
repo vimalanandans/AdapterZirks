@@ -40,7 +40,7 @@ public class PhilipsHueAdapter {
 
     private final PhilipsHueController philipsHueController;
 
-    public PhilipsHueAdapter(Bezirk bezirk, String hueBridgeUrl, String hueBridgeApiKey) throws MalformedURLException {
+    public PhilipsHueAdapter(final Bezirk bezirk, String hueBridgeUrl, String hueBridgeApiKey) throws MalformedURLException {
         philipsHueController = new PhilipsHueController(hueBridgeUrl, hueBridgeApiKey);
 
         final EventSet lightEventSet = new EventSet(TurnLightOnEvent.class, TurnLightOffEvent.class,

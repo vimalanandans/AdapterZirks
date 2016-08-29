@@ -1,0 +1,4 @@
+rootProject.name = 'AdapterZirks'
+
+include 'EstimoteAdapter:app', 'EstimoteAdapter:estimoteadapter'
+include 'PhilipsHue'

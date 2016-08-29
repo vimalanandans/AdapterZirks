@@ -35,6 +35,6 @@ dependencies {
         transitive = true
         exclude group: 'ch.qos.logback'
     }
-    compile project(':estimoteadapter')
+    compile project(':EstimoteAdapter:estimoteadapter')
     compile 'com.bezirk:HardwareEvents:0.0.23'
 }
