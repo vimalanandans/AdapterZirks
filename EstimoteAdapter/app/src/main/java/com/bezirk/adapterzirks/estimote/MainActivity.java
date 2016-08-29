@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
                     final BeaconsDetectedEvent beaconsDetectedEvt = (BeaconsDetectedEvent) event;
                     boolean foundMyCar = false;
                     for (Beacon beacon : beaconsDetectedEvt.getBeacons()) {
-                        if ("9fd9a34e0dd90566".equals(beacon.getId())) {
+                        if ("fc37428c16376665".equals(beacon.getId())) {
                             if (EstimoteAdapter.Hardware.HARDWARE_NEARABLE.toString().equalsIgnoreCase(beacon.getHardwareName())) {
                                 bezirk.sendEvent(sender, new GetBeaconAttributesEvent(beacon.getId(),
                                         beacon.getHardwareName()));
