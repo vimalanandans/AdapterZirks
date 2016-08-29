@@ -100,7 +100,7 @@ public class PhilipsHueAdapter {
     }
 
     private static Set<String> discoverBridgesUpnp() {
-        final UpnpDiscovery discovery = new UpnpDiscovery(5000, ".*IpBridge.*");
+        final UpnpDiscovery discovery = new UpnpDiscovery(5000, "IpBridge");
         final Set<String> locations = discovery.discoverDevices();
 
         final Set<String> bridgeBaseUrls = new HashSet<>();

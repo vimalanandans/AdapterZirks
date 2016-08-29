@@ -9,10 +9,10 @@ public class WeMoZirkTest {
     public static void main(String[] args) {
         final Bezirk bezirk = BezirkMiddleware.registerZirk("WeMo Test Zirk");
 
-        final Set<String> sockets = WeMoAdapter.discoverSockets();
+        final Set<String> potentialSwitches = WeMoAdapter.discoverSwitches();
 
-        for (String socket : sockets) {
-            System.out.println(socket);
+        for (String potentialSwitch : potentialSwitches) {
+            System.out.println(potentialSwitch);
         }
     }
 }

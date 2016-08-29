@@ -5,8 +5,9 @@ import com.bezirk.adapter.upnp.UpnpDiscovery;
 import java.util.Set;
 
 public class WeMoAdapter {
-    public static Set<String> discoverSockets() {
-        final UpnpDiscovery discovery = new UpnpDiscovery(5000, ".*uuid:Socket.*:urn:Belkin:device:controllee.*");
+    public static Set<String> discoverSwitches() {
+        final UpnpDiscovery discovery = new UpnpDiscovery(5000, "upnp:rootdevice",
+                "upnp:rootdevice");
         final Set<String> locations = discovery.discoverDevices();
 
         return locations;
