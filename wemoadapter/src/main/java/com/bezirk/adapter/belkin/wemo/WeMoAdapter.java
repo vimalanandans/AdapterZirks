@@ -1,6 +1,15 @@
 package com.bezirk.adapter.belkin.wemo;
 
 import com.bezirk.adapter.upnp.UpnpDiscovery;
+import com.bezirk.hardwareevents.outlet.Outlet;
+import com.bezirk.hardwareevents.outlet.OutletEvent;
+import com.bezirk.hardwareevents.outlet.OutletsDetectedEvent;
+import com.bezirk.hardwareevents.outlet.TurnOutletOffEvent;
+import com.bezirk.hardwareevents.outlet.TurnOutletOnEvent;
+import com.bezirk.middleware.Bezirk;
+import com.bezirk.middleware.addressing.ZirkEndPoint;
+import com.bezirk.middleware.messages.Event;
+import com.bezirk.middleware.messages.EventSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +25,38 @@ import java.util.Set;
 public class WeMoAdapter {
     private static final Logger logger = LoggerFactory.getLogger(WeMoAdapter.class);
 
-    public static Set<String> discoverSwitches() {
+    public WeMoAdapter(final Bezirk bezirk) {
+        final WeMoController wemoController = new WeMoController();
+
+        final Set<Outlet> outlets = new HashSet<>();
+
+        for (String outlet : discoverWeMoSwitches()) {
+            outlets.add(new Outlet(outlet, "Belkin"));
+        }
+
+        bezirk.sendEvent(new OutletsDetectedEvent(outlets));
+
+        final EventSet outletEvents = new EventSet(TurnOutletOnEvent.class, TurnOutletOffEvent.class);
+
+        outletEvents.setEventReceiver(new EventSet.EventReceiver() {
+            @Override
+            public void receiveEvent(Event event, ZirkEndPoint zirkEndPoint) {
+                if (event instanceof OutletEvent) {
+                    final String outletId = ((OutletEvent) event).getId();
+
+                    if (event instanceof TurnOutletOnEvent) {
+                        wemoController.turnSwitchOn(outletId);
+                    } else if (event instanceof TurnOutletOffEvent) {
+                        wemoController.turnSwitchOff(outletId);
+                    }
+                }
+            }
+        });
+
+        bezirk.subscribe(outletEvents);
+    }
+
+    private Set<String> discoverWeMoSwitches() {
         final UpnpDiscovery discovery = new UpnpDiscovery(5000, "upnp:rootdevice",
                 "upnp:rootdevice");
         final Set<String> potentialSwitchLocations = discovery.discoverDevices();
