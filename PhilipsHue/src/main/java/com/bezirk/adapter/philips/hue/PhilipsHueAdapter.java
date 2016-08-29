@@ -67,8 +67,7 @@ public class PhilipsHueAdapter {
                         final CurrentLightStateEvent lightStateEvent =
                                 philipsHueController.getLightState(lightId);
 
-                        if (lightEventSet != null)
-                            bezirk.sendEvent(sender, lightStateEvent);
+                        bezirk.sendEvent(sender, lightStateEvent);
                     }
                 }
             }
@@ -91,7 +90,7 @@ public class PhilipsHueAdapter {
      * @return base urls for discovered hue bridges.
      */
     public static Set<String> discoverHueBridges() {
-        Set<String> bridges = discoverBridgesUpnp(5000);
+        Set<String> bridges = discoverBridgesUpnp();
 
         if (bridges.isEmpty()) {
             bridges = discoverBridgesNupnp();
@@ -100,7 +99,7 @@ public class PhilipsHueAdapter {
         return bridges;
     }
 
-    private static Set<String> discoverBridgesUpnp(int upnpTimeout /* ms */) {
+    private static Set<String> discoverBridgesUpnp() {
         final UpnpDiscovery discovery = new UpnpDiscovery(5000, ".*IpBridge.*");
         final Set<String> locations = discovery.discoverDevices();
 
