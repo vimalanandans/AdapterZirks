@@ -16,7 +16,7 @@ dependencies {
     compile(group: 'com.bezirk', name: 'bezirk-middleware-api', version: '3.0.0-alpha-mvp+012')
     compile(group: 'com.bezirk', name: 'bezirk', version: '3.0.0-alpha-mvp+012')
     compile(group: 'com.bezirk', name: 'commons', version: '3.0.0-alpha-mvp+012')
-    compile(group: 'com.bezirk', name: 'HardwareEvents', version: '0.0.23')
+    compile(group: 'com.bezirk', name: 'HardwareEvents', version: rootProject.hardwareEventsVersion)
 
     testCompile 'junit:junit:4.12'
 }

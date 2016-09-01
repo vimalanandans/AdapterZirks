@@ -29,5 +29,5 @@ dependencies {
         exclude group: 'ch.qos.logback'
     }
     compile project(':EstimoteAdapter:estimoteadapter')
-    compile 'com.bezirk:HardwareEvents:0.0.23'
+    compile 'com.bezirk:HardwareEvents:' + rootProject.hardwareEventsVersion
 }

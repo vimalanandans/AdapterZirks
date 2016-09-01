@@ -7,7 +7,7 @@ import android.util.Log;
 import com.bezirk.hardwareevents.beacon.Beacon;
 import com.bezirk.hardwareevents.beacon.BeaconsDetectedEvent;
 import com.bezirk.hardwareevents.beacon.GetBeaconAttributesEvent;
-import com.bezirk.hardwareevents.environment.Temperature;
+import com.bezirk.hardwareevents.Temperature;
 import com.bezirk.middleware.Bezirk;
 import com.bezirk.middleware.addressing.ZirkEndPoint;
 import com.bezirk.middleware.messages.Event;
@@ -51,10 +51,8 @@ public class EstimoteAdapter {
             public void onNearablesDiscovered(List<Nearable> nearables) {
                 final List<Beacon> beacons = new ArrayList<>();
                 for (Nearable nearable : nearables) {
-                    Beacon beacon = new Beacon(nearable.identifier,
-                            Beacon.BatteryLevel.values()[nearable.batteryLevel.ordinal()],
-                            new Temperature(nearable.temperature, Temperature.TemperatureUnit.CELSIUS),
-                            Hardware.HARDWARE_NEARABLE.toString());
+                    final Beacon beacon = new Beacon(nearable.identifier,
+                            0, 0, nearable.rssi, Hardware.HARDWARE_NEARABLE.toString());
                     beacons.add(beacon);
 
                     beaconsSeen.put(nearable.identifier, nearable);
@@ -75,9 +73,10 @@ public class EstimoteAdapter {
                     GetBeaconAttributesEvent beaconAttributesEvent =
                             (GetBeaconAttributesEvent) event;
 
-                    if (Hardware.HARDWARE_NEARABLE.toString().equalsIgnoreCase(beaconAttributesEvent.getHardwareName()) &&
-                            beaconsSeen.containsKey(beaconAttributesEvent.getId())) {
-                        final Nearable requestedNearable = beaconsSeen.get(beaconAttributesEvent.getId());
+                    if (Hardware.HARDWARE_NEARABLE.toString().equalsIgnoreCase(
+                            beaconAttributesEvent.getBeacon().getHardwareName()) &&
+                            beaconsSeen.containsKey(beaconAttributesEvent.getBeacon().getId())) {
+                        final Nearable requestedNearable = beaconsSeen.get(beaconAttributesEvent.getBeacon().getId());
 
                         final EstimoteBeaconAttributesEvent beaconAttributes =
                                 new EstimoteBeaconAttributesEvent(requestedNearable.bootloaderVersion,

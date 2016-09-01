@@ -53,8 +53,7 @@ public class MainActivity extends AppCompatActivity {
                     for (Beacon beacon : beaconsDetectedEvt.getBeacons()) {
                         if ("fc37428c16376665".equals(beacon.getId())) {
                             if (EstimoteAdapter.Hardware.HARDWARE_NEARABLE.toString().equalsIgnoreCase(beacon.getHardwareName())) {
-                                bezirk.sendEvent(sender, new GetBeaconAttributesEvent(beacon.getId(),
-                                        beacon.getHardwareName()));
+                                bezirk.sendEvent(sender, new GetBeaconAttributesEvent(beacon));
                                 Log.v(TAG, "Detected estimote beacon, requested estimote attributes");
                             }
 
