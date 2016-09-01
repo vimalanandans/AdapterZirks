@@ -4,6 +4,7 @@ import com.bezirk.adapter.upnp.UpnpDiscovery;
 import com.bezirk.hardwareevents.HexColor;
 import com.bezirk.hardwareevents.light.CurrentLightStateEvent;
 import com.bezirk.hardwareevents.light.GetLightStateEvent;
+import com.bezirk.hardwareevents.light.Light;
 import com.bezirk.hardwareevents.light.LightEvent;
 import com.bezirk.hardwareevents.light.LightsDetectedEvent;
 import com.bezirk.hardwareevents.light.SetLightBrightnessEvent;
@@ -47,25 +48,25 @@ public class PhilipsHueAdapter {
             @Override
             public void receiveEvent(Event event, ZirkEndPoint sender) {
                 if (event instanceof LightEvent) {
-                    final String lightId = ((LightEvent) event).getId();
+                    final Light light = ((LightEvent) event).getLight();
 
                     if (event instanceof TurnLightOnEvent) {
-                        philipsHueController.turnLightOn(lightId);
+                        philipsHueController.turnLightOn(light);
                     } else if (event instanceof TurnLightOffEvent) {
-                        philipsHueController.turnLightOff(lightId);
+                        philipsHueController.turnLightOff(light);
                     } else if (event instanceof SetLightBrightnessEvent) {
                         SetLightBrightnessEvent brightnessEvt = (SetLightBrightnessEvent) event;
                         logger.trace(brightnessEvt.toString());
 
-                        philipsHueController.setLightBrightness(lightId, brightnessEvt.getBrightnessLevel());
+                        philipsHueController.setLightBrightness(light, brightnessEvt.getBrightnessLevel());
                     } else if (event instanceof SetLightColorEvent) {
                         final SetLightColorEvent colorEvent = (SetLightColorEvent) event;
                         logger.trace(colorEvent.toString());
 
-                        setLightColor(lightId, colorEvent.getColor());
+                        setLightColor(light, colorEvent.getColor());
                     } else if (event instanceof GetLightStateEvent) {
                         final CurrentLightStateEvent lightStateEvent =
-                                philipsHueController.getLightState(lightId);
+                                philipsHueController.getLightState(light);
 
                         bezirk.sendEvent(sender, lightStateEvent);
                     }
@@ -178,7 +179,7 @@ public class PhilipsHueAdapter {
         return "";
     }
 
-    private void setLightColor(String lightId, HexColor hexColor) {
+    private void setLightColor(Light light, HexColor hexColor) {
         final Color color = Color.decode(hexColor.getHexString());
         final float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
         final int hue = (int) (hsb[0] * 65535);
@@ -186,6 +187,6 @@ public class PhilipsHueAdapter {
         final int bri = (int) (hsb[2] * 255);
 
         logger.trace("H: {} S: {} b: {}", hue, sat, bri);
-        philipsHueController.setLightColorHSV(lightId, hue, sat, bri);
+        philipsHueController.setLightColorHSV(light, hue, sat, bri);
     }
 }

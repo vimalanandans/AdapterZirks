@@ -1,5 +1,7 @@
 package com.bezirk.adapter.belkin.wemo;
 
+import com.bezirk.hardwareevents.outlet.Outlet;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,12 +15,12 @@ import java.net.URL;
 public class WeMoController {
     private static final Logger logger = LoggerFactory.getLogger(WeMoController.class);
 
-    public void turnSwitchOn(String id) {
-        sendPayload(id, "<BinaryState>1</BinaryState>", "SetBinaryState");
+    public void turnSwitchOn(Outlet outlet) {
+        sendPayload(outlet.getId(), "<BinaryState>1</BinaryState>", "SetBinaryState");
     }
 
-    public void turnSwitchOff(String id) {
-        sendPayload(id, "<BinaryState>0</BinaryState>", "SetBinaryState");
+    public void turnSwitchOff(Outlet outlet) {
+        sendPayload(outlet.getId(), "<BinaryState>0</BinaryState>", "SetBinaryState");
     }
 
     private String sendPayload(String id, String stateBody, String soapAction) {

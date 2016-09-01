@@ -59,8 +59,8 @@ public class PhilipsHueController {
         return foundLights;
     }
 
-    public CurrentLightStateEvent getLightState(String id) {
-        final String result = sendPayload(String.format("%s%s/%s", baseBridgeUrl, "lights", id), "GET", "");
+    public CurrentLightStateEvent getLightState(Light light) {
+        final String result = sendPayload(String.format("%s%s/%s", baseBridgeUrl, "lights", light.getId()), "GET", "");
 
         try {
             final JSONObject json = (JSONObject) new JSONParser().parse(result);
@@ -83,32 +83,32 @@ public class PhilipsHueController {
             final String hexColor = String.format("#%02x%02x%02x", c.getRed(), c.getGreen(),
                     c.getBlue());
 
-            return new CurrentLightStateEvent(id, lightState, brightness, new HexColor(hexColor));
+            return new CurrentLightStateEvent(light, lightState, brightness, new HexColor(hexColor));
         } catch (ParseException e) {
             logger.error("Failed to parse JSON for Hue N-UPNP discovery", e);
             return null;
         }
     }
 
-    public void turnLightOn(String id) {
+    public void turnLightOn(Light light) {
         String payload = "{\"on\":true}";
-        sendPayload(String.format("%s%s/%s/%s", baseBridgeUrl, "lights", id, "state"), "PUT", payload);
+        sendPayload(String.format("%s%s/%s/%s", baseBridgeUrl, "lights", light.getId(), "state"), "PUT", payload);
     }
 
-    public void turnLightOff(String id) {
+    public void turnLightOff(Light light) {
         String payload = "{\"on\":false}";
-        sendPayload(String.format("%s%s/%s/%s", baseBridgeUrl, "lights", id, "state"), "PUT", payload);
+        sendPayload(String.format("%s%s/%s/%s", baseBridgeUrl, "lights", light.getId(), "state"), "PUT", payload);
     }
 
-    public void setLightBrightness(String id, byte brightnessLevel) {
+    public void setLightBrightness(Light light, int brightnessLevel) {
         String payload = String.format("{\"bri\":%d}", brightnessLevel);
-        sendPayload(String.format("%s%s/%s/%s", baseBridgeUrl, "lights", id, "state"), "PUT", payload);
+        sendPayload(String.format("%s%s/%s/%s", baseBridgeUrl, "lights", light.getId(), "state"), "PUT", payload);
     }
 
-    public void setLightColorHSV(String id, int h, int s, int v) {
+    public void setLightColorHSV(Light light, int h, int s, int v) {
         String payload = String.format("{\"on\":true, \"hue\":%d, \"sat\":%d, \"bri\":%d}",
                 h, s, v);
-        sendPayload(String.format("%s%s/%s/%s", baseBridgeUrl, "lights", id, "state"), "PUT", payload);
+        sendPayload(String.format("%s%s/%s/%s", baseBridgeUrl, "lights", light.getId(), "state"), "PUT", payload);
     }
 
     private String sendPayload(String url, String requestMethod, String payload) {

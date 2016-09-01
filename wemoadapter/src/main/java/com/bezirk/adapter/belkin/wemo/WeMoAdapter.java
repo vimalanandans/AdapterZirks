@@ -42,12 +42,12 @@ public class WeMoAdapter {
             @Override
             public void receiveEvent(Event event, ZirkEndPoint zirkEndPoint) {
                 if (event instanceof OutletEvent) {
-                    final String outletId = ((OutletEvent) event).getId();
+                    final Outlet outlet = ((OutletEvent) event).getOutlet();
 
                     if (event instanceof TurnOutletOnEvent) {
-                        wemoController.turnSwitchOn(outletId);
+                        wemoController.turnSwitchOn(outlet);
                     } else if (event instanceof TurnOutletOffEvent) {
-                        wemoController.turnSwitchOff(outletId);
+                        wemoController.turnSwitchOff(outlet);
                     }
                 }
             }

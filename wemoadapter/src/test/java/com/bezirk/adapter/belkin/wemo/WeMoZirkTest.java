@@ -8,7 +8,7 @@ import com.bezirk.middleware.Bezirk;
 import com.bezirk.middleware.addressing.ZirkEndPoint;
 import com.bezirk.middleware.messages.Event;
 import com.bezirk.middleware.messages.EventSet;
-import com.bezirk.middleware.proxy.BezirkMiddleware;
+import com.bezirk.middleware.java.proxy.BezirkMiddleware;
 
 import java.util.Set;
 import java.util.Timer;
@@ -27,12 +27,12 @@ public class WeMoZirkTest {
                     final Set<Outlet> outlets = ((OutletsDetectedEvent) event).getOutlets();
 
                     for (Outlet outlet : outlets) {
-                        bezirk.sendEvent(new TurnOutletOnEvent(outlet.getId()));
+                        bezirk.sendEvent(new TurnOutletOnEvent(outlet));
 
                         new Timer().schedule(new TimerTask() {
                             @Override
                             public void run() {
-                                bezirk.sendEvent(new TurnOutletOffEvent(outlet.getId()));
+                                bezirk.sendEvent(new TurnOutletOffEvent(outlet));
                             }
                         }, 4000);
                     }

@@ -11,7 +11,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.TextView;
 
-import com.bezirk.componentManager.AppManager;
 import com.bezirk.hardwareevents.beacon.Beacon;
 import com.bezirk.hardwareevents.beacon.BeaconsDetectedEvent;
 import com.bezirk.hardwareevents.beacon.GetBeaconAttributesEvent;
@@ -19,7 +18,7 @@ import com.bezirk.middleware.Bezirk;
 import com.bezirk.middleware.addressing.ZirkEndPoint;
 import com.bezirk.middleware.messages.Event;
 import com.bezirk.middleware.messages.EventSet;
-import com.bezirk.middleware.proxy.android.BezirkMiddleware;
+import com.bezirk.middleware.android.BezirkMiddleware;
 
 import java.util.Locale;
 
@@ -36,8 +35,8 @@ public class MainActivity extends AppCompatActivity {
 
         final TextView statusTxtView = (TextView) findViewById(R.id.statusTxtView);
 
-        AppManager.getAppManager().startBezirk(this, true, "Integrated Bezirk", null);
-        final Bezirk bezirk = BezirkMiddleware.registerZirk(this, "Estimote Adapter Test");
+        BezirkMiddleware.initialize(this);
+        final Bezirk bezirk = BezirkMiddleware.registerZirk("Estimote Adapter Test");
 
         estimoteAdapter = new EstimoteAdapter(bezirk, getApplicationContext());
 
@@ -145,6 +144,12 @@ public class MainActivity extends AppCompatActivity {
     public void onStop() {
         super.onStop();
         estimoteAdapter.stop();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        BezirkMiddleware.stop();
     }
 
     @Override

@@ -10,7 +10,7 @@ import com.bezirk.middleware.Bezirk;
 import com.bezirk.middleware.addressing.ZirkEndPoint;
 import com.bezirk.middleware.messages.Event;
 import com.bezirk.middleware.messages.EventSet;
-import com.bezirk.middleware.proxy.BezirkMiddleware;
+import com.bezirk.middleware.java.proxy.BezirkMiddleware;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,13 +36,13 @@ public class PhilipsHueZirkTest {
                     Set<Light> lights = ((LightsDetectedEvent) event).getLights();
 
                     for (final Light light : lights) {
-                        bezirk.sendEvent(new GetLightStateEvent(light.getId()));
-                        bezirk.sendEvent(new TurnLightOnEvent(light.getId()));
+                        bezirk.sendEvent(new GetLightStateEvent(light));
+                        bezirk.sendEvent(new TurnLightOnEvent(light));
 
                         new Timer().schedule(new TimerTask() {
                             @Override
                             public void run() {
-                                bezirk.sendEvent(new TurnLightOffEvent(light.getId()));
+                                bezirk.sendEvent(new TurnLightOffEvent(light));
                             }
                         }, 2000);
                     }
