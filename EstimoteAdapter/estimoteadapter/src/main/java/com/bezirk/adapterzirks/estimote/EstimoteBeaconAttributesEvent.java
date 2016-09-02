@@ -3,6 +3,7 @@ package com.bezirk.adapterzirks.estimote;
 import com.bezirk.middleware.messages.Event;
 
 public class EstimoteBeaconAttributesEvent extends Event {
+    private final EstimoteBatteryLevel batteryLevel;
     private final String bootloaderVersion;
     private final long currentMotionStateDuration;
     private final String firmwareVersion;
@@ -16,12 +17,14 @@ public class EstimoteBeaconAttributesEvent extends Event {
     private final double yAcceleration;
     private final double zAcceleration;
 
-    public EstimoteBeaconAttributesEvent(String bootloaderVersion, long currentMotionStateDuration,
+    public EstimoteBeaconAttributesEvent(EstimoteBatteryLevel batteryLevel,
+                                         String bootloaderVersion, long currentMotionStateDuration,
                                          String firmwareVersion, String hardwareVersion,
                                          String identifier, boolean isMoving,
                                          long lastMotionStateDuration, EstimoteOrientation orientation,
                                          int rssi, double xAcceleration,
                                          double yAcceleration, double zAcceleration) {
+        this.batteryLevel = batteryLevel;
         this.bootloaderVersion = bootloaderVersion;
         this.currentMotionStateDuration = currentMotionStateDuration;
         this.firmwareVersion = firmwareVersion;
@@ -34,6 +37,10 @@ public class EstimoteBeaconAttributesEvent extends Event {
         this.xAcceleration = xAcceleration;
         this.yAcceleration = yAcceleration;
         this.zAcceleration = zAcceleration;
+    }
+
+    public EstimoteBatteryLevel getBatteryLevel() {
+        return batteryLevel;
     }
 
     public String getBootloaderVersion() {
@@ -113,5 +120,9 @@ public class EstimoteBeaconAttributesEvent extends Event {
         public String toString() {
             return text;
         }
+    }
+
+    public enum EstimoteBatteryLevel {
+        HIGH, MEDIUM, LOW, UNKNOWN
     }
 }

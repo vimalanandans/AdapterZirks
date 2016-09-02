@@ -75,11 +75,11 @@ public class MainActivity extends AppCompatActivity {
                             (EstimoteBeaconAttributesEvent) event;
 
                     statusTxtView.setText(String.format(Locale.getDefault(),
-                            "%s%nCar isMoving: %s, xAcceleration: %f, yAcceleration: %f, " +
+                            "%s%nBattery Level: %s, Car isMoving: %s, xAcceleration: %f, yAcceleration: %f, " +
                                     "zAcceleration: %f",
-                            statusTxtView.getText(), beaconAttributes.isMoving(),
-                            beaconAttributes.getXAcceleration(), beaconAttributes.getYAcceleration(),
-                            beaconAttributes.getZAcceleration()));
+                            statusTxtView.getText(),beaconAttributes.getBatteryLevel(),
+                            beaconAttributes.isMoving(), beaconAttributes.getXAcceleration(),
+                            beaconAttributes.getYAcceleration(), beaconAttributes.getZAcceleration()));
                 }
             }
         });

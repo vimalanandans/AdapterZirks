@@ -7,7 +7,6 @@ import android.util.Log;
 import com.bezirk.hardwareevents.beacon.Beacon;
 import com.bezirk.hardwareevents.beacon.BeaconsDetectedEvent;
 import com.bezirk.hardwareevents.beacon.GetBeaconAttributesEvent;
-import com.bezirk.hardwareevents.Temperature;
 import com.bezirk.middleware.Bezirk;
 import com.bezirk.middleware.addressing.ZirkEndPoint;
 import com.bezirk.middleware.messages.Event;
@@ -79,7 +78,9 @@ public class EstimoteAdapter {
                         final Nearable requestedNearable = beaconsSeen.get(beaconAttributesEvent.getBeacon().getId());
 
                         final EstimoteBeaconAttributesEvent beaconAttributes =
-                                new EstimoteBeaconAttributesEvent(requestedNearable.bootloaderVersion,
+                                new EstimoteBeaconAttributesEvent(
+                                        convertBatteryLevel(requestedNearable.batteryLevel),
+                                        requestedNearable.bootloaderVersion,
                                         requestedNearable.currentMotionStateDuration,
                                         requestedNearable.firmwareVersion,
                                         requestedNearable.hardwareVersion,
@@ -102,6 +103,21 @@ public class EstimoteAdapter {
 
     // This conversion is done in case estimote changes their orientation enum in a way
     // that changes the ordinal values assigned to each member.
+    private EstimoteBeaconAttributesEvent.EstimoteBatteryLevel convertBatteryLevel(Nearable.BatteryLevel batteryLevel) {
+        switch (batteryLevel) {
+            case HIGH:
+                return EstimoteBeaconAttributesEvent.EstimoteBatteryLevel.HIGH;
+            case MEDIUM:
+                return EstimoteBeaconAttributesEvent.EstimoteBatteryLevel.MEDIUM;
+            case LOW:
+                return EstimoteBeaconAttributesEvent.EstimoteBatteryLevel.LOW;
+            case UNKNOWN:
+                return EstimoteBeaconAttributesEvent.EstimoteBatteryLevel.UNKNOWN;
+        }
+
+        return EstimoteBeaconAttributesEvent.EstimoteBatteryLevel.UNKNOWN;
+    }
+
     private EstimoteBeaconAttributesEvent.EstimoteOrientation convertOrientation(Nearable.Orientation orientation) {
         switch (orientation) {
             case HORIZONTAL:
