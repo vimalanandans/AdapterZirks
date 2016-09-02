@@ -1,9 +1,12 @@
 package com.bezirk.adapter.philips.hue;
 
+import com.bezirk.hardwareevents.HexColor;
 import com.bezirk.hardwareevents.light.CurrentLightStateEvent;
 import com.bezirk.hardwareevents.light.GetLightStateEvent;
 import com.bezirk.hardwareevents.light.Light;
 import com.bezirk.hardwareevents.light.LightsDetectedEvent;
+import com.bezirk.hardwareevents.light.SetLightBrightnessEvent;
+import com.bezirk.hardwareevents.light.SetLightColorEvent;
 import com.bezirk.hardwareevents.light.TurnLightOffEvent;
 import com.bezirk.hardwareevents.light.TurnLightOnEvent;
 import com.bezirk.middleware.Bezirk;
@@ -38,6 +41,8 @@ public class PhilipsHueZirkTest {
                     for (final Light light : lights) {
                         bezirk.sendEvent(new GetLightStateEvent(light));
                         bezirk.sendEvent(new TurnLightOnEvent(light));
+                        bezirk.sendEvent(new SetLightColorEvent(light, new HexColor("#00FF00")));
+                        bezirk.sendEvent(new SetLightBrightnessEvent(light, 125));
 
                         new Timer().schedule(new TimerTask() {
                             @Override
