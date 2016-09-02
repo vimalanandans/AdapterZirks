@@ -1,4 +1,4 @@
-package com.bezirk.adapterzirks.estimote;
+package com.bezirk.adapter.estimote;
 
 import android.Manifest;
 import android.content.DialogInterface;
@@ -51,16 +51,16 @@ public class MainActivity extends AppCompatActivity {
                     boolean foundMyCar = false;
                     for (Beacon beacon : beaconsDetectedEvt.getBeacons()) {
                         if ("fc37428c16376665".equals(beacon.getId())) {
-                            if (EstimoteAdapter.Hardware.HARDWARE_NEARABLE.toString().equalsIgnoreCase(beacon.getHardwareName())) {
-                                bezirk.sendEvent(sender, new GetBeaconAttributesEvent(beacon));
-                                Log.v(TAG, "Detected estimote beacon, requested estimote attributes");
-                            }
-
                             final String foundCar = getString(R.string.found_car);
 
                             Log.d(TAG, foundCar);
                             statusTxtView.setText(foundCar);
                             foundMyCar = true;
+                        }
+
+                        if (EstimoteAdapter.Hardware.HARDWARE_NEARABLE.toString().equalsIgnoreCase(beacon.getHardwareName())) {
+                            bezirk.sendEvent(sender, new GetBeaconAttributesEvent(beacon));
+                            Log.v(TAG, "Detected estimote beacon, requested estimote attributes");
                         }
                     }
 
@@ -75,9 +75,10 @@ public class MainActivity extends AppCompatActivity {
                             (EstimoteBeaconAttributesEvent) event;
 
                     statusTxtView.setText(String.format(Locale.getDefault(),
-                            "%s%nBattery Level: %s, Car isMoving: %s, xAcceleration: %f, yAcceleration: %f, " +
-                                    "zAcceleration: %f",
-                            statusTxtView.getText(),beaconAttributes.getBatteryLevel(),
+                            "%s%nIdentifier: %s, Battery Level: %s, RSSI: %d, isMoving: %s, " +
+                                    "xAcceleration: %f, yAcceleration: %f, zAcceleration: %f",
+                            statusTxtView.getText(), beaconAttributes.getIdentifier(),
+                            beaconAttributes.getBatteryLevel(), beaconAttributes.getRssi(),
                             beaconAttributes.isMoving(), beaconAttributes.getXAcceleration(),
                             beaconAttributes.getYAcceleration(), beaconAttributes.getZAcceleration()));
                 }

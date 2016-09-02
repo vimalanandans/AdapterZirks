@@ -1,4 +1,4 @@
-package com.bezirk.adapterzirks.estimote;
+package com.bezirk.adapter.estimote;
 
 import android.app.Activity;
 import android.content.Context;

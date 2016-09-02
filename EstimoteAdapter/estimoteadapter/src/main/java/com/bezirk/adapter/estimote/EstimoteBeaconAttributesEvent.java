@@ -1,4 +1,4 @@
-package com.bezirk.adapterzirks.estimote;
+package com.bezirk.adapter.estimote;
 
 import com.bezirk.middleware.messages.Event;
 
