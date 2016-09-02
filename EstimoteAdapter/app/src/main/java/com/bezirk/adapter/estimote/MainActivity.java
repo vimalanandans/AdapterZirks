@@ -41,26 +41,30 @@ public class MainActivity extends AppCompatActivity {
         estimoteAdapter = new EstimoteAdapter(bezirk, getApplicationContext());
 
         final EventSet eventSet = new EventSet(BeaconsDetectedEvent.class,
-                EstimoteBeaconAttributesEvent.class);
+                EstimoteNearablesDiscoveredEvent.class, EstimoteNearableAttributesEvent.class);
 
         eventSet.setEventReceiver(new EventSet.EventReceiver() {
             @Override
             public void receiveEvent(Event event, ZirkEndPoint sender) {
                 if (event instanceof BeaconsDetectedEvent) {
                     final BeaconsDetectedEvent beaconsDetectedEvt = (BeaconsDetectedEvent) event;
-                    boolean foundMyCar = false;
                     for (Beacon beacon : beaconsDetectedEvt.getBeacons()) {
-                        if ("fc37428c16376665".equals(beacon.getId())) {
+                        if (EstimoteAdapter.Hardware.HARDWARE_NEARABLE.toString().equalsIgnoreCase(beacon.getHardwareName())) {
+                            bezirk.sendEvent(sender, new GetBeaconAttributesEvent(beacon));
+                            Log.v(TAG, "Detected estimote beacon, requested estimote attributes");
+                        }
+                    }
+                } else if (event instanceof EstimoteNearablesDiscoveredEvent) {
+                    final EstimoteNearablesDiscoveredEvent nearablesDiscoveredEvent
+                            = (EstimoteNearablesDiscoveredEvent) event;
+                    boolean foundMyCar = false;
+                    for (EstimoteNearable nearable : nearablesDiscoveredEvent.getNearables()) {
+                        if ("fc37428c16376665".equals(nearable.getIdentifier())) {
                             final String foundCar = getString(R.string.found_car);
 
                             Log.d(TAG, foundCar);
                             statusTxtView.setText(foundCar);
                             foundMyCar = true;
-                        }
-
-                        if (EstimoteAdapter.Hardware.HARDWARE_NEARABLE.toString().equalsIgnoreCase(beacon.getHardwareName())) {
-                            bezirk.sendEvent(sender, new GetBeaconAttributesEvent(beacon));
-                            Log.v(TAG, "Detected estimote beacon, requested estimote attributes");
                         }
                     }
 
@@ -70,9 +74,11 @@ public class MainActivity extends AppCompatActivity {
                         Log.d(TAG, lostCar);
                         statusTxtView.setText(lostCar);
                     }
-                } else if (event instanceof EstimoteBeaconAttributesEvent) {
-                    EstimoteBeaconAttributesEvent beaconAttributes =
-                            (EstimoteBeaconAttributesEvent) event;
+                } else if (event instanceof EstimoteNearableAttributesEvent) {
+                    final EstimoteNearableAttributesEvent beaconAttributesEvent =
+                            (EstimoteNearableAttributesEvent) event;
+                    final EstimoteNearable beaconAttributes =
+                            beaconAttributesEvent.getEstimoteNearable();
 
                     statusTxtView.setText(String.format(Locale.getDefault(),
                             "%s%nIdentifier: %s, Battery Level: %s, RSSI: %d, isMoving: %s, " +

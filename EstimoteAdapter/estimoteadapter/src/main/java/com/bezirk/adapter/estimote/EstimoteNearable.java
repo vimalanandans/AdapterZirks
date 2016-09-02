@@ -1,8 +1,6 @@
 package com.bezirk.adapter.estimote;
 
-import com.bezirk.middleware.messages.Event;
-
-public class EstimoteBeaconAttributesEvent extends Event {
+public class EstimoteNearable {
     private final EstimoteBatteryLevel batteryLevel;
     private final String bootloaderVersion;
     private final long currentMotionStateDuration;
@@ -17,13 +15,13 @@ public class EstimoteBeaconAttributesEvent extends Event {
     private final double yAcceleration;
     private final double zAcceleration;
 
-    public EstimoteBeaconAttributesEvent(EstimoteBatteryLevel batteryLevel,
-                                         String bootloaderVersion, long currentMotionStateDuration,
-                                         String firmwareVersion, String hardwareVersion,
-                                         String identifier, boolean isMoving,
-                                         long lastMotionStateDuration, EstimoteOrientation orientation,
-                                         int rssi, double xAcceleration,
-                                         double yAcceleration, double zAcceleration) {
+    public EstimoteNearable(EstimoteBatteryLevel batteryLevel,
+                                           String bootloaderVersion, long currentMotionStateDuration,
+                                           String firmwareVersion, String hardwareVersion,
+                                           String identifier, boolean isMoving,
+                                           long lastMotionStateDuration, EstimoteOrientation orientation,
+                                           int rssi, double xAcceleration,
+                                           double yAcceleration, double zAcceleration) {
         this.batteryLevel = batteryLevel;
         this.bootloaderVersion = bootloaderVersion;
         this.currentMotionStateDuration = currentMotionStateDuration;
@@ -112,7 +110,7 @@ public class EstimoteBeaconAttributesEvent extends Event {
 
         private final String text;
 
-        private EstimoteType(final String text) {
+        EstimoteType(final String text) {
             this.text = text;
         }
 
