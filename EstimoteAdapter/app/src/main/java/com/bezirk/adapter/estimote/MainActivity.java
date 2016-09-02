@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         estimoteAdapter = new EstimoteAdapter(bezirk, getApplicationContext());
 
         final EventSet eventSet = new EventSet(BeaconsDetectedEvent.class,
-                EstimoteNearablesDiscoveredEvent.class, EstimoteNearableAttributesEvent.class);
+                EstimoteNearablesDetectedEvent.class, EstimoteNearableAttributesEvent.class);
 
         eventSet.setEventReceiver(new EventSet.EventReceiver() {
             @Override
@@ -54,9 +54,9 @@ public class MainActivity extends AppCompatActivity {
                             Log.v(TAG, "Detected estimote beacon, requested estimote attributes");
                         }
                     }
-                } else if (event instanceof EstimoteNearablesDiscoveredEvent) {
-                    final EstimoteNearablesDiscoveredEvent nearablesDiscoveredEvent
-                            = (EstimoteNearablesDiscoveredEvent) event;
+                } else if (event instanceof EstimoteNearablesDetectedEvent) {
+                    final EstimoteNearablesDetectedEvent nearablesDiscoveredEvent
+                            = (EstimoteNearablesDetectedEvent) event;
                     boolean foundMyCar = false;
                     for (EstimoteNearable nearable : nearablesDiscoveredEvent.getNearables()) {
                         if ("fc37428c16376665".equals(nearable.getIdentifier())) {

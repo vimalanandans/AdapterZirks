@@ -76,7 +76,7 @@ public class EstimoteAdapter {
                     Log.d(TAG, String.format("Estimote nearable detected: %s%n", nearable.toString()));
                 }
 
-                bezirk.sendEvent(new EstimoteNearablesDiscoveredEvent(estimoteNearables));
+                bezirk.sendEvent(new EstimoteNearablesDetectedEvent(estimoteNearables));
                 Log.v(TAG, "Sent nearables detected event");
             }
         });

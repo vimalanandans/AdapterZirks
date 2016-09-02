@@ -4,10 +4,10 @@ import com.bezirk.middleware.messages.Event;
 
 import java.util.List;
 
-public class EstimoteNearablesDiscoveredEvent extends Event {
+public class EstimoteNearablesDetectedEvent extends Event {
     private final List<EstimoteNearable> estimoteNearables;
 
-    public EstimoteNearablesDiscoveredEvent(List<EstimoteNearable> estimoteNearables) {
+    public EstimoteNearablesDetectedEvent(List<EstimoteNearable> estimoteNearables) {
         this.estimoteNearables = estimoteNearables;
     }
 
