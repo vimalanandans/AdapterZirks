@@ -39,6 +39,8 @@ public class PhilipsHueZirkTest {
                     Set<Light> lights = ((LightsDetectedEvent) event).getLights();
 
                     for (final Light light : lights) {
+                        logger.debug("Found light: {}", light.toString());
+
                         bezirk.sendEvent(new GetLightStateEvent(light));
                         bezirk.sendEvent(new TurnLightOnEvent(light));
                         bezirk.sendEvent(new SetLightColorEvent(light, new HexColor("#00FF00")));

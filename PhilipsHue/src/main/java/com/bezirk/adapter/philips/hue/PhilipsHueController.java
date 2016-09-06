@@ -41,10 +41,19 @@ public class PhilipsHueController {
 
                 JSONObject lightData = (JSONObject) json.get(key);
                 String manufacturerName = (String) lightData.get("manufacturername");
+                String modelId = (String) lightData.get("modelid");
 
                 final Light light;
                 if (Hardware.MANUFACTURER.toString().equalsIgnoreCase(manufacturerName)) {
-                    light = new Light(lightId, Hardware.HARDWARE_HUE.toString());
+                    if (modelId.startsWith("LCT")) {
+                        light = new Light(lightId, Hardware.HARDWARE_HUE_BULB_COLOR.toString());
+                    } else if (modelId.startsWith("LTW")) {
+                        light = new Light(lightId, Hardware.HARDWARE_HUE_BULB_WHITE.toString());
+                    } else if (modelId.startsWith("LST")) {
+                        light = new Light(lightId, Hardware.HARDWARE_HUE_STRIP.toString());
+                    } else {
+                        light = new Light(lightId, Hardware.MANUFACTURER.toString());
+                    }
                 } else {
                     light = new Light(lightId, "unknown");
                 }
@@ -59,7 +68,19 @@ public class PhilipsHueController {
         return foundLights;
     }
 
+    private boolean isHueCompatible(Light light) {
+        for (Hardware h : Hardware.values()) {
+            if (h.toString().equals(light.getHardwareName())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public CurrentLightStateEvent getLightState(Light light) {
+        if (!isHueCompatible(light)) return null;
+
         final String result = sendPayload(String.format("%s%s/%s", baseBridgeUrl, "lights", light.getId()), "GET", "");
 
         try {
@@ -91,21 +112,29 @@ public class PhilipsHueController {
     }
 
     public void turnLightOn(Light light) {
+        if (!isHueCompatible(light)) return;
+
         String payload = "{\"on\":true}";
         sendPayload(String.format("%s%s/%s/%s", baseBridgeUrl, "lights", light.getId(), "state"), "PUT", payload);
     }
 
     public void turnLightOff(Light light) {
+        if (!isHueCompatible(light)) return;
+
         String payload = "{\"on\":false}";
         sendPayload(String.format("%s%s/%s/%s", baseBridgeUrl, "lights", light.getId(), "state"), "PUT", payload);
     }
 
     public void setLightBrightness(Light light, int brightnessLevel) {
+        if (!isHueCompatible(light)) return;
+
         String payload = String.format("{\"bri\":%d}", brightnessLevel);
         sendPayload(String.format("%s%s/%s/%s", baseBridgeUrl, "lights", light.getId(), "state"), "PUT", payload);
     }
 
     public void setLightColorHSV(Light light, int h, int s, int v) {
+        if (!isHueCompatible(light)) return;
+
         String payload = String.format("{\"on\":true, \"hue\":%d, \"sat\":%d, \"bri\":%d}",
                 h, s, v);
         sendPayload(String.format("%s%s/%s/%s", baseBridgeUrl, "lights", light.getId(), "state"), "PUT", payload);
@@ -152,7 +181,9 @@ public class PhilipsHueController {
 
     public enum Hardware {
         MANUFACTURER("philips"),
-        HARDWARE_HUE("philips.hue");
+        HARDWARE_HUE_BULB_COLOR("philips.hue.bulb.color"),
+        HARDWARE_HUE_BULB_WHITE("philips.hue.bulb.white"),
+        HARDWARE_HUE_STRIP("philips.hue.strip");
 
         private final String text;
 
