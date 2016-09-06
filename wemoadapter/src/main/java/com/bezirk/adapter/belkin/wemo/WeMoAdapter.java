@@ -26,15 +26,10 @@ public class WeMoAdapter {
     private static final Logger logger = LoggerFactory.getLogger(WeMoAdapter.class);
 
     public WeMoAdapter(final Bezirk bezirk) {
-        final WeMoController wemoController = new WeMoController();
+        final Set<WeMoOutlet> outlets = new HashSet<>(discoverWeMoSwitches());
+        bezirk.sendEvent(new OutletsDetectedEvent(new HashSet<>(outlets)));
 
-        final Set<Outlet> outlets = new HashSet<>();
-
-        for (String outlet : discoverWeMoSwitches()) {
-            outlets.add(new Outlet(outlet, "Belkin"));
-        }
-
-        bezirk.sendEvent(new OutletsDetectedEvent(outlets));
+        final WeMoController wemoController = new WeMoController(outlets);
 
         final EventSet outletEvents = new EventSet(TurnOutletOnEvent.class, TurnOutletOffEvent.class);
 
@@ -56,33 +51,53 @@ public class WeMoAdapter {
         bezirk.subscribe(outletEvents);
     }
 
-    private Set<String> discoverWeMoSwitches() {
+    private Set<WeMoOutlet> discoverWeMoSwitches() {
         final UpnpDiscovery discovery = new UpnpDiscovery(5000, "upnp:rootdevice",
                 "upnp:rootdevice");
         final Set<String> potentialSwitchLocations = discovery.discoverDevices();
 
-        final Set<String> switchLocations = new HashSet<>();
+        final Set<WeMoOutlet> switchLocations = new HashSet<>();
 
         for (String location : potentialSwitchLocations) {
             final String deviceDescription = getHttpResponse(location);
 
             if (isWemoSwitch(deviceDescription)) {
-                switchLocations.add(parseWeMoLocation(location));
+                final String modelName = parseWeMoTag("modelName", deviceDescription);
+
+                final String hardwareName;
+                if ("Insight".equals(modelName)) {
+                    hardwareName = WeMoController.Hardware.HARDWARE_INSIGHT.toString();
+                } else {
+                    hardwareName = WeMoController.Hardware.MANUFACTURER.toString() + "." +
+                            modelName.toLowerCase();
+                }
+
+                switchLocations.add(new WeMoOutlet(parseWeMoTag("serialNumber", deviceDescription),
+                        hardwareName, parseWeMoLocation(location)));
             }
         }
 
         return switchLocations;
     }
 
-    private static boolean isWemoSwitch(String deviceDescription) {
+    private boolean isWemoSwitch(String deviceDescription) {
         return deviceDescription.contains("Belkin:device") && deviceDescription.contains("WeMo");
     }
 
-    private static String parseWeMoLocation(String location) {
+    private String parseWeMoLocation(String location) {
         return location.substring(0, location.lastIndexOf('/'));
     }
 
-    private static String getHttpResponse(String url) {
+    private String parseWeMoTag(String tagName, String deviceDescription) {
+        final String serialTag = String.format("<%s>", tagName);
+        final int startTag = deviceDescription.indexOf(serialTag) +
+                serialTag.length();
+        final int endTag = deviceDescription.indexOf(String.format("</%s>", tagName), startTag);
+
+        return deviceDescription.substring(startTag, endTag);
+    }
+
+    private String getHttpResponse(String url) {
         try {
             URL requestUrl = new URL(url);
             BufferedReader in = new BufferedReader(

@@ -11,16 +11,52 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class WeMoController {
     private static final Logger logger = LoggerFactory.getLogger(WeMoController.class);
 
+    private final Map<String, String> idToAddressMap = new HashMap<>();
+
+    public WeMoController(Set<WeMoOutlet> knownOutlets) {
+        for (WeMoOutlet outlet : knownOutlets) {
+            idToAddressMap.put(outlet.getId(), outlet.getUrl());
+        }
+    }
+
+    private String getOutletUrl(Outlet outlet) {
+        if (idToAddressMap.containsKey(outlet.getId()) &&
+                outlet.getHardwareName().startsWith(Hardware.MANUFACTURER.toString())) {
+            return idToAddressMap.get(outlet.getId());
+        }
+
+        return null;
+    }
+
     public void turnSwitchOn(Outlet outlet) {
-        sendPayload(outlet.getId(), "<BinaryState>1</BinaryState>", "SetBinaryState");
+        final String url = getOutletUrl(outlet);
+
+        if (url != null) {
+            sendPayload(url, "<BinaryState>1</BinaryState>", "SetBinaryState");
+        } else {
+            if (logger.isTraceEnabled())
+                logger.trace("Ignoring outlet on event for unknown outlet: {} - {}", outlet.getId(),
+                        outlet.getHardwareName());
+        }
     }
 
     public void turnSwitchOff(Outlet outlet) {
-        sendPayload(outlet.getId(), "<BinaryState>0</BinaryState>", "SetBinaryState");
+        final String url = getOutletUrl(outlet);
+
+        if (url != null) {
+            sendPayload(url, "<BinaryState>0</BinaryState>", "SetBinaryState");
+        } else {
+            if (logger.isTraceEnabled())
+                logger.trace("Ignoring outlet off event for unknown outlet: {} - {}", outlet.getId(),
+                        outlet.getHardwareName());
+        }
     }
 
     private String sendPayload(String id, String stateBody, String soapAction) {
@@ -71,5 +107,21 @@ public class WeMoController {
         }
 
         return "";
+    }
+
+    public enum Hardware {
+        MANUFACTURER("belkin"),
+        HARDWARE_INSIGHT("belkin.insight");
+
+        private final String text;
+
+        Hardware(final String text) {
+            this.text = text;
+        }
+
+        @Override
+        public String toString() {
+            return text;
+        }
     }
 }

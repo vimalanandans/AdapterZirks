@@ -1,4 +1,7 @@
 apply plugin: 'java'
+apply from: "${rootDir}/artifactory.gradle"
+group = 'com.bezirk'
+version = "1.0.0"
 
 dependencies {
     compile project(':upnpdiscovery')
