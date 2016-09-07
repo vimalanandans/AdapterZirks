@@ -1,4 +1,7 @@
 apply plugin: 'java'
+apply from: "${rootDir}/artifactory.gradle"
+group = 'com.bezirk'
+version = "0.0.1"
 
 dependencies {
     compile 'org.slf4j:slf4j-api:1.7.21'
