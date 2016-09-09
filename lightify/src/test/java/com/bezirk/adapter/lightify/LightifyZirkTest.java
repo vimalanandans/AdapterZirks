@@ -2,6 +2,7 @@ package com.bezirk.adapter.lightify;
 
 import com.bezirk.hardwareevents.light.Light;
 import com.bezirk.hardwareevents.light.LightsDetectedEvent;
+import com.bezirk.hardwareevents.light.SetLightBrightnessEvent;
 import com.bezirk.hardwareevents.light.TurnLightOffEvent;
 import com.bezirk.hardwareevents.light.TurnLightOnEvent;
 import com.bezirk.middleware.Bezirk;
@@ -36,6 +37,7 @@ public class LightifyZirkTest {
                         logger.debug("Found light: {}", light.toString());
 
                         bezirk.sendEvent(new TurnLightOnEvent(light));
+                        bezirk.sendEvent(new SetLightBrightnessEvent(light, 50));
 
                         new Timer().schedule(new TimerTask() {
                             @Override

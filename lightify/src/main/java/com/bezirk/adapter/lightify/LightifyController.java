@@ -19,7 +19,7 @@ import java.util.Set;
 public class LightifyController {
     private static final Logger logger = LoggerFactory.getLogger(LightifyController.class);
     private static final byte COMMAND_ALL_LIGHT_STATUS = 0x13;
-    private static final byte COMMAND_LUMINANCE = 0x31;
+    private static final byte COMMAND_BRIGHTNESS = 0x31;
     private static final byte COMMAND_ONOFF = 0x32;
     private static final byte COMMAND_LIGHT_STATUS = 0x68;
 
@@ -93,11 +93,19 @@ public class LightifyController {
         return lights;
     }
 
+    private boolean isLightifyCompatible(Light light) {
+        return Hardware.HARDWARE_LIGHTIFY_BULB.toString().equals(light.getHardwareName());
+    }
+
     public void turnLightOn(Light light) {
+        if (!isLightifyCompatible(light)) return;
+
         setLightStatus(light, (byte) 1);
     }
 
     public void turnLightOff(Light light) {
+        if (!isLightifyCompatible(light)) return;
+
         setLightStatus(light, (byte) 0);
     }
 
@@ -109,9 +117,26 @@ public class LightifyController {
             data[8] = status;
         } catch (UnsupportedEncodingException e) {
             logger.error("Failed to decode lightify light id", e);
+            return;
         }
 
         sendPayload(buildCommand(FLAG_NODE, COMMAND_ONOFF, data));
+    }
+
+    public void setLightBrightness(Light light, int brightnessLevel) {
+        if (!isLightifyCompatible(light)) return;
+
+        final byte[] data = new byte[11];
+
+        try {
+            System.arraycopy(light.getId().getBytes("ISO-8859-1"), 0, data, 0, light.getId().length());
+            data[8] = (byte) brightnessLevel;
+        } catch (UnsupportedEncodingException e) {
+            logger.error("Failed to decode lightify light id", e);
+            return;
+        }
+
+        sendPayload(buildCommand(FLAG_NODE, COMMAND_BRIGHTNESS, data));
     }
 
     private byte[] buildCommand(byte flag, byte command, byte[] data) {

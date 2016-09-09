@@ -3,6 +3,7 @@ package com.bezirk.adapter.lightify;
 import com.bezirk.hardwareevents.light.Light;
 import com.bezirk.hardwareevents.light.LightEvent;
 import com.bezirk.hardwareevents.light.LightsDetectedEvent;
+import com.bezirk.hardwareevents.light.SetLightBrightnessEvent;
 import com.bezirk.hardwareevents.light.TurnLightOffEvent;
 import com.bezirk.hardwareevents.light.TurnLightOnEvent;
 import com.bezirk.middleware.Bezirk;
@@ -31,7 +32,8 @@ public class LightifyAdapter {
     public LightifyAdapter(final Bezirk bezirk, String gatewayAddress) throws IOException {
         lightifyController = new LightifyController(gatewayAddress);
 
-        final EventSet lightEventSet = new EventSet(TurnLightOnEvent.class, TurnLightOffEvent.class);
+        final EventSet lightEventSet = new EventSet(TurnLightOnEvent.class, TurnLightOffEvent.class,
+                SetLightBrightnessEvent.class);
 
         lightEventSet.setEventReceiver(new EventSet.EventReceiver() {
             @Override
@@ -43,6 +45,11 @@ public class LightifyAdapter {
                         lightifyController.turnLightOn(light);
                     } else if (event instanceof TurnLightOffEvent) {
                         lightifyController.turnLightOff(light);
+                    } else if (event instanceof SetLightBrightnessEvent) {
+                        SetLightBrightnessEvent brightnessEvent = (SetLightBrightnessEvent) event;
+                        logger.trace(brightnessEvent.toString());
+
+                        lightifyController.setLightBrightness(light, brightnessEvent.getBrightnessLevel());
                     }
                 }
             }
