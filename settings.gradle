@@ -2,5 +2,6 @@ rootProject.name = 'AdapterZirks'
 
 include 'EstimoteAdapter:app', 'EstimoteAdapter:estimoteadapter'
 include ':upnpdiscovery'
+include ':lightify'
 include 'PhilipsHue'
 include ':wemoadapter'
