@@ -78,7 +78,7 @@ public class PhilipsHueAdapter {
         logger.trace("Listening for hue light events");
 
         bezirk.sendEvent(new LightsDetectedEvent(philipsHueController.findLights()));
-        logger.trace("Sent discovered lights event");
+        logger.trace("Sent discovered lights event for hue");
     }
 
     /**

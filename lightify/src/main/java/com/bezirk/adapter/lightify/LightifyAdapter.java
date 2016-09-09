@@ -52,7 +52,7 @@ public class LightifyAdapter {
         logger.trace("Listening for osram lightify events");
 
         bezirk.sendEvent(new LightsDetectedEvent(lightifyController.findLights()));
-        logger.trace("Sent discovered lights event");
+        logger.trace("Sent discovered lights event for lightify");
     }
 
     public static Set<String> discoverGateways() {
@@ -86,7 +86,7 @@ public class LightifyAdapter {
                     try {
                         testAddress = InetAddress.getByAddress(address);
                     } catch (UnknownHostException e) {
-                        logger.error("Failed to build test address", e);
+                        logger.error("Failed to build lightify test address", e);
                         return;
                     }
 
