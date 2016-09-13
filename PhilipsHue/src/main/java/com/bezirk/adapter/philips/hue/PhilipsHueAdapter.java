@@ -55,10 +55,10 @@ public class PhilipsHueAdapter {
                     } else if (event instanceof TurnLightOffEvent) {
                         philipsHueController.turnLightOff(light);
                     } else if (event instanceof SetLightBrightnessEvent) {
-                        SetLightBrightnessEvent brightnessEvt = (SetLightBrightnessEvent) event;
-                        logger.trace(brightnessEvt.toString());
+                        SetLightBrightnessEvent brightnessEvent = (SetLightBrightnessEvent) event;
+                        logger.trace(brightnessEvent.toString());
 
-                        philipsHueController.setLightBrightness(light, brightnessEvt.getBrightnessLevel());
+                        philipsHueController.setLightBrightness(light, brightnessEvent.getBrightnessLevel());
                     } else if (event instanceof SetLightColorEvent) {
                         final SetLightColorEvent colorEvent = (SetLightColorEvent) event;
                         logger.trace(colorEvent.toString());
@@ -78,7 +78,7 @@ public class PhilipsHueAdapter {
         logger.trace("Listening for hue light events");
 
         bezirk.sendEvent(new LightsDetectedEvent(philipsHueController.findLights()));
-        logger.trace("Sent discovered lights event");
+        logger.trace("Sent discovered lights event for hue");
     }
 
     /**

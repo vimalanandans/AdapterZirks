@@ -19,6 +19,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 public class PhilipsHueController {
@@ -128,14 +129,14 @@ public class PhilipsHueController {
     public void setLightBrightness(Light light, int brightnessLevel) {
         if (!isHueCompatible(light)) return;
 
-        String payload = String.format("{\"bri\":%d}", brightnessLevel);
+        String payload = String.format(Locale.getDefault(), "{\"bri\":%d}", brightnessLevel);
         sendPayload(String.format("%s%s/%s/%s", baseBridgeUrl, "lights", light.getId(), "state"), "PUT", payload);
     }
 
     public void setLightColorHSV(Light light, int h, int s, int v) {
         if (!isHueCompatible(light)) return;
 
-        String payload = String.format("{\"on\":true, \"hue\":%d, \"sat\":%d, \"bri\":%d}",
+        String payload = String.format(Locale.getDefault(), "{\"on\":true, \"hue\":%d, \"sat\":%d, \"bri\":%d}",
                 h, s, v);
         sendPayload(String.format("%s%s/%s/%s", baseBridgeUrl, "lights", light.getId(), "state"), "PUT", payload);
     }
