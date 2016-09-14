@@ -3,7 +3,9 @@ package com.bezirk.adapter.obd.service;
 import android.bluetooth.BluetoothSocket;
 
 import com.bezirk.adapter.obd.constants.CommandConstants;
+import com.bezirk.adapter.obd.events.RequestObdErrorCodesEvent;
 import com.bezirk.adapter.obd.events.RequestObdLiveDataEvent;
+import com.bezirk.adapter.obd.events.ResponseObdErrorCodesEvent;
 import com.bezirk.adapter.obd.events.ResponseObdLiveDataEvent;
 import com.bezirk.middleware.Bezirk;
 import com.bezirk.middleware.addressing.ZirkEndPoint;
@@ -33,7 +35,9 @@ public class ObdAdapter {
                     final ResponseObdLiveDataEvent obdLiveDataEvent = controller.getObdLiveData(CommandConstants.ENGINE_RPM);
                     bezirk.sendEvent(sender, obdLiveDataEvent);
                 }
-
+                else if(event instanceof RequestObdErrorCodesEvent) {
+                    final ResponseObdErrorCodesEvent obdErrorCodesEvent = controller.getObdErrorCodes(CommandConstants.ERR_CODES);
+                }
             }
         });
         bezirk.subscribe(obdCommandEventSet);

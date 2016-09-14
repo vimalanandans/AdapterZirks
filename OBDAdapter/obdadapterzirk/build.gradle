@@ -26,4 +26,9 @@ dependencies {
     compile(group: 'com.bezirk', name: 'bezirk-middleware-api', version: rootProject.bezirkVersion)
     compile(group: 'com.bezirk', name: 'HardwareEvents', version: rootProject.hardwareEventsVersion)
     compile 'com.github.pires:obd-java-api:1.0-RC16'
+    compile group: 'org.powermock', name: 'powermock-module-testng', version: '1.6.5'
+    compile group: 'org.powermock', name: 'powermock-api-easymock', version: '1.6.5'
+    compile group: 'org.powermock', name: 'powermock-api-mockito', version: '1.6.5'
+    compile group: 'org.easymock', name: 'easymock', version: '3.4'
+
 }
