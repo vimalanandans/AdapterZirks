@@ -27,6 +27,15 @@ public class WeMoAdapter {
 
     public WeMoAdapter(final Bezirk bezirk) {
         final Set<WeMoOutlet> outlets = new HashSet<>(discoverWeMoSwitches());
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Found {} smart outlets with WeMo adapter", outlets.size());
+
+            for (Outlet o : outlets) {
+                logger.debug("Detected smart outlet: id = {}, hardwareName = {}",
+                        o.getId(), o.getHardwareName());
+            }
+        }
         bezirk.sendEvent(new OutletsDetectedEvent(new HashSet<>(outlets)));
 
         final WeMoController wemoController = new WeMoController(outlets);
@@ -60,6 +69,9 @@ public class WeMoAdapter {
 
         for (String location : potentialSwitchLocations) {
             final String deviceDescription = getHttpResponse(location);
+
+            if (logger.isTraceEnabled())
+                logger.trace("Description for location {}: {}", location, deviceDescription);
 
             if (isWemoSwitch(deviceDescription)) {
                 final String modelName = parseWeMoTag("modelName", deviceDescription);

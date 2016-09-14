@@ -40,6 +40,11 @@ public class WeMoController {
 
         if (url != null) {
             sendPayload(url, "<BinaryState>1</BinaryState>", "SetBinaryState");
+
+            if (logger.isTraceEnabled()) {
+                logger.trace("Sent payload to turn on outlet {} - {}", outlet.getId(),
+                        outlet.getHardwareName());
+            }
         } else {
             if (logger.isTraceEnabled())
                 logger.trace("Ignoring outlet on event for unknown outlet: {} - {}", outlet.getId(),
@@ -52,6 +57,11 @@ public class WeMoController {
 
         if (url != null) {
             sendPayload(url, "<BinaryState>0</BinaryState>", "SetBinaryState");
+
+            if (logger.isTraceEnabled()) {
+                logger.trace("Sent payload to turn off outlet {} - {}", outlet.getId(),
+                        outlet.getHardwareName());
+            }
         } else {
             if (logger.isTraceEnabled())
                 logger.trace("Ignoring outlet off event for unknown outlet: {} - {}", outlet.getId(),
@@ -97,8 +107,10 @@ public class WeMoController {
                 httpReply.append(inputLine);
             in.close();
 
-            logger.trace("Sent to wemo switch: {}", payload);
-            logger.trace("WeMo's payload response: {}", httpConnection.getResponseMessage());
+            if (logger.isTraceEnabled()) {
+                logger.trace("Sent to WeMo switch: {}", payload);
+                logger.trace("WeMo's payload response: {}", httpConnection.getResponseMessage());
+            }
 
             return httpReply.toString();
 
