@@ -7,4 +7,5 @@ public class CommandConstants {
 
     public static final String ENGINE_RPM = "ENGINE_RPM";
     public static final String ERR_CODES = "ERROR_CODES";
+    public static final String PROTOCOL = "AUTO";
 }

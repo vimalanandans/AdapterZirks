@@ -11,11 +11,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bezirk.obd.app.R;
+import com.bezirk.obd.conn.ObdGatewayService;
 import com.bezirk.obd.constants.Constants;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Set;
 
@@ -24,6 +27,8 @@ public class MainActivity extends AppCompatActivity {
     SharedPreferences pref;
     ArrayList deviceStrs;
     Context appContext;
+    ObdGatewayService service;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +36,9 @@ public class MainActivity extends AppCompatActivity {
 
         pref=this.getSharedPreferences("user_options", MODE_PRIVATE);
         appContext = this.getApplicationContext();
+
+        service = new ObdGatewayService(appContext);
+
         deviceStrs = new ArrayList();
         final ArrayList devices = new ArrayList();
 
@@ -45,12 +53,10 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        // show list
 
 
-
-        Button button = (Button) findViewById(R.id.pairedDeviceButton);
-        button.setOnClickListener(new View.OnClickListener() {
+        Button selectDeviceBtn = (Button) findViewById(R.id.pairedDeviceButton);
+        selectDeviceBtn.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View v) {
                 Toast.makeText(appContext, "Button Clicked", Toast.LENGTH_LONG).show();
@@ -59,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
                 ArrayAdapter adapter = new ArrayAdapter(appContext, android.R.layout.select_dialog_singlechoice,
                         deviceStrs.toArray(new String[deviceStrs.size()]));
 
-                int userChoice = pref.getInt(Constants.BLUETOOTH_SELECTED, -1);
+                int userChoice = pref.getInt(Constants.BLUETOOTH_DEVICE_POS_SELECTED, -1);
                 alertDialog.setSingleChoiceItems(adapter, userChoice, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which)
@@ -70,7 +76,10 @@ public class MainActivity extends AppCompatActivity {
                         System.out.println("deviceaddress::"+deviceStrs.get(position) +        "        "+position);
                         // TODO save deviceAddress
                         SharedPreferences.Editor editor = pref.edit();
-                        editor.putInt(Constants.BLUETOOTH_SELECTED,position).apply();
+                        editor.putInt(Constants.BLUETOOTH_DEVICE_POS_SELECTED,position).apply();
+                        editor.putString(Constants.BLUETOOTH_DEVICE_ADD_SELECTED,deviceAddress).apply();
+                        TextView selectedDevice = (TextView) findViewById( R.id.selectedDevice );
+                        selectedDevice.setText(deviceStrs.get(position).toString());
                     }
                 });
 
@@ -78,7 +87,19 @@ public class MainActivity extends AppCompatActivity {
                 alertDialog.show();
             }
         });
+
+
+        Button fetchDataBtn = (Button) findViewById(R.id.fetchData);
+        fetchDataBtn.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View v) {
+                Toast.makeText(appContext, "Button Clicked", Toast.LENGTH_LONG).show();
+                try {
+                    service.startService();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
-
-
 }

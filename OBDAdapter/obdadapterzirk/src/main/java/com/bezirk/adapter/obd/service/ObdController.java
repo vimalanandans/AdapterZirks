@@ -32,6 +32,46 @@ public class ObdController {
         this.sock = sock;
     }
 
+    public boolean initializeOBD() {
+        try {
+            new ObdResetCommand().run(sock.getInputStream(), sock.getOutputStream());
+            try { Thread.sleep(500); } catch (InterruptedException e) { e.printStackTrace(); }
+
+            new EchoOffCommand().run(sock.getInputStream(), sock.getOutputStream());
+            new LineFeedOffCommand().run(sock.getInputStream(), sock.getOutputStream());
+            new SelectProtocolCommand(ObdProtocols.AUTO).run(sock.getInputStream(), sock.getOutputStream());
+
+            new SelectProtocolCommand(ObdProtocols.valueOf(CommandConstants.PROTOCOL));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
+            return false;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
+            return false;
+        } catch (UnableToConnectException e) {
+            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
+            return false;
+        } catch (MisunderstoodCommandException e) {
+            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
+            return false;
+        } catch (NoDataException e) {
+            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
+        } finally {
+            //Close socket if applicable
+        }
+        return true;
+    }
+
     public ResponseObdLiveDataEvent getObdLiveData(String attribute) {
         ObdCommand command = null;
 
