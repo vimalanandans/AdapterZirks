@@ -7,10 +7,83 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.bezirk.obd.app.MainActivity">
+    tools:context="com.bezirk.obd.activity.MainActivity">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="RPM"
+        android:id="@+id/rpm"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="68dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="No Data"
+        android:id="@+id/rpmValue"
+        android:layout_above="@+id/errorCodes"
+        android:layout_alignLeft="@+id/errorCodesValue"
+        android:layout_alignStart="@+id/errorCodesValue" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Error Codes"
+        android:id="@+id/errorCodes"
+        android:layout_below="@+id/rpm"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="42dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="No Data"
+        android:id="@+id/errorCodesValue"
+        android:layout_alignTop="@+id/errorCodes"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="75dp"
+        android:layout_marginEnd="75dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select Paired Device"
+        android:id="@+id/pairedDeviceButton"
+        android:layout_below="@+id/errorCodes"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="131dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fetch Data"
+        android:id="@+id/fetchData"
+        android:layout_below="@+id/pairedDeviceButton"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="40dp"
+        android:layout_toStartOf="@+id/errorCodesValue"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="No Device Selected"
+        android:id="@+id/selectedDevice"
+        android:layout_above="@+id/fetchData"
+        android:layout_toRightOf="@+id/pairedDeviceButton"
+        android:layout_toEndOf="@+id/pairedDeviceButton" />
+
 </RelativeLayout>
