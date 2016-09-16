@@ -30,9 +30,11 @@ public class ObdController {
 
     public ObdController(BluetoothSocket sock) {
         this.sock = sock;
+        initializeOBD();
     }
 
     public boolean initializeOBD() {
+        Log.d(TAG, "Initializing OBD Device..");
         try {
             new ObdResetCommand().run(sock.getInputStream(), sock.getOutputStream());
             try { Thread.sleep(500); } catch (InterruptedException e) { e.printStackTrace(); }
@@ -40,8 +42,6 @@ public class ObdController {
             new EchoOffCommand().run(sock.getInputStream(), sock.getOutputStream());
             new LineFeedOffCommand().run(sock.getInputStream(), sock.getOutputStream());
             new SelectProtocolCommand(ObdProtocols.AUTO).run(sock.getInputStream(), sock.getOutputStream());
-
-            new SelectProtocolCommand(ObdProtocols.valueOf(CommandConstants.PROTOCOL));
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -69,17 +69,21 @@ public class ObdController {
         } finally {
             //Close socket if applicable
         }
+        Log.d(TAG, "Initializing OBD Device..Completed");
         return true;
     }
 
     public ResponseObdLiveDataEvent getObdLiveData(String attribute) {
         ObdCommand command = null;
-
+        String result = null;
         if (CommandConstants.ENGINE_RPM.equals(attribute)) {
             command = new RPMCommand();
             command.useImperialUnits(true);
             try {
+                Log.d(TAG, "Now invoking RPMCommand");
                 command.run(sock.getInputStream(), sock.getOutputStream());
+                result = command.getCalculatedResult();
+                Log.d(TAG, "Fetched results of RPMCommand");
             } catch (IOException e) {
                 e.printStackTrace();
                 Log.e(TAG, e.getMessage());
@@ -107,22 +111,18 @@ public class ObdController {
                 //Close socket if applicable
             }
         }
-        return new ResponseObdLiveDataEvent(command.getCalculatedResult());
+        return new ResponseObdLiveDataEvent(result);
     }
 
     public ResponseObdErrorCodesEvent getObdErrorCodes(String attribute) {
         String result = null;
         if (CommandConstants.ERR_CODES.equals(attribute)) {
             try {
-//                Log.d(TAG, "Queueing jobs for connection configuration..");
-//                new ObdResetCommand().run(sock.getInputStream(), sock.getOutputStream());
-//                new EchoOffCommand().run(sock.getInputStream(), sock.getOutputStream());
-//                new LineFeedOffCommand().run(sock.getInputStream(), sock.getOutputStream());
-//                new SelectProtocolCommand(ObdProtocols.AUTO).run(sock.getInputStream(), sock.getOutputStream());
-
+                Log.d(TAG, "Now invoking ModifiedTroubleCodesObdCommand");
                 ModifiedTroubleCodesObdCommand tcoc = new ModifiedTroubleCodesObdCommand();
                 tcoc.run(sock.getInputStream(), sock.getOutputStream());
                 result = tcoc.getFormattedResult();
+                Log.d(TAG, "Fetched results of ModifiedTroubleCodesObdCommand");
             } catch (IOException e) {
                 e.printStackTrace();
                 Log.e(TAG, e.getMessage());

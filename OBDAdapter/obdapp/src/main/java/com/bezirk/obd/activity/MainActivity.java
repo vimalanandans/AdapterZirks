@@ -14,12 +14,14 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bezirk.adapter.obd.constants.CommandConstants;
 import com.bezirk.obd.app.R;
 import com.bezirk.obd.conn.ObdGatewayService;
 import com.bezirk.obd.constants.Constants;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
@@ -53,8 +55,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-
-
         Button selectDeviceBtn = (Button) findViewById(R.id.pairedDeviceButton);
         selectDeviceBtn.setOnClickListener(new View.OnClickListener() {
 
@@ -78,8 +78,22 @@ public class MainActivity extends AppCompatActivity {
                         SharedPreferences.Editor editor = pref.edit();
                         editor.putInt(Constants.BLUETOOTH_DEVICE_POS_SELECTED,position).apply();
                         editor.putString(Constants.BLUETOOTH_DEVICE_ADD_SELECTED,deviceAddress).apply();
+
                         TextView selectedDevice = (TextView) findViewById( R.id.selectedDevice );
                         selectedDevice.setText(deviceStrs.get(position).toString());
+
+                        try {
+                            service.startService();
+                        }
+                            catch(Exception e){
+                                e.printStackTrace();
+                            }
+                        boolean connStatus = service.isRunning();
+                        TextView obdConnStatus = (TextView) findViewById( R.id.obdConnStatusValue );
+                        if(connStatus == true)
+                            obdConnStatus.setText(Constants.CONNECTED);
+                        else
+                            obdConnStatus.setText(Constants.DISCONNECTED);
                     }
                 });
 
@@ -95,7 +109,12 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Toast.makeText(appContext, "Button Clicked", Toast.LENGTH_LONG).show();
                 try {
-                    service.startService();
+                    Map resultData = service.fetchOBDData();
+                    TextView rpmTxtView = (TextView) findViewById( R.id.rpmValue );
+                    rpmTxtView.setText(resultData.get(CommandConstants.ENGINE_RPM).toString());
+                    TextView errCodesTxtView = (TextView) findViewById( R.id.errorCodesValue );
+                    errCodesTxtView.setText(resultData.get(CommandConstants.ERR_CODES).toString());
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

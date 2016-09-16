@@ -8,9 +8,14 @@ import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.bezirk.adapter.obd.constants.CommandConstants;
+import com.bezirk.adapter.obd.service.ObdAdapter;
+import com.bezirk.adapter.obd.service.ObdController;
 import com.bezirk.obd.constants.Constants;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ObdGatewayService  {
 
@@ -20,6 +25,7 @@ public class ObdGatewayService  {
     private Context ctx = null;
     private BluetoothDevice dev = null;
     private BluetoothSocket sock = null;
+    ObdAdapter obdAdapter;
 
     public ObdGatewayService(Context ctx)
     {
@@ -58,14 +64,33 @@ public class ObdGatewayService  {
 
     private void startObdConnection() throws IOException {
         Log.d(TAG, "Starting OBD connection..");
-        isRunning = true;
         try {
             sock = BluetoothManager.connect(dev);
+            isRunning = true;
+            //uncomment the below line
+            //obdAdapter = new ObdAdapter(bezirk, sock);
         } catch (Exception e2) {
             Log.e(TAG, "There was an error while establishing Bluetooth connection. Stopping app..", e2);
             stopService();
             throw new IOException();
         }
+    }
+
+    public Map fetchOBDData() throws IOException {
+        Map resultMap = null;
+        Log.d(TAG, "Fetching OBD Data...");
+        try {
+            //call the send event method
+            resultMap = new HashMap();
+            resultMap.put(CommandConstants.ENGINE_RPM, "500");
+            resultMap.put(CommandConstants.ERR_CODES, "P1008, P6777");
+
+        } catch (Exception e2) {
+            Log.e(TAG, "There was an error while establishing Bluetooth connection. Stopping app..", e2);
+            stopService();
+            throw new IOException();
+        }
+        return resultMap;
     }
 
     public void stopService() {
@@ -81,6 +106,7 @@ public class ObdGatewayService  {
                 Log.e(TAG, e.getMessage());
             }
     }
+
 
     public boolean isRunning() {
         return isRunning;
