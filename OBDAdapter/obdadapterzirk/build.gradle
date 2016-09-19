@@ -25,6 +25,8 @@ dependencies {
     compile 'org.slf4j:slf4j-api:1.7.21'
     compile(group: 'com.bezirk', name: 'bezirk-middleware-api', version: rootProject.bezirkVersion)
     compile(group: 'com.bezirk', name: 'HardwareEvents', version: rootProject.hardwareEventsVersion)
+    compile(group: 'com.bezirk', name: 'commons', version: '3.0.0-alpha+019')
+
     compile 'com.github.pires:obd-java-api:1.0-RC16'
     compile group: 'org.powermock', name: 'powermock-module-testng', version: '1.6.5'
     compile group: 'org.powermock', name: 'powermock-api-easymock', version: '1.6.5'

@@ -9,8 +9,11 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.bezirk.adapter.obd.constants.CommandConstants;
+import com.bezirk.adapter.obd.events.RequestObdErrorCodesEvent;
+import com.bezirk.adapter.obd.events.RequestObdLiveDataEvent;
 import com.bezirk.adapter.obd.service.ObdAdapter;
 import com.bezirk.adapter.obd.service.ObdController;
+import com.bezirk.middleware.Bezirk;
 import com.bezirk.obd.constants.Constants;
 
 import java.io.IOException;
@@ -26,10 +29,12 @@ public class ObdGatewayService  {
     private BluetoothDevice dev = null;
     private BluetoothSocket sock = null;
     ObdAdapter obdAdapter;
+    Bezirk bezirk;
 
-    public ObdGatewayService(Context ctx)
+    public ObdGatewayService(Context ctx, Bezirk bezirk)
     {
         this.ctx = ctx;
+        this.bezirk = bezirk;
         prefs = this.ctx.getSharedPreferences("user_options", Context.MODE_PRIVATE);
     }
 
@@ -67,8 +72,7 @@ public class ObdGatewayService  {
         try {
             sock = BluetoothManager.connect(dev);
             isRunning = true;
-            //uncomment the below line
-            //obdAdapter = new ObdAdapter(bezirk, sock);
+            obdAdapter = new ObdAdapter(bezirk, sock);
         } catch (Exception e2) {
             Log.e(TAG, "There was an error while establishing Bluetooth connection. Stopping app..", e2);
             stopService();
@@ -76,21 +80,21 @@ public class ObdGatewayService  {
         }
     }
 
-    public Map fetchOBDData() throws IOException {
+    public void fetchOBDData() throws IOException {
         Map resultMap = null;
         Log.d(TAG, "Fetching OBD Data...");
         try {
             //call the send event method
-            resultMap = new HashMap();
-            resultMap.put(CommandConstants.ENGINE_RPM, "500");
-            resultMap.put(CommandConstants.ERR_CODES, "P1008, P6777");
-
+            Log.d(TAG, "Now sending Bezirk Send event for RequestObdLiveDataEvent...");
+            bezirk.sendEvent(new RequestObdLiveDataEvent(CommandConstants.ENGINE_RPM));
+            Log.d(TAG, "Now sending Bezirk Send event for RequestObdErrorCodesEvent...");
+            bezirk.sendEvent(new RequestObdErrorCodesEvent(CommandConstants.ERR_CODES));
+            Log.d(TAG, "Completed Sending both the events...");
         } catch (Exception e2) {
             Log.e(TAG, "There was an error while establishing Bluetooth connection. Stopping app..", e2);
             stopService();
             throw new IOException();
         }
-        return resultMap;
     }
 
     public void stopService() {

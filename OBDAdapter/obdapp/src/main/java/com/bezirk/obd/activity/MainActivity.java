@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -15,6 +16,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bezirk.adapter.obd.constants.CommandConstants;
+import com.bezirk.adapter.obd.events.ResponseObdErrorCodesEvent;
+import com.bezirk.adapter.obd.events.ResponseObdLiveDataEvent;
+import com.bezirk.hardwareevents.beacon.Beacon;
+import com.bezirk.hardwareevents.beacon.BeaconsDetectedEvent;
+import com.bezirk.hardwareevents.beacon.GetBeaconAttributesEvent;
+import com.bezirk.middleware.Bezirk;
+import com.bezirk.middleware.addressing.ZirkEndPoint;
+import com.bezirk.middleware.android.BezirkMiddleware;
+import com.bezirk.middleware.messages.Event;
+import com.bezirk.middleware.messages.EventSet;
 import com.bezirk.obd.app.R;
 import com.bezirk.obd.conn.ObdGatewayService;
 import com.bezirk.obd.constants.Constants;
@@ -30,16 +41,43 @@ public class MainActivity extends AppCompatActivity {
     ArrayList deviceStrs;
     Context appContext;
     ObdGatewayService service;
+    private static final String TAG = MainActivity.class.getName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        BezirkMiddleware.initialize(this);
+        final Bezirk bezirk = BezirkMiddleware.registerZirk("OBD Adapter");
+        Log.d(TAG, "Created Bezirk Instance!!");
+
+        final EventSet eventSet = new EventSet(ResponseObdErrorCodesEvent.class, ResponseObdLiveDataEvent.class);
+
+        eventSet.setEventReceiver(new EventSet.EventReceiver() {
+            @Override
+            public void receiveEvent(Event event, ZirkEndPoint sender) {
+                System.out.println("REcevied event!!!!!!!!!!!!!!!!");
+                if (event instanceof ResponseObdErrorCodesEvent) {
+                    Log.v(TAG, "Received Event ResponseObdErrorCodesEvent");
+                    ResponseObdErrorCodesEvent responseObdErrorCodesEvent = (ResponseObdErrorCodesEvent)event;
+                    TextView errCodesTxtView = (TextView) findViewById( R.id.errorCodesValue );
+                    errCodesTxtView.setText(responseObdErrorCodesEvent.getResult());
+                }
+                else if (event instanceof ResponseObdLiveDataEvent) {
+                    Log.v(TAG, "Received Event ResponseObdLiveDataEvent");
+                    ResponseObdLiveDataEvent responseObdLiveDataEvent = (ResponseObdLiveDataEvent)event;
+                    TextView rpmTxtView = (TextView) findViewById( R.id.rpmValue );
+                    rpmTxtView.setText(responseObdLiveDataEvent.getResult());
+                }
+            }
+        });
+        bezirk.subscribe(eventSet);
+
         pref=this.getSharedPreferences("user_options", MODE_PRIVATE);
         appContext = this.getApplicationContext();
 
-        service = new ObdGatewayService(appContext);
+        service = new ObdGatewayService(appContext, bezirk);
 
         deviceStrs = new ArrayList();
         final ArrayList devices = new ArrayList();
@@ -59,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
         selectDeviceBtn.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View v) {
-                Toast.makeText(appContext, "Button Clicked", Toast.LENGTH_LONG).show();
+                Toast.makeText(appContext, "Select a device", Toast.LENGTH_LONG).show();
                 final AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
 
                 ArrayAdapter adapter = new ArrayAdapter(appContext, android.R.layout.select_dialog_singlechoice,
@@ -109,12 +147,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Toast.makeText(appContext, "Button Clicked", Toast.LENGTH_LONG).show();
                 try {
-                    Map resultData = service.fetchOBDData();
-                    TextView rpmTxtView = (TextView) findViewById( R.id.rpmValue );
-                    rpmTxtView.setText(resultData.get(CommandConstants.ENGINE_RPM).toString());
-                    TextView errCodesTxtView = (TextView) findViewById( R.id.errorCodesValue );
-                    errCodesTxtView.setText(resultData.get(CommandConstants.ERR_CODES).toString());
 
+                    service.fetchOBDData();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

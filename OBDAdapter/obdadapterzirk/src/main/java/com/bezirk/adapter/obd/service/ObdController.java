@@ -36,12 +36,20 @@ public class ObdController {
     public boolean initializeOBD() {
         Log.d(TAG, "Initializing OBD Device..");
         try {
-            new ObdResetCommand().run(sock.getInputStream(), sock.getOutputStream());
-            try { Thread.sleep(500); } catch (InterruptedException e) { e.printStackTrace(); }
+            if (sock.isConnected()) {
+                new ObdResetCommand().run(sock.getInputStream(), sock.getOutputStream());
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
-            new EchoOffCommand().run(sock.getInputStream(), sock.getOutputStream());
-            new LineFeedOffCommand().run(sock.getInputStream(), sock.getOutputStream());
-            new SelectProtocolCommand(ObdProtocols.AUTO).run(sock.getInputStream(), sock.getOutputStream());
+                new EchoOffCommand().run(sock.getInputStream(), sock.getOutputStream());
+                new LineFeedOffCommand().run(sock.getInputStream(), sock.getOutputStream());
+                new SelectProtocolCommand(ObdProtocols.AUTO).run(sock.getInputStream(), sock.getOutputStream());
+            }else {
+                Log.e(TAG, "Can't run command on a closed socket.");
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -80,10 +88,14 @@ public class ObdController {
             command = new RPMCommand();
             command.useImperialUnits(true);
             try {
-                Log.d(TAG, "Now invoking RPMCommand");
-                command.run(sock.getInputStream(), sock.getOutputStream());
-                result = command.getCalculatedResult();
-                Log.d(TAG, "Fetched results of RPMCommand");
+                if (sock.isConnected()) {
+                    Log.d(TAG, "Now invoking RPMCommand");
+                    command.run(sock.getInputStream(), sock.getOutputStream());
+                    result = command.getCalculatedResult();
+                    Log.d(TAG, "Fetched results of RPMCommand :"+result);
+                }else {
+                    Log.e(TAG, "Can't run command on a closed socket.");
+                }
             } catch (IOException e) {
                 e.printStackTrace();
                 Log.e(TAG, e.getMessage());
@@ -118,11 +130,15 @@ public class ObdController {
         String result = null;
         if (CommandConstants.ERR_CODES.equals(attribute)) {
             try {
-                Log.d(TAG, "Now invoking ModifiedTroubleCodesObdCommand");
-                ModifiedTroubleCodesObdCommand tcoc = new ModifiedTroubleCodesObdCommand();
-                tcoc.run(sock.getInputStream(), sock.getOutputStream());
-                result = tcoc.getFormattedResult();
-                Log.d(TAG, "Fetched results of ModifiedTroubleCodesObdCommand");
+                if (sock.isConnected()) {
+                    Log.d(TAG, "Now invoking ModifiedTroubleCodesObdCommand");
+                    ModifiedTroubleCodesObdCommand tcoc = new ModifiedTroubleCodesObdCommand();
+                    tcoc.run(sock.getInputStream(), sock.getOutputStream());
+                    result = tcoc.getFormattedResult();
+                    Log.d(TAG, "Fetched results of ModifiedTroubleCodesObdCommand :"+result);
+                }else {
+                    Log.e(TAG, "Can't run command on a closed socket.");
+                }
             } catch (IOException e) {
                 e.printStackTrace();
                 Log.e(TAG, e.getMessage());

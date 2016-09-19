@@ -7,6 +7,10 @@ import com.bezirk.middleware.messages.Event;
  */
 public class RequestObdLiveDataEvent extends Event
 {
+    public RequestObdLiveDataEvent(String attribute)
+    {
+        this.attribute = attribute;
+    }
     private String attribute;
 
     public static final String TOPIC = RequestObdLiveDataEvent.class.getSimpleName();
