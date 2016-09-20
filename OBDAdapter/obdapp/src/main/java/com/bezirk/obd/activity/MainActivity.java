@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
             public void onClick(View v) {
                 Toast.makeText(appContext, "Select a device", Toast.LENGTH_LONG).show();
-                final AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
+                final AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this, android.R.style.Theme_DeviceDefault_Dialog_MinWidth);
 
                 ArrayAdapter adapter = new ArrayAdapter(appContext, android.R.layout.select_dialog_singlechoice,
                         deviceStrs.toArray(new String[deviceStrs.size()]));
