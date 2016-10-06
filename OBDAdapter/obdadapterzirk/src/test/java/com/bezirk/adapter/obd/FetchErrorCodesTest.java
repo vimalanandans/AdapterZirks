@@ -25,7 +25,6 @@ import static org.powermock.api.easymock.PowerMock.verifyAll;
 import static org.testng.Assert.assertEquals;
 
 /**
-
  */
 @PrepareForTest({InputStream.class, OutputStream.class, BluetoothSocket.class})
 public class FetchErrorCodesTest {
