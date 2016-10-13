@@ -113,7 +113,7 @@ public class ObdController {
                 Log.e(TAG, e.getMessage());
                 return null;
             } catch (NoDataException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
                 Log.e(TAG, e.getMessage());
                 result = CommandConstants.NO_DATA;
             } catch (Exception e) {
@@ -156,7 +156,7 @@ public class ObdController {
                 Log.e(TAG, e.getMessage());
                 return null;
             } catch (NoDataException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
                 Log.e(TAG, e.getMessage());
                 result = CommandConstants.NO_DATA;
             } catch (Exception e) {
