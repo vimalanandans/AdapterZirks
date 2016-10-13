@@ -1,4 +1,8 @@
 apply plugin: 'com.android.library'
+apply from: "${rootDir}/artifactory-aar-publish.gradle"
+
+group = 'com.bezirk'
+version = "0.0.2"
 
 android {
     compileSdkVersion 24
@@ -16,21 +20,26 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+	
+    lintOptions {
+        abortOnError false    
+	}
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:24.0.0-alpha2'
     compile 'org.slf4j:slf4j-api:1.7.21'
     compile(group: 'com.bezirk', name: 'bezirk-middleware-api', version: rootProject.bezirkVersion)
     compile(group: 'com.bezirk', name: 'HardwareEvents', version: rootProject.hardwareEventsVersion)
-    compile(group: 'com.bezirk', name: 'commons', version: '3.0.0-alpha+019')
+    compile(group: 'com.bezirk', name: 'commons', version: '3.0.0-alpha+025-snapshot')
 
     compile 'com.github.pires:obd-java-api:1.0-RC16'
-    compile group: 'org.powermock', name: 'powermock-module-testng', version: '1.6.5'
-    compile group: 'org.powermock', name: 'powermock-api-easymock', version: '1.6.5'
-    compile group: 'org.powermock', name: 'powermock-api-mockito', version: '1.6.5'
-    compile group: 'org.easymock', name: 'easymock', version: '3.4'
+
+    testCompile 'junit:junit:4.12'
+    testCompile  group: 'org.powermock', name: 'powermock-module-testng', version: '1.6.5'
+    testCompile  group: 'org.powermock', name: 'powermock-api-easymock', version: '1.6.5'
+    testCompile  group: 'org.powermock', name: 'powermock-api-mockito', version: '1.6.5'
+    testCompile  group: 'org.easymock', name: 'easymock', version: '3.4'
 
 }
