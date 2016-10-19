@@ -13,9 +13,6 @@ import com.bezirk.middleware.addressing.ZirkEndPoint;
 import com.bezirk.middleware.messages.Event;
 import com.bezirk.middleware.messages.EventSet;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.net.MalformedURLException;
 
 /**
@@ -23,16 +20,18 @@ import java.net.MalformedURLException;
  */
 public class ObdAdapter {
     private static final String TAG = ObdAdapter.class.getName();
+    private Bezirk bezirk;
+    private EventSet obdCommandEventSet;
 
     public ObdAdapter(final Bezirk bezirk, BluetoothSocket socket) throws MalformedURLException {
 
         final ObdController controller = new ObdController(socket);
-        final EventSet obdCommandEventSet = new EventSet(RequestObdLiveDataEvent.class, RequestObdErrorCodesEvent.class);
+        obdCommandEventSet = new EventSet(RequestObdLiveDataEvent.class, RequestObdErrorCodesEvent.class);
+        this.bezirk = bezirk;
 
         obdCommandEventSet.setEventReceiver(new EventSet.EventReceiver() {
             @Override
             public void receiveEvent(Event event, ZirkEndPoint sender) {
-                Log.e(TAG, "Inside receive Event of ObdAdapter");
                 if (event instanceof RequestObdLiveDataEvent) {
                     Log.e(TAG, "Received the event RequestObdLiveDataEvent ");
                     final ResponseObdLiveDataEvent obdLiveDataEvent = controller.getObdLiveData(CommandConstants.ENGINE_RPM);
@@ -48,5 +47,10 @@ public class ObdAdapter {
             }
         });
         bezirk.subscribe(obdCommandEventSet);
+    }
+
+    public void unSubscribeEventSet()
+    {
+        bezirk.unsubscribe(obdCommandEventSet);
     }
 }

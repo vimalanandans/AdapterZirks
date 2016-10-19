@@ -171,7 +171,6 @@ public class ObdController {
     public class ModifiedTroubleCodesObdCommand extends TroubleCodesCommand {
         @Override
         public String getResult() {
-            // remove unwanted response from output since this results in erroneous error codes
             return rawData.replace("SEARCHING...", "").replace("NODATA", "");
         }
     }
