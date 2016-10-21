@@ -27,6 +27,7 @@ public class PhilipsHueZirkTest {
     private static final Logger logger = LoggerFactory.getLogger(PhilipsHueZirkTest.class);
 
     public static void main(String[] args) {
+        BezirkMiddleware.initialize();
         final Bezirk bezirk = BezirkMiddleware.registerZirk("Philips Hue Test Zirk");
 
         final EventSet lightEvents = new EventSet(LightsDetectedEvent.class,

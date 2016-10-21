@@ -23,6 +23,7 @@ public class LightifyZirkTest {
     private static final Logger logger = LoggerFactory.getLogger(LightifyZirkTest.class);
 
     public static void main(String[] args) {
+        BezirkMiddleware.initialize();
         final Bezirk bezirk = BezirkMiddleware.registerZirk("Lightify Test Zirk");
 
         final EventSet lightEvents = new EventSet(LightsDetectedEvent.class);

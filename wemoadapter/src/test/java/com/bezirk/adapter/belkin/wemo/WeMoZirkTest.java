@@ -16,6 +16,7 @@ import java.util.TimerTask;
 
 public class WeMoZirkTest {
     public static void main(String[] args) {
+        BezirkMiddleware.initialize();
         final Bezirk bezirk = BezirkMiddleware.registerZirk("WeMo Test Zirk");
 
         final EventSet outletEvents = new EventSet(OutletsDetectedEvent.class);
