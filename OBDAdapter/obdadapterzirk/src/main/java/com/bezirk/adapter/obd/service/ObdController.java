@@ -4,11 +4,15 @@ import android.bluetooth.BluetoothSocket;
 import android.util.Log;
 
 import com.bezirk.adapter.obd.constants.CommandConstants;
+import com.bezirk.adapter.obd.events.ResponseObdEngineRPMEvent;
 import com.bezirk.adapter.obd.events.ResponseObdErrorCodesEvent;
-import com.bezirk.adapter.obd.events.ResponseObdLiveDataEvent;
+import com.bezirk.adapter.obd.events.ResponseObdFuelLevelEvent;
+import com.bezirk.adapter.obd.events.ResponseObdVehicleSpeedEvent;
 import com.github.pires.obd.commands.ObdCommand;
+import com.github.pires.obd.commands.SpeedCommand;
 import com.github.pires.obd.commands.control.TroubleCodesCommand;
 import com.github.pires.obd.commands.engine.RPMCommand;
+import com.github.pires.obd.commands.fuel.FuelLevelCommand;
 import com.github.pires.obd.commands.protocol.EchoOffCommand;
 import com.github.pires.obd.commands.protocol.LineFeedOffCommand;
 import com.github.pires.obd.commands.protocol.ObdResetCommand;
@@ -84,13 +88,12 @@ public class ObdController {
             e.printStackTrace();
             Log.e(TAG, e.getMessage());
         } finally {
-            //Close socket if applicable
         }
         Log.d(TAG, "Initializing OBD Device..Completed");
         return true;
     }
 
-    public ResponseObdLiveDataEvent getObdLiveData(String attribute) throws Exception{
+    public ResponseObdEngineRPMEvent getEngineRPM(String attribute) throws Exception{
         ObdCommand command;
 
         String result = null;
@@ -99,8 +102,45 @@ public class ObdController {
             command.useImperialUnits(true);
             result = executeCommand(command);
         }
-        return new  ResponseObdLiveDataEvent(result);
+        return new  ResponseObdEngineRPMEvent(result);
     }
+
+    public ResponseObdFuelLevelEvent getFuelLevel(String attribute) throws Exception{
+        ObdCommand command;
+
+        String result = null;
+        if (CommandConstants.FUEL_LEVEL.equals(attribute)) {
+            command = new FuelLevelCommand();
+            command.useImperialUnits(true);
+            result = executeCommand(command);
+        }
+        return new ResponseObdFuelLevelEvent(result);
+    }
+
+    public ResponseObdVehicleSpeedEvent getObdVehicleSpeed(String attribute) throws Exception{
+        ObdCommand command;
+
+        String result = null;
+        if (CommandConstants.VEH_SPEED.equals(attribute)) {
+            command = new SpeedCommand();
+            command.useImperialUnits(true);
+            result = executeCommand(command);
+        }
+        return new ResponseObdVehicleSpeedEvent(result);
+    }
+
+    public ResponseObdErrorCodesEvent getObdErrorCodes(String attribute) throws Exception{
+        ObdCommand command;
+
+        String result = null;
+        if (CommandConstants.ERR_CODES.equals(attribute)) {
+            command = new ModifiedTroubleCodesObdCommand();
+            command.useImperialUnits(true);
+            result = executeCommand(command);
+        }
+        return new  ResponseObdErrorCodesEvent(result);
+    }
+
 
     String executeCommand(final ObdCommand command) throws Exception {
         String resultFinal = "";
@@ -111,10 +151,10 @@ public class ObdController {
                 String result = null;
                 try {
                     if (sock.isConnected()) {
-                        Log.d(TAG, "Now invoking RPMCommand");
+                        Log.d(TAG, "Now invoking Command");
                         command.run(sock.getInputStream(), sock.getOutputStream());
                         result = command.getCalculatedResult();
-                        Log.d(TAG, "Fetched results of RPMCommand :" + result);
+                        Log.d(TAG, "Fetched results of Command :" + result);
                     } else {
                         Log.e(TAG, "Can't run command on a closed socket.");
                     }
@@ -175,18 +215,6 @@ public class ObdController {
             throw new Exception(e);
         }
         return resultFinal;
-    }
-
-    public ResponseObdErrorCodesEvent getObdErrorCodes(String attribute) throws Exception{
-        ObdCommand command;
-
-        String result = null;
-        if (CommandConstants.ERR_CODES.equals(attribute)) {
-            command = new ModifiedTroubleCodesObdCommand();
-            command.useImperialUnits(true);
-            result = executeCommand(command);
-        }
-        return new  ResponseObdErrorCodesEvent(result);
     }
 
     public class ModifiedTroubleCodesObdCommand extends TroubleCodesCommand {
