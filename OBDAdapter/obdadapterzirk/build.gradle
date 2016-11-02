@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply from: "${rootDir}/artifactory-aar-publish.gradle"
 
 group = 'com.bezirk'
-version = "0.0.3"
+version = "0.0.4"
 
 android {
     compileSdkVersion 24
