@@ -189,7 +189,8 @@ public class PhilipsHueAdapter {
     }
 
     // This method is a combination of Color.decode and Color.RGBtoHSB from
-    // java.awt.Color in OpenJDK
+    // java.awt.Color in OpenJDK. It is included hear to ensure this code does not depend
+    // on Swing classes, which are not available on Android.
     /*
      * Copyright 1995-2007 Sun Microsystems, Inc.  All Rights Reserved.
      * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
