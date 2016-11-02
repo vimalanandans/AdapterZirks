@@ -4,6 +4,9 @@ project.ext.set("bezirkVersion", '3.0.1')
 buildscript {
     repositories {
         jcenter()
+        jcenter {
+            url "http://jcenter.bintray.com/"
+        }//used for jfrog
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.2.2'

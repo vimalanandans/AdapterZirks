@@ -9,15 +9,13 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.bezirk.adapter.obd.constants.CommandConstants;
+import com.bezirk.adapter.obd.events.RequestObdEngineRPMEvent;
 import com.bezirk.adapter.obd.events.RequestObdErrorCodesEvent;
-import com.bezirk.adapter.obd.events.RequestObdLiveDataEvent;
 import com.bezirk.adapter.obd.service.ObdAdapter;
-import com.bezirk.adapter.obd.service.ObdController;
 import com.bezirk.middleware.Bezirk;
 import com.bezirk.obd.constants.Constants;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 public class ObdGatewayService  {
@@ -85,8 +83,8 @@ public class ObdGatewayService  {
         Log.d(TAG, "Fetching OBD Data...");
         try {
             //call the send event method
-            Log.d(TAG, "Now sending Bezirk Send event for RequestObdLiveDataEvent...");
-            bezirk.sendEvent(new RequestObdLiveDataEvent(CommandConstants.ENGINE_RPM));
+            Log.d(TAG, "Now sending Bezirk Send event for RequestObdEngineRPMEvent...");
+            bezirk.sendEvent(new RequestObdEngineRPMEvent(CommandConstants.ENGINE_RPM));
             Log.d(TAG, "Now sending Bezirk Send event for RequestObdErrorCodesEvent...");
             bezirk.sendEvent(new RequestObdErrorCodesEvent(CommandConstants.ERR_CODES));
             Log.d(TAG, "Completed Sending both the events...");

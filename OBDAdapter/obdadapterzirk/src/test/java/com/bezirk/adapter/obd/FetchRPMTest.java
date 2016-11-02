@@ -2,7 +2,7 @@ package com.bezirk.adapter.obd;
 
 import android.bluetooth.BluetoothSocket;
 
-import com.bezirk.adapter.obd.events.ResponseObdLiveDataEvent;
+import com.bezirk.adapter.obd.events.ResponseObdEngineRPMEvent;
 import com.bezirk.adapter.obd.service.ObdController;
 
 import org.mockito.Mockito;
@@ -70,16 +70,16 @@ public class FetchRPMTest {
         String res = "2575";
 
         ObdController controller = new ObdController(socket);
-        ResponseObdLiveDataEvent responseObdLiveDataEvent = null;
+        ResponseObdEngineRPMEvent responseObdEngineRPMEvent = null;
 
         try {
-            responseObdLiveDataEvent = controller.getObdLiveData("ENGINE_RPM");
+            responseObdEngineRPMEvent = controller.getEngineRPM("ENGINE_RPM");
         }
         catch(Exception e)
         {
             e.printStackTrace();
         }
-        assertEquals(responseObdLiveDataEvent.getResult(), res);
+        assertEquals(responseObdEngineRPMEvent.getResult(), res);
         verifyAll();
     }
 

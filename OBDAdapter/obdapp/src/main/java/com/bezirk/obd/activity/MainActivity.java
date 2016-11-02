@@ -15,12 +15,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bezirk.adapter.obd.constants.CommandConstants;
+import com.bezirk.adapter.obd.events.ResponseObdEngineRPMEvent;
 import com.bezirk.adapter.obd.events.ResponseObdErrorCodesEvent;
-import com.bezirk.adapter.obd.events.ResponseObdLiveDataEvent;
-import com.bezirk.hardwareevents.beacon.Beacon;
-import com.bezirk.hardwareevents.beacon.BeaconsDetectedEvent;
-import com.bezirk.hardwareevents.beacon.GetBeaconAttributesEvent;
 import com.bezirk.middleware.Bezirk;
 import com.bezirk.middleware.addressing.ZirkEndPoint;
 import com.bezirk.middleware.android.BezirkMiddleware;
@@ -32,7 +28,6 @@ import com.bezirk.obd.constants.Constants;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
@@ -52,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         final Bezirk bezirk = BezirkMiddleware.registerZirk("OBD Adapter");
         Log.d(TAG, "Created Bezirk Instance!!");
 
-        final EventSet eventSet = new EventSet(ResponseObdErrorCodesEvent.class, ResponseObdLiveDataEvent.class);
+        final EventSet eventSet = new EventSet(ResponseObdErrorCodesEvent.class, ResponseObdEngineRPMEvent.class);
 
         eventSet.setEventReceiver(new EventSet.EventReceiver() {
             @Override
@@ -64,11 +59,11 @@ public class MainActivity extends AppCompatActivity {
                     TextView errCodesTxtView = (TextView) findViewById( R.id.errorCodesValue );
                     errCodesTxtView.setText(responseObdErrorCodesEvent.getResult());
                 }
-                else if (event instanceof ResponseObdLiveDataEvent) {
-                    Log.v(TAG, "Received Event ResponseObdLiveDataEvent");
-                    ResponseObdLiveDataEvent responseObdLiveDataEvent = (ResponseObdLiveDataEvent)event;
+                else if (event instanceof ResponseObdEngineRPMEvent) {
+                    Log.v(TAG, "Received Event ResponseObdEngineRPMEvent");
+                    ResponseObdEngineRPMEvent responseObdEngineRPMEvent = (ResponseObdEngineRPMEvent)event;
                     TextView rpmTxtView = (TextView) findViewById( R.id.rpmValue );
-                    rpmTxtView.setText(responseObdLiveDataEvent.getResult());
+                    rpmTxtView.setText(responseObdEngineRPMEvent.getResult());
                 }
             }
         });

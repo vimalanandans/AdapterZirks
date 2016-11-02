@@ -5,15 +5,15 @@ import com.bezirk.middleware.messages.Event;
 /**
  * Created by DEV6KOR on 9/8/2016.
  */
-public class RequestObdLiveDataEvent extends Event
+public class RequestObdEngineRPMEvent extends Event
 {
-    public RequestObdLiveDataEvent(String attribute)
+    public RequestObdEngineRPMEvent(String attribute)
     {
         this.attribute = attribute;
     }
     private String attribute;
 
-    public static final String TOPIC = RequestObdLiveDataEvent.class.getSimpleName();
+    public static final String TOPIC = RequestObdEngineRPMEvent.class.getSimpleName();
 
     public String getAttribute() {
         return attribute;
