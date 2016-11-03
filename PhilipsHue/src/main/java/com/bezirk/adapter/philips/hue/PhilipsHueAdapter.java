@@ -23,7 +23,6 @@ import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -180,13 +179,84 @@ public class PhilipsHueAdapter {
     }
 
     private void setLightColor(Light light, HexColor hexColor) {
-        final Color color = Color.decode(hexColor.getHexString());
-        final float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
+        final float[] hsb = rgbStringToHsb(hexColor.getHexString());
         final int hue = (int) (hsb[0] * 65535);
         final int sat = (int) (hsb[1] * 255);
         final int bri = (int) (hsb[2] * 255);
 
         logger.trace("H: {} S: {} b: {}", hue, sat, bri);
         philipsHueController.setLightColorHSV(light, hue, sat, bri);
+    }
+
+    // This method is a combination of Color.decode and Color.RGBtoHSB from
+    // java.awt.Color in OpenJDK. It is included hear to ensure this code does not depend
+    // on Swing classes, which are not available on Android.
+    /*
+     * Copyright 1995-2007 Sun Microsystems, Inc.  All Rights Reserved.
+     * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+     *
+     * This code is free software; you can redistribute it and/or modify it
+     * under the terms of the GNU General Public License version 2 only, as
+     * published by the Free Software Foundation.  Sun designates this
+     * particular file as subject to the "Classpath" exception as provided
+     * by Sun in the LICENSE file that accompanied this code.
+     *
+     * This code is distributed in the hope that it will be useful, but WITHOUT
+     * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+     * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+     * version 2 for more details (a copy is included in the LICENSE file that
+     * accompanied this code).
+     *
+     * You should have received a copy of the GNU General Public License version
+     * 2 along with this work; if not, write to the Free Software Foundation,
+     * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+     *
+     * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
+     * CA 95054 USA or visit www.sun.com if you need additional information or
+     * have any questions.
+     */
+    private float[] rgbStringToHsb(String nm) throws NumberFormatException {
+        final Integer intval = Integer.decode(nm);
+        final int i = intval.intValue();
+
+        final int r = (i >> 16) & 0xFF;
+        final int g = (i >> 8) & 0xFF;
+        final int b = i & 0xFF;
+
+        float hue, saturation, brightness;
+        final float[] hsbvals = new float[3];
+
+        int cmax = (r > g) ? r : g;
+        if (b > cmax) cmax = b;
+        int cmin = (r < g) ? r : g;
+        if (b < cmin) cmin = b;
+
+        brightness = ((float) cmax) / 255.0f;
+        if (cmax != 0)
+            saturation = ((float) (cmax - cmin)) / ((float) cmax);
+        else
+            saturation = 0;
+        if (saturation == 0)
+            hue = 0;
+        else {
+            float redc = ((float) (cmax - r)) / ((float) (cmax - cmin));
+            float greenc = ((float) (cmax - g)) / ((float) (cmax - cmin));
+            float bluec = ((float) (cmax - b)) / ((float) (cmax - cmin));
+            if (r == cmax)
+                hue = bluec - greenc;
+            else if (g == cmax)
+                hue = 2.0f + redc - bluec;
+            else
+                hue = 4.0f + greenc - redc;
+            hue = hue / 6.0f;
+            if (hue < 0)
+                hue = hue + 1.0f;
+        }
+
+        hsbvals[0] = hue;
+        hsbvals[1] = saturation;
+        hsbvals[2] = brightness;
+
+        return hsbvals;
     }
 }
