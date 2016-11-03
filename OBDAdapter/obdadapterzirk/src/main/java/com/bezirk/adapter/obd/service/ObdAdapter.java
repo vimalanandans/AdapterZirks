@@ -4,13 +4,13 @@ import android.bluetooth.BluetoothSocket;
 import android.util.Log;
 
 import com.bezirk.adapter.obd.constants.CommandConstants;
+import com.bezirk.adapter.obd.events.RequestObdCoolantTempEvent;
 import com.bezirk.adapter.obd.events.RequestObdEngineRPMEvent;
 import com.bezirk.adapter.obd.events.RequestObdErrorCodesEvent;
-import com.bezirk.adapter.obd.events.RequestObdFuelLevelEvent;
 import com.bezirk.adapter.obd.events.RequestObdVehicleSpeedEvent;
+import com.bezirk.adapter.obd.events.ResponseObdCoolantTempEvent;
 import com.bezirk.adapter.obd.events.ResponseObdEngineRPMEvent;
 import com.bezirk.adapter.obd.events.ResponseObdErrorCodesEvent;
-import com.bezirk.adapter.obd.events.ResponseObdFuelLevelEvent;
 import com.bezirk.adapter.obd.events.ResponseObdStatusEvent;
 import com.bezirk.adapter.obd.events.ResponseObdVehicleSpeedEvent;
 import com.bezirk.adapter.obd.events.SenderEvent;
@@ -35,7 +35,7 @@ public class ObdAdapter {
     public ObdAdapter(final Bezirk bezirk, BluetoothSocket socket) throws MalformedURLException {
 
         controller = new ObdController(socket);
-        obdCommandEventSet = new EventSet(RequestObdEngineRPMEvent.class, RequestObdFuelLevelEvent.class,
+        obdCommandEventSet = new EventSet(RequestObdEngineRPMEvent.class, RequestObdCoolantTempEvent.class,
                 RequestObdVehicleSpeedEvent.class, RequestObdErrorCodesEvent.class);
         this.bezirk = bezirk;
 
@@ -46,8 +46,8 @@ public class ObdAdapter {
                     Log.e(TAG, "Received the event RequestObdEngineRPMEvent ");
                     commandQueue.add(new SenderEvent(sender, event));
                 }
-                else if (event instanceof RequestObdFuelLevelEvent) {
-                    Log.e(TAG, "Received the event RequestObdFuelLevelEvent ");
+                else if (event instanceof RequestObdCoolantTempEvent) {
+                    Log.e(TAG, "Received the event RequestObdCoolantTempEvent ");
                     commandQueue.add(new SenderEvent(sender, event));
                 }
                 else if (event instanceof RequestObdVehicleSpeedEvent) {
@@ -93,13 +93,13 @@ public class ObdAdapter {
                     execThread.interrupt();
                 }
             }
-            else if (senderEvent.getEvent() instanceof RequestObdFuelLevelEvent) {
+            else if (senderEvent.getEvent() instanceof RequestObdCoolantTempEvent) {
                 try {
-                    final ResponseObdFuelLevelEvent obdFuelLevelEvent = controller.getFuelLevel(CommandConstants.FUEL_LEVEL);
-                    bezirk.sendEvent(senderEvent.getZirkEndPoint(), obdFuelLevelEvent);
+                    final ResponseObdCoolantTempEvent obdCoolantTempEvent = controller.getCoolantTemp(CommandConstants.COOLANT_TEMP);
+                    bezirk.sendEvent(senderEvent.getZirkEndPoint(), obdCoolantTempEvent);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Log.d(TAG, "Error while executing Commands from Queue for ResponseObdFuelLevelEvent...Now sending event for ResponseObdStatusEvent");
+                    Log.d(TAG, "Error while executing Commands from Queue for ResponseObdCoolantTempEvent...Now sending event for ResponseObdStatusEvent");
                     bezirk.sendEvent(senderEvent.getZirkEndPoint(), new ResponseObdStatusEvent(e.getMessage(), false));
                     Log.d(TAG, "Now interrupting the Queue thread..");
                     Thread.currentThread().interrupt();

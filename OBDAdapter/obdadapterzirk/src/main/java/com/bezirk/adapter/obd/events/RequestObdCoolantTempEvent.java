@@ -5,15 +5,15 @@ import com.bezirk.middleware.messages.Event;
 /**
  * Created by DEV6KOR on 9/8/2016.
  */
-public class RequestObdFuelLevelEvent extends Event
+public class RequestObdCoolantTempEvent extends Event
 {
-    public RequestObdFuelLevelEvent(String attribute)
+    public RequestObdCoolantTempEvent(String attribute)
     {
         this.attribute = attribute;
     }
     private String attribute;
 
-    public static final String TOPIC = RequestObdFuelLevelEvent.class.getSimpleName();
+    public static final String TOPIC = RequestObdCoolantTempEvent.class.getSimpleName();
 
     public String getAttribute() {
         return attribute;

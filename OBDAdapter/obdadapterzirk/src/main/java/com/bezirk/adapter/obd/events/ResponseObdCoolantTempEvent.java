@@ -5,12 +5,12 @@ import com.bezirk.middleware.messages.Event;
 /**
  * Created by DEV6KOR on 9/8/2016.
  */
-public class ResponseObdFuelLevelEvent extends Event {
-    public static final String TOPIC = ResponseObdFuelLevelEvent.class.getSimpleName();
+public class ResponseObdCoolantTempEvent extends Event {
+    public static final String TOPIC = ResponseObdCoolantTempEvent.class.getSimpleName();
     private String attribute;
     private String result;
 
-    public ResponseObdFuelLevelEvent(String result)
+    public ResponseObdCoolantTempEvent(String result)
     {
         this.result = result;
     }

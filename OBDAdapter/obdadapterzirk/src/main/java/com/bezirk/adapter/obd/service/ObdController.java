@@ -4,19 +4,19 @@ import android.bluetooth.BluetoothSocket;
 import android.util.Log;
 
 import com.bezirk.adapter.obd.constants.CommandConstants;
+import com.bezirk.adapter.obd.events.ResponseObdCoolantTempEvent;
 import com.bezirk.adapter.obd.events.ResponseObdEngineRPMEvent;
 import com.bezirk.adapter.obd.events.ResponseObdErrorCodesEvent;
-import com.bezirk.adapter.obd.events.ResponseObdFuelLevelEvent;
 import com.bezirk.adapter.obd.events.ResponseObdVehicleSpeedEvent;
 import com.github.pires.obd.commands.ObdCommand;
 import com.github.pires.obd.commands.SpeedCommand;
 import com.github.pires.obd.commands.control.TroubleCodesCommand;
 import com.github.pires.obd.commands.engine.RPMCommand;
-import com.github.pires.obd.commands.fuel.FuelLevelCommand;
 import com.github.pires.obd.commands.protocol.EchoOffCommand;
 import com.github.pires.obd.commands.protocol.LineFeedOffCommand;
 import com.github.pires.obd.commands.protocol.ObdResetCommand;
 import com.github.pires.obd.commands.protocol.SelectProtocolCommand;
+import com.github.pires.obd.commands.temperature.EngineCoolantTemperatureCommand;
 import com.github.pires.obd.enums.ObdProtocols;
 import com.github.pires.obd.exceptions.MisunderstoodCommandException;
 import com.github.pires.obd.exceptions.NoDataException;
@@ -105,16 +105,16 @@ public class ObdController {
         return new  ResponseObdEngineRPMEvent(result);
     }
 
-    public ResponseObdFuelLevelEvent getFuelLevel(String attribute) throws Exception{
+    public ResponseObdCoolantTempEvent getCoolantTemp(String attribute) throws Exception{
         ObdCommand command;
 
         String result = null;
-        if (CommandConstants.FUEL_LEVEL.equals(attribute)) {
-            command = new FuelLevelCommand();
+        if (CommandConstants.COOLANT_TEMP.equals(attribute)) {
+            command = new EngineCoolantTemperatureCommand();
             command.useImperialUnits(true);
             result = executeCommand(command);
         }
-        return new ResponseObdFuelLevelEvent(result);
+        return new ResponseObdCoolantTempEvent(result);
     }
 
     public ResponseObdVehicleSpeedEvent getObdVehicleSpeed(String attribute) throws Exception{
