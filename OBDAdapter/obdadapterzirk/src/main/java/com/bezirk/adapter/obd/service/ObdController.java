@@ -194,7 +194,7 @@ public class ObdController {
 
         Future<String> task = executor.submit(callable);
         try{
-            resultFinal = task.get(5000, TimeUnit.DAYS.MILLISECONDS);
+            resultFinal = task.get(25000, TimeUnit.DAYS.MILLISECONDS);
         } catch (InterruptedException e) {
             Log.e(TAG, "InterruptedException:5000");
             task.cancel(true);
