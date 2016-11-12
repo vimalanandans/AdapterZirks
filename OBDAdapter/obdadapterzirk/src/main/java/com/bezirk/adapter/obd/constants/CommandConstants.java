@@ -9,6 +9,5 @@ public class CommandConstants {
     public static final String VEH_SPEED = "VEH_SPEED";
     public static final String COOLANT_TEMP = "COOLANT_TEMP";
     public static final String ERR_CODES = "ERROR_CODES";
-    public static final String PROTOCOL = "AUTO";
     public static final String NO_DATA = "NO DATA";
 }

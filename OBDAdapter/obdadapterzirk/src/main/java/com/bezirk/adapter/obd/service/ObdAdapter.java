@@ -85,6 +85,7 @@ public class ObdAdapter {
                     final ResponseObdEngineRPMEvent obdEngineRPMEvent = controller.getEngineRPM(CommandConstants.ENGINE_RPM);
                     bezirk.sendEvent(senderEvent.getZirkEndPoint(), obdEngineRPMEvent);
                 } catch (Exception e) {
+                    commandQueue.clear();
                     e.printStackTrace();
                     Log.d(TAG, "Error while executing Commands from Queue for ResponseObdEngineRPMEvent...Now sending event for ResponseObdStatusEvent");
                     bezirk.sendEvent(senderEvent.getZirkEndPoint(), new ResponseObdStatusEvent(e.getMessage(), false));
@@ -98,6 +99,7 @@ public class ObdAdapter {
                     final ResponseObdCoolantTempEvent obdCoolantTempEvent = controller.getCoolantTemp(CommandConstants.COOLANT_TEMP);
                     bezirk.sendEvent(senderEvent.getZirkEndPoint(), obdCoolantTempEvent);
                 } catch (Exception e) {
+                    commandQueue.clear();
                     e.printStackTrace();
                     Log.d(TAG, "Error while executing Commands from Queue for ResponseObdCoolantTempEvent...Now sending event for ResponseObdStatusEvent");
                     bezirk.sendEvent(senderEvent.getZirkEndPoint(), new ResponseObdStatusEvent(e.getMessage(), false));
@@ -111,6 +113,7 @@ public class ObdAdapter {
                     final ResponseObdVehicleSpeedEvent obdVehicleSpeedEvent = controller.getObdVehicleSpeed(CommandConstants.VEH_SPEED);
                     bezirk.sendEvent(senderEvent.getZirkEndPoint(), obdVehicleSpeedEvent);
                 } catch (Exception e) {
+                    commandQueue.clear();
                     e.printStackTrace();
                     Log.d(TAG, "Error while executing Commands from Queue for ResponseObdVehicleSpeedEvent...Now sending event for ResponseObdStatusEvent");
                     bezirk.sendEvent(senderEvent.getZirkEndPoint(), new ResponseObdStatusEvent(e.getMessage(), false));
@@ -124,6 +127,7 @@ public class ObdAdapter {
                     final ResponseObdErrorCodesEvent obdErrorCodesEvent = controller.getObdErrorCodes(CommandConstants.ERR_CODES);
                     bezirk.sendEvent(senderEvent.getZirkEndPoint(), obdErrorCodesEvent);
                 } catch (Exception e) {
+                    commandQueue.clear();
                     e.printStackTrace();
                     Log.d(TAG, "Error while executing Commands from Queue for RequestObdErrorCodesEvent...Now sending event for ResponseObdStatusEvent");
                     bezirk.sendEvent(senderEvent.getZirkEndPoint(), new ResponseObdStatusEvent(e.getMessage(), false));

@@ -151,7 +151,7 @@ public class ObdController {
                 String result = null;
                 try {
                     if (sock.isConnected()) {
-                        Log.d(TAG, "Now invoking Command");
+                        Log.d(TAG, "Now invoking Command:"+ command.getName());
                         command.run(sock.getInputStream(), sock.getOutputStream());
                         result = command.getCalculatedResult();
                         Log.d(TAG, "Fetched results of Command :" + result);
@@ -172,18 +172,22 @@ public class ObdController {
                     e.printStackTrace();
                     Log.e(TAG, e.getMessage());
                     Log.e(TAG, "UnableToConnectException");
+                    throw e;
                 } catch (MisunderstoodCommandException e) {
                     e.printStackTrace();
                     Log.e(TAG, e.getMessage());
                     Log.e(TAG, "MisunderstoodCommandException");
+                    throw e;
                 } catch (NoDataException e) {
                     //e.printStackTrace();
+                    result = CommandConstants.NO_DATA;
                     Log.e(TAG, e.getMessage());
                     Log.e(TAG, "NoDataException");
                 } catch (Exception e) {
                     e.printStackTrace();
                     Log.e(TAG, e.getMessage());
                     Log.e(TAG, "Exception");
+                    throw e;
                 } finally {
                     Log.e(TAG, "Finally");
                     //Close socket if applicable
