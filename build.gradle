@@ -1,5 +1,5 @@
-project.ext.set("hardwareEventsVersion", '0.0.29')
-project.ext.set("bezirkVersion", '3.0.1')
+project.ext.set("hardwareEventsVersion", '0.0.31')
+project.ext.set("bezirkVersion", '3.0.2')
 
 buildscript {
     repositories {
