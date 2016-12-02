@@ -67,7 +67,10 @@ public class PhilipsHueAdapter {
                         final CurrentLightStateEvent lightStateEvent =
                                 philipsHueController.getLightState(light);
 
-                        bezirk.sendEvent(sender, lightStateEvent);
+                        // Light state can be null if we are checking the state of a light that
+                        // is not a Philips product
+                        if (lightStateEvent != null)
+                            bezirk.sendEvent(sender, lightStateEvent);
                     }
                 }
             }
