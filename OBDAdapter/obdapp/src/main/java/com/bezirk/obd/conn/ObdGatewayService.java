@@ -8,8 +8,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.bezirk.adapter.obd.constants.CommandConstants;
-import com.bezirk.adapter.obd.events.RequestObdEngineRPMEvent;
+import com.bezirk.adapter.obd.config.CommandConstants;
 import com.bezirk.adapter.obd.events.RequestObdErrorCodesEvent;
 import com.bezirk.adapter.obd.service.ObdAdapter;
 import com.bezirk.middleware.Bezirk;

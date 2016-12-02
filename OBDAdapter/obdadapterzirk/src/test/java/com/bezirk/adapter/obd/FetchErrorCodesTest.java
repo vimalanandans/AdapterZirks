@@ -84,7 +84,7 @@ public class FetchErrorCodesTest {
         ResponseObdErrorCodesEvent responseObdErrorCodesEvent = null;
 
         try {
-            responseObdErrorCodesEvent = controller.getObdErrorCodes("ERROR_CODES");
+            //responseObdErrorCodesEvent = controller.getObdErrorCodes("ERROR_CODES");
         }
         catch(Exception e)
         {

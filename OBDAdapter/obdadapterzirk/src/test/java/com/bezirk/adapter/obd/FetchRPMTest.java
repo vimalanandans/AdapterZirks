@@ -73,7 +73,7 @@ public class FetchRPMTest {
         ResponseObdEngineRPMEvent responseObdEngineRPMEvent = null;
 
         try {
-            responseObdEngineRPMEvent = controller.getEngineRPM("ENGINE_RPM");
+            //responseObdEngineRPMEvent = controller.getEngineRPM("ENGINE_RPM");
         }
         catch(Exception e)
         {
