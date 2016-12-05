@@ -27,7 +27,7 @@ public class WeMoZirkTest {
                 if (event instanceof OutletsDetectedEvent) {
                     final Set<Outlet> outlets = ((OutletsDetectedEvent) event).getOutlets();
 
-                    for (Outlet outlet : outlets) {
+                    for (final Outlet outlet : outlets) {
                         bezirk.sendEvent(new TurnOutletOnEvent(outlet));
 
                         new Timer().schedule(new TimerTask() {
