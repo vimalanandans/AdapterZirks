@@ -160,6 +160,9 @@ public class ObdAdapter {
         else if(commandName.equals(OBDQueryParameter.THROTTLE_POS.getValue())){
             obdResponseData.setThrottlePosition(result);
         }
+        else if(commandName.equals(OBDQueryParameter.TROUBLE_CODES.getValue())){
+            obdResponseData.setTroubleCodes(result);
+        }
         else if(commandName.equals(OBDQueryParameter.TIMING_ADVANCE.getValue())){
             obdResponseData.setTimingAdvance(result);
         }
