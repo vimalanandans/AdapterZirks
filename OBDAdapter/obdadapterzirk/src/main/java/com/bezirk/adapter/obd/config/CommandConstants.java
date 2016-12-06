@@ -15,7 +15,6 @@ public class CommandConstants {
 
     public static List<String> highFrequencyParams = Arrays.asList(
             OBDQueryParameter.ENGINE_RPM.getValue(),
-            OBDQueryParameter.SPEED.getValue(),
-            OBDQueryParameter.ENGINE_COOLANT_TEMP.getValue()
+            OBDQueryParameter.SPEED.getValue()
     );
 }

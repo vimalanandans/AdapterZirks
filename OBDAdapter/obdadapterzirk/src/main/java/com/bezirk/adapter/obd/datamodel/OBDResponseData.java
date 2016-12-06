@@ -4,50 +4,36 @@ package com.bezirk.adapter.obd.datamodel;
  * Created by rgj5kor on 11/29/2016.
  */
 public class OBDResponseData {
-    final static public int paramCount = 19;
+    final static public int paramCount = 22;
     private int fillCounter = 0;
     private String ambientAirTemperature;
     private String ctrlModulePowerSupply;
     private String cmdEquivalenceRatio;
     private String distanceTraveledMILon;
+    private String engineCoolantTemp;
+    private String engineRPM;
     private String timingAdvance;
     private String troubleCodes;
     private String vehicleIdentificationNumber;
-    private String engineLoad;
     private String massAirFlow;
     private String throttlePosition;
-    private String relativeThrottlePosition;
     private String fuelType;
     private String fuelLevel;
-    private String fuelRate;
     private String fuelConsumptionRate;
     private String airOrFuelRatio;
-    private String widebandAirOrFuelRatio;
     private String engineOilTemperature;
     private String barometricPressure;
     private String fuelPressure;
     private String intakeManifoldPressure;
     private String absoluteLoad;
     private String fuelRailPressure;
-    private String airIntakeTemperature;
-    private String ignitionMonitor;
-    private String dtcNumber;
     private String engineRuntime;
-    private String pendingTroubleCodes;
-    private String permanentTroubleCodes;
     private String distanceSinceCodesCleared;
-    private String describeProtocol;
-    private String describeProtocolNumber;
-
-
-
-    private String timeRunWithMILOn;
-    private String timeSinceTroubleCodesCleared;
+    private String vehicleSpeed;
 
     public void incrementFillCounter(){
         this.fillCounter++;
     }
-
 
     public int getFillCounter() {
         return fillCounter;
@@ -89,6 +75,14 @@ public class OBDResponseData {
         this.distanceTraveledMILon = distanceTraveledMILon;
     }
 
+    public String getEngineCoolantTemp() {
+        return engineCoolantTemp;
+    }
+
+    public void setEngineCoolantTemp(String engineCoolantTemp) {
+        this.engineCoolantTemp = engineCoolantTemp;
+    }
+
     public String getTimingAdvance() {
         return timingAdvance;
     }
@@ -113,14 +107,6 @@ public class OBDResponseData {
         this.vehicleIdentificationNumber = vehicleIdentificationNumber;
     }
 
-    public String getEngineLoad() {
-        return engineLoad;
-    }
-
-    public void setEngineLoad(String engineLoad) {
-        this.engineLoad = engineLoad;
-    }
-
     public String getMassAirFlow() {
         return massAirFlow;
     }
@@ -137,13 +123,6 @@ public class OBDResponseData {
         this.throttlePosition = throttlePosition;
     }
 
-    public String getRelativeThrottlePosition() {
-        return relativeThrottlePosition;
-    }
-
-    public void setRelativeThrottlePosition(String relativeThrottlePosition) {
-        this.relativeThrottlePosition = relativeThrottlePosition;
-    }
     public String getFuelType() {
         return fuelType;
     }
@@ -176,14 +155,6 @@ public class OBDResponseData {
         this.airOrFuelRatio = airOrFuelRatio;
     }
 
-    public String getWidebandAirOrFuelRatio() {
-        return widebandAirOrFuelRatio;
-    }
-
-    public void setWidebandAirOrFuelRatio(String widebandAirOrFuelRatio) {
-        this.widebandAirOrFuelRatio = widebandAirOrFuelRatio;
-    }
-
     public String getEngineOilTemperature() {
         return engineOilTemperature;
     }
@@ -210,14 +181,6 @@ public class OBDResponseData {
     }
 
 
-    public String getFuelRate() {
-        return fuelRate;
-    }
-
-    public void setFuelRate(String fuelRate) {
-        this.fuelRate = fuelRate;
-    }
-
     public String getIntakeManifoldPressure() {
         return intakeManifoldPressure;
     }
@@ -242,52 +205,12 @@ public class OBDResponseData {
         this.fuelRailPressure = fuelRailPressure;
     }
 
-    public String getAirIntakeTemperature() {
-        return airIntakeTemperature;
-    }
-
-    public void setAirIntakeTemperature(String airIntakeTemperature) {
-        this.airIntakeTemperature = airIntakeTemperature;
-    }
-
-    public String getIgnitionMonitor() {
-        return ignitionMonitor;
-    }
-
-    public void setIgnitionMonitor(String ignitionMonitor) {
-        this.ignitionMonitor = ignitionMonitor;
-    }
-
-    public String getDtcNumber() {
-        return dtcNumber;
-    }
-
-    public void setDtcNumber(String dtcNumber) {
-        this.dtcNumber = dtcNumber;
-    }
-
     public String getEngineRuntime() {
         return engineRuntime;
     }
 
     public void setEngineRuntime(String engineRuntime) {
         this.engineRuntime = engineRuntime;
-    }
-
-    public String getPendingTroubleCodes() {
-        return pendingTroubleCodes;
-    }
-
-    public void setPendingTroubleCodes(String pendingTroubleCodes) {
-        this.pendingTroubleCodes = pendingTroubleCodes;
-    }
-
-    public String getPermanentTroubleCodes() {
-        return permanentTroubleCodes;
-    }
-
-    public void setPermanentTroubleCodes(String permanentTroubleCodes) {
-        this.permanentTroubleCodes = permanentTroubleCodes;
     }
 
     public String getDistanceSinceCodesCleared() {
@@ -298,35 +221,19 @@ public class OBDResponseData {
         this.distanceSinceCodesCleared = distanceSinceCodesCleared;
     }
 
-    public String getDescribeProtocol() {
-        return describeProtocol;
+    public String getEngineRPM() {
+        return engineRPM;
     }
 
-    public void setDescribeProtocol(String describeProtocol) {
-        this.describeProtocol = describeProtocol;
+    public void setEngineRPM(String engineRPM) {
+        this.engineRPM = engineRPM;
     }
 
-    public String getDescribeProtocolNumber() {
-        return describeProtocolNumber;
+    public String getVehicleSpeed() {
+        return vehicleSpeed;
     }
 
-    public void setDescribeProtocolNumber(String describeProtocolNumber) {
-        this.describeProtocolNumber = describeProtocolNumber;
-    }
-
-    public String getTimeRunWithMILOn() {
-        return timeRunWithMILOn;
-    }
-
-    public void setTimeRunWithMILOn(String timeRunWithMILOn) {
-        this.timeRunWithMILOn = timeRunWithMILOn;
-    }
-
-    public String getTimeSinceTroubleCodesCleared() {
-        return timeSinceTroubleCodesCleared;
-    }
-
-    public void setTimeSinceTroubleCodesCleared(String timeSinceTroubleCodesCleared) {
-        this.timeSinceTroubleCodesCleared = timeSinceTroubleCodesCleared;
+    public void setVehicleSpeed(String vehicleSpeed) {
+        this.vehicleSpeed = vehicleSpeed;
     }
 }

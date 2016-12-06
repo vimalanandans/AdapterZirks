@@ -35,6 +35,8 @@ public class ObdAdapter {
     private QueueService service;
     private ZirkEndPoint senderId;
     private OBDResponseData obdResponseData;
+    private List<OBDQueryParameter> parameters;
+
     public ObdAdapter(final Bezirk bezirk, BluetoothSocket socket) throws MalformedURLException {
         controller = new ObdController(socket);
         obdCommandEventSet = new EventSet(RequestObdStartEvent.class, RequestObdStopEvent.class);
@@ -46,7 +48,7 @@ public class ObdAdapter {
                 if (event instanceof RequestObdStartEvent) {
                     Log.e(TAG, "Received the event RequestObdStartEvent ");
                     senderId = sender;
-                    List<OBDQueryParameter> parameters = ((RequestObdStartEvent) event).getParameters();
+                    parameters = ((RequestObdStartEvent) event).getParameters();
                     service.prepareCommandsToQueue(parameters);
                     execThread.start();
                 }
@@ -98,7 +100,7 @@ public class ObdAdapter {
             {
                 obdResponseData = new OBDResponseData();
             }
-            if(obdResponseData.getFillCounter() == OBDResponseData.paramCount){
+            if(obdResponseData.getFillCounter() == parameters.size()-1){
                 bezirk.sendEvent(senderId, new ResponseOBDDataEvent(obdResponseData));
                 obdResponseData = null;
             }
@@ -135,7 +137,7 @@ public class ObdAdapter {
             obdResponseData.setEngineRuntime(result);
         }
         else if(commandName.equals(OBDQueryParameter.ENGINE_OIL_TEMP.getValue())){
-            obdResponseData.setEngineRuntime(result);
+            obdResponseData.setEngineOilTemperature(result);
         }
         else if(commandName.equals(OBDQueryParameter.EQUIV_RATIO.getValue())){
             obdResponseData.setCmdEquivalenceRatio(result);

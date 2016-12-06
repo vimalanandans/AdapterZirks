@@ -10,6 +10,7 @@ import com.github.pires.obd.commands.protocol.LineFeedOffCommand;
 import com.github.pires.obd.commands.protocol.ObdResetCommand;
 import com.github.pires.obd.commands.protocol.SelectProtocolCommand;
 import com.github.pires.obd.enums.ObdProtocols;
+import com.github.pires.obd.exceptions.MisunderstoodCommandException;
 import com.github.pires.obd.exceptions.NoDataException;
 
 import java.io.IOException;
@@ -82,7 +83,7 @@ public class ObdController {
         return new  ResponseObdErrorCodesEvent(result);
     }*/
 
-    String executeCommand(final ObdCommand command) throws Exception {
+    public String executeCommand(final ObdCommand command) throws Exception {
         String resultFinal;
 
         Callable<String> callable = new Callable<String>(){
@@ -98,7 +99,7 @@ public class ObdController {
                     } else {
                         Log.d(TAG, "Can't run command on a closed socket.");
                     }
-                } catch (NoDataException e) {
+                } catch (MisunderstoodCommandException|NoDataException e) {
                     result = CommandConstants.NO_DATA;
                     Log.e(TAG, e.getMessage());
                 } catch (Exception e) {
