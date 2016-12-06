@@ -10,6 +10,7 @@ import com.bezirk.adapter.obd.events.RequestObdStopEvent;
 import com.bezirk.adapter.obd.events.ResponseOBDDataEvent;
 import com.bezirk.adapter.obd.events.ResponseObdCoolantTempEvent;
 import com.bezirk.adapter.obd.events.ResponseObdEngineRPMEvent;
+import com.bezirk.adapter.obd.events.ResponseObdErrorCodesEvent;
 import com.bezirk.adapter.obd.events.ResponseObdStatusEvent;
 import com.bezirk.adapter.obd.events.ResponseObdVehicleSpeedEvent;
 import com.bezirk.middleware.Bezirk;
@@ -80,6 +81,9 @@ public class ObdAdapter {
 
     public void sendResult(String commandName, String result)
     {
+        if(commandName.equals(OBDQueryParameter.TROUBLE_CODES.getValue())){
+            bezirk.sendEvent(senderId, new ResponseObdErrorCodesEvent(result));
+        }
         if(commandName.equals(OBDQueryParameter.ENGINE_RPM.getValue())){
             bezirk.sendEvent(senderId, new ResponseObdEngineRPMEvent(result));
         }
