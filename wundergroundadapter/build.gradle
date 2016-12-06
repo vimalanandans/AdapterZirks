@@ -1,0 +1,16 @@
+apply plugin: 'java'
+apply from: "${rootDir}/artifactory.gradle"
+group = 'com.bezirk'
+version = "0.0.1"
+
+dependencies {
+    compile 'com.googlecode.json-simple:json-simple:1.1.1'
+
+    compile(group: 'com.bezirk', name: 'bezirk-middleware-api', version: rootProject.bezirkVersion)
+    compile(group: 'com.bezirk', name: 'HardwareEvents', version: rootProject.hardwareEventsVersion)
+
+    testCompile(group: 'com.bezirk', name: 'java-zirk-proxy', version: rootProject.bezirkVersion)
+}
+
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"
