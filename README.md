@@ -10,7 +10,8 @@ Assuming you need to do more than the generic events allow, some adapters use cu
 
 1. Open the AdapterZirk project in Android Studio
 2. Click Gradle Sync button on the right side in the Gradle tab.
-3. In that Gradle tab, find the adapter of interest in the list under AdapterZirks and expand it
+3. If an API key is required for this hardware, open the corresponding test source file and add the API key where it says "API_KEY_HERE".
+3. In Gradle tab on the right, find the adapter of interest in the list under AdapterZirks and expand it
 4. Then go into Tasks -> Build and double click testClasses
 5. Then right click the corresponding test class in the project view on the left side and select Run ... main()
    For example: if testing PhilipsHue adapter, right click the PhilipsHueZirkTest.java under PhilipsHue/src/test/java/com.bezirk.adapter.philips.hue and select "Run PhilipsHueZirk...main()"
