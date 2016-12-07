@@ -1,7 +1,8 @@
 package com.bezirk.adapter.obd.datamodel;
 
 public class OBDResponseData {
-    public static final int paramCount = 22;
+    public static final int PARAM_COUNT = 22;
+
     private int fillCounter = 0;
     private String ambientAirTemperature;
     private String ctrlModulePowerSupply;

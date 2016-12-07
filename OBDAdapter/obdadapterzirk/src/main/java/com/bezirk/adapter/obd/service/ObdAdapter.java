@@ -19,13 +19,14 @@ import com.bezirk.middleware.messages.Event;
 import com.bezirk.middleware.messages.EventSet;
 import com.github.pires.obd.commands.ObdCommand;
 
-import java.net.MalformedURLException;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeoutException;
 
 public class ObdAdapter {
-    static protected final BlockingQueue<ObdCommand> commandQueue = new LinkedBlockingQueue<>();
+    protected static final BlockingQueue<ObdCommand> commandQueue = new LinkedBlockingQueue<>();
     private static final String TAG = ObdAdapter.class.getName();
     private final Bezirk bezirk;
     private final EventSet obdCommandEventSet;
@@ -44,9 +45,6 @@ public class ObdAdapter {
                 Log.d(TAG, "Execution Interrupted. Now Interrupting the executionThread..");
                 execThread.interrupt();
                 bezirk.unsubscribe(obdCommandEventSet);
-            } catch (Exception e) {
-                execThread.interrupt();
-                e.printStackTrace();
             }
         }
     });
@@ -112,7 +110,7 @@ public class ObdAdapter {
                 String commandName = command.getName();
                 sendResult(commandName, result);
 
-            } catch (Exception e) {
+            } catch (InterruptedException | ExecutionException | TimeoutException e) {
                 commandQueue.clear();
                 e.printStackTrace();
                 Log.d(TAG, "Error while executing Commands from Queue for ResponseObdEngineRPMEvent...Now sending event for ResponseObdStatusEvent");

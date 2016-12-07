@@ -61,7 +61,8 @@ public class ObdController {
         return true;
     }
 
-    public String executeCommand(@NonNull final ObdCommand command) throws Exception {
+    public String executeCommand(@NonNull final ObdCommand command)
+            throws InterruptedException, ExecutionException, TimeoutException {
         String resultFinal;
 
         Callable<String> callable = new Callable<String>() {
@@ -75,7 +76,7 @@ public class ObdController {
                         result = command.getCalculatedResult();
                         Log.d(TAG, "Fetched results of Command: " + result);
                     } else {
-                        Log.d(TAG, "Can't run command on a closed socket.");
+                        Log.e(TAG, "Can't run command on a closed socket.");
                     }
                 } catch (MisunderstoodCommandException | NoDataException e) {
                     result = NO_DATA;
