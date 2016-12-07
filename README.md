@@ -1,6 +1,6 @@
 # AdapterZirks
 
-This repository includes adapter Zirks which allow commercial IoT hardware and services to be easily operated with Bezirk. These adapters can detect the specific hardware, read their states, and actuate them. With these adapters, you can simply use Bezirk [events](http://developer.bezirk.com/documentation/key_terms.php) to operate the hardware, saving you from having to learn various, sometimes confusing, proprietary SDKs.
+Adapter Zirks allow commercial IoT hardware and services to be easily operated with Bezirk. These adapters can detect the specific hardware, read their states, and actuate them. With these adapters, you can simply use Bezirk [events](http://developer.bezirk.com/documentation/key_terms.php) to operate the hardware, saving you from having to learn various, sometimes confusing, proprietary SDKs.
 
 Typically, adapters use generic [hardware events](https://github.com/Bezirk-Bosch/HardwareEvents) to accept commands and return results. Generic events provide a uniform way of working with the basic features of specific hardware categories (e.g. lights, beacons, etc.). This means if you change light manufacturers (say, from Philips to OSRAM), you can just change the corresponding adapter without having to alter the events your Zirk sends and receives. You can also choose to use both adapters (Philips Hue and Osram Lightify) at the same time, enabling your Zirk to easily actuate lights from both manufacturers without having to worry about under-the-hood details.
 
