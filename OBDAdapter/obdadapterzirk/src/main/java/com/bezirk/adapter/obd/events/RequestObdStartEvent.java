@@ -6,7 +6,7 @@ import com.bezirk.middleware.messages.Event;
 import java.util.List;
 
 public class RequestObdStartEvent extends Event {
-    private List<OBDQueryParameter> parameters;
+    private final List<OBDQueryParameter> parameters;
 
     public RequestObdStartEvent(List<OBDQueryParameter> parameters) {
         this.parameters = parameters;
@@ -14,9 +14,5 @@ public class RequestObdStartEvent extends Event {
 
     public List<OBDQueryParameter> getParameters() {
         return parameters;
-    }
-
-    public void setParameters(List<OBDQueryParameter> parameters) {
-        this.parameters = parameters;
     }
 }

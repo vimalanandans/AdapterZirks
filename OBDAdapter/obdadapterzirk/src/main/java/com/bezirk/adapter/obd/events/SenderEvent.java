@@ -4,8 +4,8 @@ import com.bezirk.middleware.addressing.ZirkEndPoint;
 import com.bezirk.middleware.messages.Event;
 
 public class SenderEvent {
-    private ZirkEndPoint zirkEndPoint;
-    private Event event;
+    private final ZirkEndPoint zirkEndPoint;
+    private final Event event;
 
     public SenderEvent(ZirkEndPoint zirkEndPoint, Event event) {
         this.zirkEndPoint = zirkEndPoint;
@@ -16,16 +16,8 @@ public class SenderEvent {
         return event;
     }
 
-    public void setEven(Event even) {
-        this.event = even;
-    }
-
     public ZirkEndPoint getZirkEndPoint() {
         return zirkEndPoint;
-    }
-
-    public void setZirkEndPoint(ZirkEndPoint zirkEndPoint) {
-        this.zirkEndPoint = zirkEndPoint;
     }
 }
 

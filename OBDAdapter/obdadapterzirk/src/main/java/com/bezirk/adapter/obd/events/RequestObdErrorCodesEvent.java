@@ -3,7 +3,7 @@ package com.bezirk.adapter.obd.events;
 import com.bezirk.middleware.messages.Event;
 
 public class RequestObdErrorCodesEvent extends Event {
-    private String attribute;
+    private final String attribute;
 
     public RequestObdErrorCodesEvent(String attribute) {
         this.attribute = attribute;
@@ -11,9 +11,5 @@ public class RequestObdErrorCodesEvent extends Event {
 
     public String getAttribute() {
         return attribute;
-    }
-
-    public void setAttribute(String attribute) {
-        this.attribute = attribute;
     }
 }

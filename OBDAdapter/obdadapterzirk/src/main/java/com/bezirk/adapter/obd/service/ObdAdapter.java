@@ -51,7 +51,7 @@ public class ObdAdapter {
         }
     });
 
-    public ObdAdapter(final Bezirk bezirk, BluetoothSocket socket) throws MalformedURLException {
+    public ObdAdapter(final Bezirk bezirk, BluetoothSocket socket) {
         controller = new ObdController(socket);
         obdCommandEventSet = new EventSet(RequestObdStartEvent.class, RequestObdStopEvent.class);
         this.bezirk = bezirk;
@@ -60,13 +60,13 @@ public class ObdAdapter {
             @Override
             public void receiveEvent(Event event, ZirkEndPoint sender) {
                 if (event instanceof RequestObdStartEvent) {
-                    Log.e(TAG, "Received the event RequestObdStartEvent ");
+                    Log.v(TAG, "Received the event RequestObdStartEvent");
                     senderId = sender;
                     parameters = ((RequestObdStartEvent) event).getParameters();
                     service.prepareCommandsToQueue(parameters);
                     execThread.start();
                 } else if (event instanceof RequestObdStopEvent) {
-                    Log.e(TAG, "Received the event RequestObdStopEvent ");
+                    Log.v(TAG, "Received the event RequestObdStopEvent");
                     senderId = sender;
                     service.stopQueueAddition();
                     unSubscribeEventSet();
