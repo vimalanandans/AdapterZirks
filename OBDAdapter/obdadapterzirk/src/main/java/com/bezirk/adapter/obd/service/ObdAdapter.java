@@ -105,77 +105,13 @@ public class ObdAdapter {
                 obdResponseData = null;
             }
             else {
-                prepareOBDResponseData(commandName, result);
+                OBDQueryParameter obdQueryParameter = OBDQueryParameter.getOBDQueryParameter(commandName);
+                if(obdQueryParameter!=null){
+                    obdQueryParameter.updateOBDResponseData(obdResponseData,result);
+                    obdResponseData.incrementFillCounter();
+                }
             }
         }
-    }
-
-    void prepareOBDResponseData(String commandName, String result)
-    {
-        if(commandName.equals(OBDQueryParameter.ABS_LOAD.getValue())){
-            obdResponseData.setAbsoluteLoad(result);
-        }
-        else if(commandName.equals(OBDQueryParameter.AMBIENT_AIR_TEMP.getValue())){
-            obdResponseData.setAmbientAirTemperature(result);
-        }
-        else if(commandName.equals(OBDQueryParameter.BAROMETRIC_PRESSURE.getValue())){
-            obdResponseData.setBarometricPressure(result);
-        }
-        else if(commandName.equals(OBDQueryParameter.CONTROL_MODULE_VOLTAGE.getValue())){
-            obdResponseData.setCtrlModulePowerSupply(result);
-        }
-        else if(commandName.equals(OBDQueryParameter.DISTANCE_TRAVELED_AFTER_CODES_CLEARED.getValue())){
-            obdResponseData.setDistanceSinceCodesCleared(result);
-        }
-        else if(commandName.equals(OBDQueryParameter.DISTANCE_TRAVELED_MIL_ON.getValue())){
-            obdResponseData.setDistanceTraveledMILon(result);
-        }
-        else if(commandName.equals(OBDQueryParameter.AIR_FUEL_RATIO.getValue())){
-            obdResponseData.setAirOrFuelRatio(result);
-        }
-        else if(commandName.equals(OBDQueryParameter.ENGINE_RUNTIME.getValue())){
-            obdResponseData.setEngineRuntime(result);
-        }
-        else if(commandName.equals(OBDQueryParameter.ENGINE_OIL_TEMP.getValue())){
-            obdResponseData.setEngineOilTemperature(result);
-        }
-        else if(commandName.equals(OBDQueryParameter.EQUIV_RATIO.getValue())){
-            obdResponseData.setCmdEquivalenceRatio(result);
-        }
-        else if(commandName.equals(OBDQueryParameter.FUEL_CONSUMPTION_RATE.getValue())){
-            obdResponseData.setFuelConsumptionRate(result);
-        }
-        else if(commandName.equals(OBDQueryParameter.FUEL_LEVEL.getValue())){
-            obdResponseData.setFuelLevel(result);
-        }
-        else if(commandName.equals(OBDQueryParameter.FUEL_PRESSURE.getValue())){
-            obdResponseData.setFuelPressure(result);
-        }
-        else if(commandName.equals(OBDQueryParameter.FUEL_RAIL_PRESSURE.getValue())){
-            obdResponseData.setFuelRailPressure(result);
-        }
-        else if(commandName.equals(OBDQueryParameter.FUEL_TYPE.getValue())){
-            obdResponseData.setFuelType(result);
-        }
-        else if(commandName.equals(OBDQueryParameter.INTAKE_MANIFOLD_PRESSURE.getValue())){
-            obdResponseData.setIntakeManifoldPressure(result);
-        }
-        else if(commandName.equals(OBDQueryParameter.MAF.getValue())){
-            obdResponseData.setMassAirFlow(result);
-        }
-        else if(commandName.equals(OBDQueryParameter.THROTTLE_POS.getValue())){
-            obdResponseData.setThrottlePosition(result);
-        }
-        else if(commandName.equals(OBDQueryParameter.TROUBLE_CODES.getValue())){
-            obdResponseData.setTroubleCodes(result);
-        }
-        else if(commandName.equals(OBDQueryParameter.TIMING_ADVANCE.getValue())){
-            obdResponseData.setTimingAdvance(result);
-        }
-        else if(commandName.equals(OBDQueryParameter.VIN.getValue())){
-            obdResponseData.setVehicleIdentificationNumber(result);
-        }
-        obdResponseData.incrementFillCounter();
     }
 
     public void executeCommandsFromQueue() throws InterruptedException {
