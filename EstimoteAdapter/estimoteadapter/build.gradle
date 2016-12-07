@@ -32,7 +32,7 @@ repositories {
 dependencies {
     testCompile 'junit:junit:4.12'
 
-    compile 'com.android.support:appcompat-v7:24.1.1'
+    compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.estimote:sdk:0.10.4@aar'
     compile 'com.bezirk:bezirk-middleware-api:' + rootProject.bezirkVersion
     compile 'com.bezirk:HardwareEvents:' +  rootProject.hardwareEventsVersion
