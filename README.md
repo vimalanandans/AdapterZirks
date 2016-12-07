@@ -14,6 +14,7 @@ Assuming you need to do more than the generic events allow, some adapters use cu
 4. Then go into Tasks -> Build and double click testClasses
 5. Then right click the corresponding test class in the project view on the left side and select Run ... main()
    For example: if testing PhilipsHue adapter, right click the PhilipsHueZirkTest.java under PhilipsHue/src/test/java/com.bezirk.adapter.philips.hue and select "Run PhilipsHueZirk...main()"
+6. If you change code in the test class, repeat from step 4. 
 
 ###Currently available adapters
 
