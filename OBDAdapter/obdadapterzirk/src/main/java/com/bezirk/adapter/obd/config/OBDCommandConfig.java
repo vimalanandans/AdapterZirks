@@ -27,11 +27,12 @@ import com.github.pires.obd.commands.temperature.AmbientAirTemperatureCommand;
 import com.github.pires.obd.commands.temperature.EngineCoolantTemperatureCommand;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public final class OBDCommandConfig {
 
-    public static ArrayList<ObdCommand> getCommands() {
-        ArrayList<ObdCommand> cmds = new ArrayList<>();
+    public static List<ObdCommand> getCommands() {
+        final List<ObdCommand> cmds = new ArrayList<>();
 
         // Control
         cmds.add(new ModuleVoltageCommand());
@@ -71,5 +72,4 @@ public final class OBDCommandConfig {
 
         return cmds;
     }
-
 }

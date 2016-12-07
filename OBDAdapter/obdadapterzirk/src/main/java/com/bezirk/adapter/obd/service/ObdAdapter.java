@@ -23,48 +23,18 @@ import java.net.MalformedURLException;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-/**
- * Created by DEV6KOR on 9/8/2016.
- */
+
 public class ObdAdapter {
+    static protected final BlockingQueue<ObdCommand> commandQueue = new LinkedBlockingQueue<>();
     private static final String TAG = ObdAdapter.class.getName();
-    private Bezirk bezirk;
-    private EventSet obdCommandEventSet;
-    static protected BlockingQueue<ObdCommand> commandQueue = new LinkedBlockingQueue<>();
-    private ObdController controller;
-    private QueueService service;
+    private final Bezirk bezirk;
+    private final EventSet obdCommandEventSet;
+    private final ObdController controller;
+    private final QueueService service;
     private ZirkEndPoint senderId;
     private OBDResponseData obdResponseData;
     private List<OBDQueryParameter> parameters;
-
-    public ObdAdapter(final Bezirk bezirk, BluetoothSocket socket) throws MalformedURLException {
-        controller = new ObdController(socket);
-        obdCommandEventSet = new EventSet(RequestObdStartEvent.class, RequestObdStopEvent.class);
-        this.bezirk = bezirk;
-        service = new QueueService();
-        obdCommandEventSet.setEventReceiver(new EventSet.EventReceiver() {
-            @Override
-            public void receiveEvent(Event event, ZirkEndPoint sender) {
-                if (event instanceof RequestObdStartEvent) {
-                    Log.e(TAG, "Received the event RequestObdStartEvent ");
-                    senderId = sender;
-                    parameters = ((RequestObdStartEvent) event).getParameters();
-                    service.prepareCommandsToQueue(parameters);
-                    execThread.start();
-                }
-                else if (event instanceof RequestObdStopEvent) {
-                    Log.e(TAG, "Received the event RequestObdStopEvent ");
-                    senderId = sender;
-                    service.stopQueueAddition();
-                    unSubscribeEventSet();
-                }
-            }
-        });
-        subscribeEventSet();
-        Log.d(TAG, "Subscription Successful. Now starting Execution of Commands...");
-    }
-
-    Thread execThread = new Thread(new Runnable() {
+    final Thread execThread = new Thread(new Runnable() {
         @Override
         public void run() {
             try {
@@ -81,33 +51,53 @@ public class ObdAdapter {
         }
     });
 
-    public void sendResult(String commandName, String result)
-    {
-        if(commandName.equals(OBDQueryParameter.TROUBLE_CODES.getValue())){
+    public ObdAdapter(final Bezirk bezirk, BluetoothSocket socket) throws MalformedURLException {
+        controller = new ObdController(socket);
+        obdCommandEventSet = new EventSet(RequestObdStartEvent.class, RequestObdStopEvent.class);
+        this.bezirk = bezirk;
+        service = new QueueService();
+        obdCommandEventSet.setEventReceiver(new EventSet.EventReceiver() {
+            @Override
+            public void receiveEvent(Event event, ZirkEndPoint sender) {
+                if (event instanceof RequestObdStartEvent) {
+                    Log.e(TAG, "Received the event RequestObdStartEvent ");
+                    senderId = sender;
+                    parameters = ((RequestObdStartEvent) event).getParameters();
+                    service.prepareCommandsToQueue(parameters);
+                    execThread.start();
+                } else if (event instanceof RequestObdStopEvent) {
+                    Log.e(TAG, "Received the event RequestObdStopEvent ");
+                    senderId = sender;
+                    service.stopQueueAddition();
+                    unSubscribeEventSet();
+                }
+            }
+        });
+        subscribeEventSet();
+        Log.d(TAG, "Subscription Successful. Now starting Execution of Commands...");
+    }
+
+    public void sendResult(String commandName, String result) {
+        if (commandName.equals(OBDQueryParameter.TROUBLE_CODES.getValue())) {
             bezirk.sendEvent(senderId, new ResponseObdErrorCodesEvent(result));
         }
-        if(commandName.equals(OBDQueryParameter.ENGINE_RPM.getValue())){
+        if (commandName.equals(OBDQueryParameter.ENGINE_RPM.getValue())) {
             bezirk.sendEvent(senderId, new ResponseObdEngineRPMEvent(result));
-        }
-        else if(commandName.equals(OBDQueryParameter.SPEED.getValue())){
+        } else if (commandName.equals(OBDQueryParameter.SPEED.getValue())) {
             bezirk.sendEvent(senderId, new ResponseObdVehicleSpeedEvent(result));
-        }
-        else if(commandName.equals(OBDQueryParameter.ENGINE_COOLANT_TEMP.getValue())){
+        } else if (commandName.equals(OBDQueryParameter.ENGINE_COOLANT_TEMP.getValue())) {
             bezirk.sendEvent(senderId, new ResponseObdCoolantTempEvent(result));
-        }
-        else{
-            if(obdResponseData == null)
-            {
+        } else {
+            if (obdResponseData == null) {
                 obdResponseData = new OBDResponseData();
             }
-            if(obdResponseData.getFillCounter() == parameters.size()-1){
+            if (obdResponseData.getFillCounter() == parameters.size() - 1) {
                 bezirk.sendEvent(senderId, new ResponseOBDDataEvent(obdResponseData));
                 obdResponseData = null;
-            }
-            else {
+            } else {
                 OBDQueryParameter obdQueryParameter = OBDQueryParameter.getOBDQueryParameter(commandName);
-                if(obdQueryParameter!=null){
-                    obdQueryParameter.updateOBDResponseData(obdResponseData,result);
+                if (obdQueryParameter != null) {
+                    obdQueryParameter.updateOBDResponseData(obdResponseData, result);
                     obdResponseData.incrementFillCounter();
                 }
             }
@@ -135,14 +125,12 @@ public class ObdAdapter {
         }
     }
 
-    public void unSubscribeEventSet()
-    {
+    public void unSubscribeEventSet() {
         Log.d(TAG, "Unsubscribing to OBDCommandEventSet");
         bezirk.unsubscribe(obdCommandEventSet);
     }
 
-    private void subscribeEventSet()
-    {
+    private void subscribeEventSet() {
         Log.d(TAG, "Subscribing to OBDCommandEventSet");
         bezirk.subscribe(obdCommandEventSet);
     }

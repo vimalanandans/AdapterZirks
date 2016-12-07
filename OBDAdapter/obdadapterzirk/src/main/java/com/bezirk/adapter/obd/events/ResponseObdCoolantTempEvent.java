@@ -2,16 +2,11 @@ package com.bezirk.adapter.obd.events;
 
 import com.bezirk.middleware.messages.Event;
 
-/**
- * Created by DEV6KOR on 9/8/2016.
- */
 public class ResponseObdCoolantTempEvent extends Event {
-    public static final String TOPIC = ResponseObdCoolantTempEvent.class.getSimpleName();
     private String attribute;
     private String result;
 
-    public ResponseObdCoolantTempEvent(String result)
-    {
+    public ResponseObdCoolantTempEvent(String result) {
         this.result = result;
     }
 
@@ -27,8 +22,7 @@ public class ResponseObdCoolantTempEvent extends Event {
         return attribute;
     }
 
-    public void setAttribute(String attribute)
-    {
+    public void setAttribute(String attribute) {
         this.attribute = attribute;
     }
 }
