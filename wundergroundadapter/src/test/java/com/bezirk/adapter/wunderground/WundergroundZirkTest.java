@@ -57,6 +57,6 @@ public class WundergroundZirkTest {
 
         bezirk.subscribe(environmentalEvents);
 
-        new WundergroundAdapter(bezirk, "FILL ME IN", "PA", "Pittsburgh");
+        new WundergroundAdapter(bezirk, "API_KEY_HERE", "PA", "Pittsburgh");
     }
 }
