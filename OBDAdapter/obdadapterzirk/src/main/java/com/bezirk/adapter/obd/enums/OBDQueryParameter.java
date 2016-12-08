@@ -155,7 +155,7 @@ public enum OBDQueryParameter {
         public void updateOBDResponseData(OBDResponseData obdResponseData, String result) {
             obdResponseData.setDistanceSinceCodesCleared(result);
         }
-    } ;
+    };
 
     private final String value;
 
@@ -163,7 +163,8 @@ public enum OBDQueryParameter {
         this.value = value;
     }
 
-    @Nullable public static OBDQueryParameter getOBDQueryParameter(String command) {
+    @Nullable
+    public static OBDQueryParameter getOBDQueryParameter(String command) {
         for (OBDQueryParameter obdQueryParameter : OBDQueryParameter.values()) {
             if (obdQueryParameter.getValue().equalsIgnoreCase(command)) {
                 return obdQueryParameter;

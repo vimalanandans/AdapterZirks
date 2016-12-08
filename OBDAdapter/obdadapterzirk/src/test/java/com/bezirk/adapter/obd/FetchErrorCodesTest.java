@@ -28,9 +28,9 @@ import static org.testng.Assert.assertEquals;
  */
 @PrepareForTest({InputStream.class, OutputStream.class, BluetoothSocket.class})
 public class FetchErrorCodesTest {
+    BluetoothSocket socket;
     private InputStream mockIn;
     private OutputStream mockOut;
-    BluetoothSocket socket;
 
     /**
      * @throws Exception
@@ -48,8 +48,7 @@ public class FetchErrorCodesTest {
     }
 
     /**
-     * @throws IOException
-     * One Frame with 3 Error codes
+     * @throws IOException One Frame with 3 Error codes
      */
     @Test
     public void testErrorCodes() throws IOException {
@@ -85,9 +84,7 @@ public class FetchErrorCodesTest {
 
         try {
             //responseObdErrorCodesEvent = controller.getObdErrorCodes("ERROR_CODES");
-        }
-        catch(Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         assertEquals(responseObdErrorCodesEvent.getResult(), res);

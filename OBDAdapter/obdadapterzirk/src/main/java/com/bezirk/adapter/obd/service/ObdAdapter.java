@@ -24,6 +24,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeoutException;
+
 /**
  * This class serves as a means to:
  * 1. Initialize Bezirk, and for event subscription in the OBDAdapter
@@ -96,7 +97,7 @@ public class ObdAdapter {
      * need frequent refresh will be encapsulated inside OBDResponseData and sent back as a single event.
      *
      * @param commandName The command value name as defined in the OBDQueryParameter enum
-     * @param result  The result that is queried from the OBD Dongle
+     * @param result      The result that is queried from the OBD Dongle
      */
     public void sendResult(String commandName, String result) {
         if (commandName.equals(OBDQueryParameter.TROUBLE_CODES.getValue())) {

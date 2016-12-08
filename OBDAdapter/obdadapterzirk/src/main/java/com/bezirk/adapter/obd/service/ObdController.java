@@ -42,6 +42,7 @@ public class ObdController {
 
     /***
      * This method initializes the OBD connection with 4 commands. This will be a one time command for one session
+     *
      * @return boolean
      * @throws Exception
      */

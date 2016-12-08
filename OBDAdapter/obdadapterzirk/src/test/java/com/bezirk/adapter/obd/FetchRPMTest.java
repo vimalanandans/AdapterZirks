@@ -29,9 +29,9 @@ import static org.testng.Assert.assertEquals;
  */
 @PrepareForTest({InputStream.class, OutputStream.class, BluetoothSocket.class})
 public class FetchRPMTest {
+    BluetoothSocket socket;
     private InputStream mockIn;
     private OutputStream mockOut;
-    BluetoothSocket socket;
 
     /**
      * @throws Exception
@@ -74,9 +74,7 @@ public class FetchRPMTest {
 
         try {
             //responseObdEngineRPMEvent = controller.getEngineRPM("ENGINE_RPM");
-        }
-        catch(Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         assertEquals(responseObdEngineRPMEvent.getResult(), res);
