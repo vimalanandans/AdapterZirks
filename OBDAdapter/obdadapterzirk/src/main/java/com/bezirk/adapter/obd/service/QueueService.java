@@ -14,9 +14,6 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-/**
- * Created by dev6kor on 11/29/2016.
- */
 public class QueueService {
     static protected BlockingQueue<ObdCommand> commandQueue = new LinkedBlockingQueue<>();
     private List<OBDQueryParameter> queryParameters;

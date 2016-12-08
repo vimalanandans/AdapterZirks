@@ -22,11 +22,10 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Created by DEV6KOR on 9/8/2016.
+/***
+ * This class is used to initialize the OBD Dongle with init commands and also to fetch the OBD data by writing to the Socket
  */
 public class ObdController {
-
     private BluetoothSocket sock = null;
     private static final String TAG = ObdController.class.getName();
     private ExecutorService executor;
@@ -42,15 +41,22 @@ public class ObdController {
         executor = Executors.newFixedThreadPool(10);
     }
 
+    /***
+     * This method initializes the OBD connection with 4 commands. This will be a one time command for one session
+     * @return boolean
+     * @throws Exception
+     */
     public boolean initializeOBD() throws Exception{
-        Log.d(TAG, "Initializing OBD Device..");
+        Log.i(TAG, "Initializing OBD Device..");
         try {
             if (sock.isConnected()) {
                 new ObdResetCommand().run(sock.getInputStream(), sock.getOutputStream());
                 try {
+                    //A sleep of 500ms is provided for the ObdResetCommand to ensure reset is completed
                     Thread.sleep(500);
                 } catch (InterruptedException e) {
                     Log.e(TAG, "Error Initializing OBD Device", e);
+                    throw e;
                 }
                 new EchoOffCommand().run(sock.getInputStream(), sock.getOutputStream());
                 new LineFeedOffCommand().run(sock.getInputStream(), sock.getOutputStream());
@@ -67,22 +73,19 @@ public class ObdController {
         }
         finally {
         }
-        Log.d(TAG, "Initializing OBD Device..Completed");
+        Log.i(TAG, "Initializing OBD Device..Completed");
         return true;
     }
 
-/*    public ResponseObdErrorCodesEvent getObdErrorCodes(String attribute) throws Exception{
-        ObdCommand command;
-
-        String result = null;
-        if (CommandConstants.ERR_CODES.equals(attribute)) {
-            command = new ModifiedTroubleCodesObdCommand();
-            command.useImperialUnits(true);
-            result = executeCommand(command);
-        }
-        return new  ResponseObdErrorCodesEvent(result);
-    }*/
-
+    /***
+     * This method executes the OBD command via the run method and returns the result (String) fetched from OBD
+     * If there is no data provided by the OBD (ecu), then the result will be "NO DATA" string
+     * If the command is not supported, then it will trigger "MisunderstoodCommandException" and in turn returns "NO DATA"
+     *
+     * @param command
+     * @return String Result from OBD query
+     * @throws Exception
+     */
     public String executeCommand(final ObdCommand command) throws Exception {
         String resultFinal;
 
@@ -106,12 +109,12 @@ public class ObdController {
                     Log.e(TAG, e.getMessage(), e);
                     throw e;
                 }
-                finally {
-                }
                 return result;
             }
         };
 
+        // Executor will time out after 25 Seconds if the response is not returned within this duration
+        // and it will stop the further fetch process from OBD
         Future<String> task = executor.submit(callable);
         try{
             resultFinal = task.get(25000, TimeUnit.DAYS.MILLISECONDS);
@@ -123,11 +126,4 @@ public class ObdController {
         }
         return resultFinal;
     }
-
-/*    public class ModifiedTroubleCodesObdCommand extends TroubleCodesCommand {
-        @Override
-        public String getResult() {
-            return rawData.replace("SEARCHING...", "").replace("NODATA", "");
-        }
-    }*/
 }

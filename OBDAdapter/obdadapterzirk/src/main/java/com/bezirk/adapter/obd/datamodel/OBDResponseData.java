@@ -1,10 +1,11 @@
 package com.bezirk.adapter.obd.datamodel;
 
 /**
- * Created by rgj5kor on 11/29/2016.
+ * Used as a data model to hold the responses from the command. The paramCount is the number of attributes with in the data model
+ * It is used to track if all the attribute values have been set. Once all the values are set, the model is retured to UI for display
  */
+
 public class OBDResponseData {
-    final static public int paramCount = 22;
     private int fillCounter = 0;
     private String ambientAirTemperature;
     private String ctrlModulePowerSupply;

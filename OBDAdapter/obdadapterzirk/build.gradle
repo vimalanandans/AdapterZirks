@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply from: "${rootDir}/artifactory-aar-publish.gradle"
 
 group = 'com.bezirk'
-version = "0.0.5.1" //0.0.5.1 is temp version. remove it
+version = "0.0.7.4"
 android {
     compileSdkVersion 24
     buildToolsVersion "23.0.3"

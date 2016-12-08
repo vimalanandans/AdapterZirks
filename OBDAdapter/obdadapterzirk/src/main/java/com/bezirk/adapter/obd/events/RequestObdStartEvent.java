@@ -5,9 +5,6 @@ import com.bezirk.middleware.messages.Event;
 
 import java.util.List;
 
-/**
- * Created by DEV6KOR on 9/8/2016.
- */
 public class RequestObdStartEvent extends Event
 {
     public RequestObdStartEvent(List<OBDQueryParameter> parameters)

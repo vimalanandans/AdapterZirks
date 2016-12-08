@@ -1,13 +1,7 @@
 package com.bezirk.adapter.obd.events;
 
-import com.bezirk.adapter.obd.enums.OBDQueryParameter;
 import com.bezirk.middleware.messages.Event;
 
-import java.util.List;
-
-/**
- * Created by DEV6KOR on 9/8/2016.
- */
 public class RequestObdStopEvent extends Event
 {
     public RequestObdStopEvent(String attribute)

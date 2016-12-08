@@ -6,11 +6,10 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Created by DEV6KOR on 9/8/2016.
+ * For configuring parameters that needs to be queried very frequently wrt time
  */
 public class CommandConstants {
 
-    public static final String ERR_CODES = "ERROR_CODES";
     public static final String NO_DATA = "NO DATA";
 
     public static List<String> highFrequencyParams = Arrays.asList(
