@@ -6,6 +6,7 @@ package com.bezirk.adapter.obd.datamodel;
  */
 
 public class OBDResponseData {
+
     private int fillCounter = 0;
     private String ambientAirTemperature;
     private String ctrlModulePowerSupply;
@@ -32,7 +33,7 @@ public class OBDResponseData {
     private String distanceSinceCodesCleared;
     private String vehicleSpeed;
 
-    public void incrementFillCounter(){
+    public void incrementFillCounter() {
         this.fillCounter++;
     }
 

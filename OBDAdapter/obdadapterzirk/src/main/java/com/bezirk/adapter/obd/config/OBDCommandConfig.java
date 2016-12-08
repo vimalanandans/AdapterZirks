@@ -27,6 +27,7 @@ import com.github.pires.obd.commands.temperature.AmbientAirTemperatureCommand;
 import com.github.pires.obd.commands.temperature.EngineCoolantTemperatureCommand;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /***
  * This class will hold a list of all the OBD command objects that needs to be supported in the application.
@@ -35,8 +36,8 @@ import java.util.ArrayList;
  */
 public final class OBDCommandConfig {
 
-    public static ArrayList<ObdCommand> getCommands() {
-        final ArrayList<ObdCommand> cmds = new ArrayList<>();
+    public static List<ObdCommand> getCommands() {
+        final List<ObdCommand> cmds = new ArrayList<>();
 
         // Control
         cmds.add(new ModuleVoltageCommand());

@@ -19,28 +19,49 @@ import com.bezirk.middleware.messages.Event;
 import com.bezirk.middleware.messages.EventSet;
 import com.github.pires.obd.commands.ObdCommand;
 
-import java.net.MalformedURLException;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeoutException;
 /**
  * This class serves as a means to:
  * 1. Initialize Bezirk, and for event subscription in the OBDAdapter
  * 2. Instantiate ObdController, that takes bluetooth socket object to query from the OBD Dongle.
  * 3. Instantiate QueueService, that creates a CommandQueue, to push all the OBD query commands for execution by ObdController
  */
+
 public class ObdAdapter {
+    protected static final BlockingQueue<ObdCommand> commandQueue = new LinkedBlockingQueue<>();
     private static final String TAG = ObdAdapter.class.getName();
-    private Bezirk bezirk;
-    private EventSet obdCommandEventSet;
-    static protected BlockingQueue<ObdCommand> commandQueue = new LinkedBlockingQueue<>();
-    private ObdController controller;
-    private QueueService service;
+    private final Bezirk bezirk;
+    private final EventSet obdCommandEventSet;
+    private final ObdController controller;
+    private final QueueService service;
     private ZirkEndPoint senderId;
     private OBDResponseData obdResponseData;
     private List<OBDQueryParameter> parameters;
 
-    public ObdAdapter(final Bezirk bezirk, BluetoothSocket socket) throws MalformedURLException {
+    /**
+     * Below thread is started as soon as an event 'RequestObdStartEvent' is received. It will be interrupted when
+     * bluetooth connection with the OBD Dongle is lost
+     **/
+
+    final Thread execThread = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            try {
+                Log.e(TAG, "Executing the Commands in Queue...");
+                executeCommandsFromQueue();
+            } catch (InterruptedException e) {
+                Log.d(TAG, "Execution Interrupted. Now Interrupting the executionThread..");
+                execThread.interrupt();
+                bezirk.unsubscribe(obdCommandEventSet);
+            }
+        }
+    });
+
+    public ObdAdapter(final Bezirk bezirk, BluetoothSocket socket) {
         controller = new ObdController(socket);
         obdCommandEventSet = new EventSet(RequestObdStartEvent.class, RequestObdStopEvent.class);
         this.bezirk = bezirk;
@@ -50,15 +71,14 @@ public class ObdAdapter {
             public void receiveEvent(Event event, ZirkEndPoint sender) {
                 if (event instanceof RequestObdStartEvent) {
                     // This event is a trigger to start the execution of OBD Commands
-                    Log.e(TAG, "Received the event RequestObdStartEvent ");
+                    Log.v(TAG, "Received the event RequestObdStartEvent");
                     senderId = sender;
                     parameters = ((RequestObdStartEvent) event).getParameters();
                     service.prepareCommandsToQueue(parameters);
                     execThread.start();
-                }
-                else if (event instanceof RequestObdStopEvent) {
+                } else if (event instanceof RequestObdStopEvent) {
                     // This event is a trigger to stop the execution of OBD Commands
-                    Log.e(TAG, "Received the event RequestObdStopEvent ");
+                    Log.v(TAG, "Received the event RequestObdStopEvent");
                     senderId = sender;
                     service.stopQueueAddition();
                     unSubscribeEventSet();
@@ -69,30 +89,6 @@ public class ObdAdapter {
         Log.d(TAG, "Subscription Successful. Now starting Execution of Commands...");
     }
 
-    /**
-     * Below thread is started as soon as an event 'RequestObdStartEvent' is received. It will be interrupted when
-     * bluetooth connection with the OBD Dongle is lost
-     **/
-
-    Thread execThread = new Thread(new Runnable() {
-        @Override
-        public void run() {
-            try {
-                Log.i(TAG, "Executing the Commands in Queue...");
-                executeCommandsFromQueue();
-            } catch (InterruptedException e) {
-                Log.e(TAG, "Execution Interrupted. Now Interrupting the executionThread..");
-                service.stopQueueAddition();
-                execThread.interrupt();
-                bezirk.unsubscribe(obdCommandEventSet);
-            } catch (Exception e) {
-                service.stopQueueAddition();
-                execThread.interrupt();
-                Log.e(TAG, e.getMessage(), e);
-                bezirk.unsubscribe(obdCommandEventSet);
-            }
-        }
-    });
 
     /**
      * This method will send out Bezirk Events to notify the UI to update the values.
@@ -102,33 +98,27 @@ public class ObdAdapter {
      * @param commandName The command value name as defined in the OBDQueryParameter enum
      * @param result  The result that is queried from the OBD Dongle
      */
-    public void sendResult(String commandName, String result)
-    {
-        if(commandName.equals(OBDQueryParameter.TROUBLE_CODES.getValue())){
+    public void sendResult(String commandName, String result) {
+        if (commandName.equals(OBDQueryParameter.TROUBLE_CODES.getValue())) {
             bezirk.sendEvent(senderId, new ResponseObdErrorCodesEvent(result));
         }
-        if(commandName.equals(OBDQueryParameter.ENGINE_RPM.getValue())){
+        if (commandName.equals(OBDQueryParameter.ENGINE_RPM.getValue())) {
             bezirk.sendEvent(senderId, new ResponseObdEngineRPMEvent(result));
-        }
-        else if(commandName.equals(OBDQueryParameter.SPEED.getValue())){
+        } else if (commandName.equals(OBDQueryParameter.SPEED.getValue())) {
             bezirk.sendEvent(senderId, new ResponseObdVehicleSpeedEvent(result));
-        }
-        else if(commandName.equals(OBDQueryParameter.ENGINE_COOLANT_TEMP.getValue())){
+        } else if (commandName.equals(OBDQueryParameter.ENGINE_COOLANT_TEMP.getValue())) {
             bezirk.sendEvent(senderId, new ResponseObdCoolantTempEvent(result));
-        }
-        else{
-            if(obdResponseData == null)
-            {
+        } else {
+            if (obdResponseData == null) {
                 obdResponseData = new OBDResponseData();
             }
-            if(obdResponseData.getFillCounter() == parameters.size()-1){
+            if (obdResponseData.getFillCounter() == parameters.size() - 1) {
                 bezirk.sendEvent(senderId, new ResponseOBDDataEvent(obdResponseData));
                 obdResponseData = null;
-            }
-            else {
+            } else {
                 OBDQueryParameter obdQueryParameter = OBDQueryParameter.getOBDQueryParameter(commandName);
-                if(obdQueryParameter!=null){
-                    obdQueryParameter.updateOBDResponseData(obdResponseData,result);
+                if (obdQueryParameter != null) {
+                    obdQueryParameter.updateOBDResponseData(obdResponseData, result);
                     obdResponseData.incrementFillCounter();
                 }
             }
@@ -151,7 +141,7 @@ public class ObdAdapter {
                 String result = controller.executeCommand(command);
                 String commandName = command.getName();
                 sendResult(commandName, result);
-            } catch (Exception e) {
+            } catch (InterruptedException | ExecutionException | TimeoutException e) {
                 commandQueue.clear();
                 Log.e(TAG, e.getMessage(), e);
                 Log.d(TAG, "Error while executing Commands from Queue for ResponseObdEngineRPMEvent...Now sending event for ResponseObdStatusEvent");
@@ -164,15 +154,14 @@ public class ObdAdapter {
         }
     }
 
-    public void unSubscribeEventSet()
-    {
-        Log.i(TAG, "Unsubscribing to OBDCommandEventSet");
+
+    public void unSubscribeEventSet() {
+        Log.d(TAG, "Unsubscribing to OBDCommandEventSet");
         bezirk.unsubscribe(obdCommandEventSet);
     }
 
-    private void subscribeEventSet()
-    {
-        Log.i(TAG, "Subscribing to OBDCommandEventSet");
+    private void subscribeEventSet() {
+        Log.d(TAG, "Subscribing to OBDCommandEventSet");
         bezirk.subscribe(obdCommandEventSet);
     }
 }

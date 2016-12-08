@@ -5,22 +5,14 @@ import com.bezirk.middleware.messages.Event;
 
 import java.util.List;
 
-public class RequestObdStartEvent extends Event
-{
-    public RequestObdStartEvent(List<OBDQueryParameter> parameters)
-    {
+public class RequestObdStartEvent extends Event {
+    private final List<OBDQueryParameter> parameters;
+
+    public RequestObdStartEvent(List<OBDQueryParameter> parameters) {
         this.parameters = parameters;
     }
 
     public List<OBDQueryParameter> getParameters() {
         return parameters;
     }
-
-    public void setParameters(List<OBDQueryParameter> parameters) {
-        this.parameters = parameters;
-    }
-
-    private List<OBDQueryParameter> parameters;
-
-    public static final String TOPIC = RequestObdStartEvent.class.getSimpleName();
 }
