@@ -29,6 +29,11 @@ import com.github.pires.obd.commands.temperature.EngineCoolantTemperatureCommand
 import java.util.ArrayList;
 import java.util.List;
 
+/***
+ * This class will hold a list of all the OBD command objects that needs to be supported in the application.
+ * Based on the selection of commands from the user, the corresponding command object shall be retrieved from the list by
+ * using the getName() method within each of the command object.
+ */
 public final class OBDCommandConfig {
 
     public static List<ObdCommand> getCommands() {

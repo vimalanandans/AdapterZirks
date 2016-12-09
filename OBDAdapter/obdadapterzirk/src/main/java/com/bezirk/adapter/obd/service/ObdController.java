@@ -22,6 +22,10 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+/***
+ * This class is used to initialize the OBD Dongle with init commands and also to fetch the OBD data by writing to the Socket
+ */
+
 public class ObdController {
     private static final String TAG = ObdController.class.getName();
     private static final String NO_DATA = "NO DATA";
@@ -36,6 +40,12 @@ public class ObdController {
         executor = Executors.newFixedThreadPool(10);
     }
 
+    /***
+     * This method initializes the OBD connection with 4 commands. This will be a one time command for one session
+     *
+     * @return boolean
+     * @throws Exception
+     */
     public boolean initializeOBD() {
         Log.v(TAG, "Initializing OBD Device..");
         try {
@@ -56,11 +66,19 @@ public class ObdController {
             Thread.currentThread().interrupt();
             return false;
         }
-
-        Log.v(TAG, "Initializing OBD Device..Completed");
+        Log.i(TAG, "Initializing OBD Device..Completed");
         return true;
     }
 
+    /***
+     * This method executes the OBD command via the run method and returns the result (String) fetched from OBD
+     * If there is no data provided by the OBD (ecu), then the result will be "NO DATA" string
+     * If the command is not supported, then it will trigger "MisunderstoodCommandException" and in turn returns "NO DATA"
+     *
+     * @param command
+     * @return String Result from OBD query
+     * @throws Exception
+     */
     public String executeCommand(@NonNull final ObdCommand command)
             throws InterruptedException, ExecutionException, TimeoutException {
         String resultFinal;
@@ -80,13 +98,15 @@ public class ObdController {
                     }
                 } catch (MisunderstoodCommandException | NoDataException e) {
                     result = NO_DATA;
-                    Log.e(TAG, "Failed to execute command: " + command.getName(), e);
+                    Log.e(TAG, "Failed to execute command: " + command.getName());
+                    Log.e(TAG, e.getMessage());
                 }
-
                 return result;
             }
         };
 
+        // Executor will time out after 25 Seconds if the response is not returned within this duration
+        // and it will stop the further fetch process from OBD
         final Future<String> task = executor.submit(callable);
         try {
             resultFinal = task.get(25000, TimeUnit.MILLISECONDS);

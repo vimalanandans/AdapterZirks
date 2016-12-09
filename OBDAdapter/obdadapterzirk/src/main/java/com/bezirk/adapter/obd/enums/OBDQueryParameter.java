@@ -4,6 +4,11 @@ import android.support.annotation.Nullable;
 
 import com.bezirk.adapter.obd.datamodel.OBDResponseData;
 
+/***
+ * Enum for the different OBD Commands. Method updateOBDREsponseData is provided in each Enum. This will be called from the
+ * method using this Enums, to set the OBDResponseData based on the command name returned after querying from OBD.
+ */
+
 public enum OBDQueryParameter {
 
     AMBIENT_AIR_TEMP("Ambient Air Temperature") {
@@ -158,7 +163,8 @@ public enum OBDQueryParameter {
         this.value = value;
     }
 
-    @Nullable public static OBDQueryParameter getOBDQueryParameter(String command) {
+    @Nullable
+    public static OBDQueryParameter getOBDQueryParameter(String command) {
         for (OBDQueryParameter obdQueryParameter : OBDQueryParameter.values()) {
             if (obdQueryParameter.getValue().equalsIgnoreCase(command)) {
                 return obdQueryParameter;
