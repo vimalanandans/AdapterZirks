@@ -12,8 +12,10 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 
 class WundergroundController {
     private static final Logger logger = LoggerFactory.getLogger(WundergroundController.class);
@@ -24,7 +26,23 @@ class WundergroundController {
     }
 
     CurrentConditions getCurrentConditions(String state, String city) {
-        final String weatherData = getWeatherData(baseUrl + state + "/" + city + ".json");
+
+        String htmlEncodedState, htmlEncodedCity;
+
+        try {
+            //URLEncoder replaces spaces with '+' which is correct for URL parameters but not for URLs themselves
+            //So we need to replace '+' with %20
+            htmlEncodedState = URLEncoder.encode(state, "UTF-8").replaceAll("\\+", "%20");
+            htmlEncodedCity = URLEncoder.encode(city, "UTF-8").replaceAll("\\+", "%20");
+        } catch (UnsupportedEncodingException e) {
+            logger.error("failed to htmlEncode state or city", e);
+            return null;
+        }
+
+        final String fullURL = baseUrl + htmlEncodedState + "/" + htmlEncodedCity + ".json";
+        System.out.println("full URL: {}" + fullURL);
+        final String weatherData = getWeatherData(fullURL);
+
         try {
             final JSONObject json = (JSONObject) new JSONParser().parse(weatherData);
             final JSONObject currentObservation = (JSONObject) json.get("current_observation");
@@ -44,6 +62,7 @@ class WundergroundController {
     }
 
     private String getWeatherData(String url) {
+
         try {
             final URL requestUrl = new URL(url);
 

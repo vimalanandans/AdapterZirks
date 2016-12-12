@@ -65,8 +65,9 @@ public class PhilipsHueZirkTest {
 
         try {
             Set<String> hueBridges = PhilipsHueAdapter.discoverHueBridges();
+            //The Philips Hue API key is also known as the auto-generated "username" string provided by the bridge.
             new PhilipsHueAdapter(bezirk, hueBridges.toArray(new String[hueBridges.size()])[0],
-                    "oFZsQakh9XzQiVhkIuuv83xsycRsmfgcEn5eBvjm");
+                    "API_KEY_HERE");
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }

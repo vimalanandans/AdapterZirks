@@ -57,6 +57,7 @@ public class WundergroundZirkTest {
 
         bezirk.subscribe(environmentalEvents);
 
+        //You can get a free Wunderground API key by registering on their API website
         new WundergroundAdapter(bezirk, "API_KEY_HERE", "PA", "Pittsburgh");
     }
 }
