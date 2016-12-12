@@ -1,0 +1,44 @@
+language: android
+jdk: oraclejdk8
+sudo: required
+#addons:
+#  sonarqube: true
+sonarqube:
+    branches:
+    - master
+env:
+  global:
+    - ANDROID_TARGET="android-24"
+    - ANDROID_ABI="armeabi-v7a"
+    - JAVA_OPTS='-Xmx3072m'
+#    - SONAR_RUNNER_OPTS="-Xmx2048m -XX:MaxPermSize=1024m -XX:ReservedCodeCacheSize=512m"
+#appcompat-v7
+android:
+  components:
+# Check Android SDK tools: http://developer.android.com/tools/sdk/tools-notes.html
+# Check Android SDK Platform-tools: http://developer.android.com/tools/revisions/platforms.html
+  - platform-tools
+  - tools
+# Check BuildTools: http://developer.android.com/tools/revisions/build-tools.html
+  - build-tools-24.0.2
+  - android-22
+  - android-24
+  - extra
+  - addon
+  - extra-android-m2repository
+  - sys-img-${ANDROID_ABI}-${ANDROID_TARGET}
+  licenses:
+    - '.+'
+# safelist
+branches:
+  only:
+  - master
+before_script:
+  - chmod +x gradlew
+#  - chmod +x /home/travis/.sonarscanner/sonar-scanner-2.8/bin/sonar-scanner
+  - echo no | android create avd --force -n test -t android-24 --abi armeabi-v7a
+  - ./gradlew clean
+script:
+  - ./gradlew --daemon check build -x lint
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
