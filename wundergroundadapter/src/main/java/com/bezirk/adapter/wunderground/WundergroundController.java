@@ -27,7 +27,8 @@ class WundergroundController {
 
     CurrentConditions getCurrentConditions(String state, String city) {
 
-        String htmlEncodedState, htmlEncodedCity;
+        final String htmlEncodedState;
+        final String htmlEncodedCity;
 
         try {
             //URLEncoder replaces spaces with '+' which is correct for URL parameters but not for URLs themselves
@@ -40,7 +41,7 @@ class WundergroundController {
         }
 
         final String fullURL = baseUrl + htmlEncodedState + "/" + htmlEncodedCity + ".json";
-        System.out.println("full URL: {}" + fullURL);
+        logger.trace("full URL: {}", fullURL);
         final String weatherData = getWeatherData(fullURL);
 
         try {
