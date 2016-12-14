@@ -100,25 +100,40 @@ public class ObdAdapter {
      * @param result      The result that is queried from the OBD Dongle
      */
     public void sendResult(String commandName, String result) {
+        OBDQueryParameter obdQueryParameter = OBDQueryParameter.getOBDQueryParameter(commandName);
         if (commandName.equals(OBDQueryParameter.TROUBLE_CODES.getValue())) {
             bezirk.sendEvent(senderId, new ResponseObdErrorCodesEvent(result));
-        }
-        if (commandName.equals(OBDQueryParameter.ENGINE_RPM.getValue())) {
+            if (obdResponseData != null) {
+                obdQueryParameter.updateOBDResponseData(obdResponseData, result);
+            }
+        } else if (commandName.equals(OBDQueryParameter.ENGINE_RPM.getValue())) {
             bezirk.sendEvent(senderId, new ResponseObdEngineRPMEvent(result));
+            if (obdResponseData != null) {
+                obdQueryParameter.updateOBDResponseData(obdResponseData, result);
+            }
         } else if (commandName.equals(OBDQueryParameter.SPEED.getValue())) {
             bezirk.sendEvent(senderId, new ResponseObdVehicleSpeedEvent(result));
+            if (obdResponseData != null) {
+                obdQueryParameter.updateOBDResponseData(obdResponseData, result);
+            }
         } else if (commandName.equals(OBDQueryParameter.ENGINE_COOLANT_TEMP.getValue())) {
             bezirk.sendEvent(senderId, new ResponseObdCoolantTempEvent(result));
-        } else {
+            if (obdResponseData != null) {
+                obdQueryParameter.updateOBDResponseData(obdResponseData, result);
+              }
+        } else
+        {
             if (obdResponseData == null) {
+                Log.d(TAG, "PPPPP:new OBDResponseData");
                 obdResponseData = new OBDResponseData();
             }
             if (obdResponseData.getFillCounter() == parameters.size() - 1) {
                 bezirk.sendEvent(senderId, new ResponseOBDDataEvent(obdResponseData));
                 obdResponseData = null;
+                Log.d(TAG, "PPPPP:new OBDResponseData=null");
             } else {
-                OBDQueryParameter obdQueryParameter = OBDQueryParameter.getOBDQueryParameter(commandName);
-                if (obdQueryParameter != null) {
+                if (obdQueryParameter != null ) {
+                    Log.d(TAG, "PPPPP: " + commandName + "fill counter " + obdResponseData.getFillCounter());
                     obdQueryParameter.updateOBDResponseData(obdResponseData, result);
                     obdResponseData.incrementFillCounter();
                 }

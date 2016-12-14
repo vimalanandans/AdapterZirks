@@ -23,6 +23,7 @@ import com.github.pires.obd.commands.pressure.BarometricPressureCommand;
 import com.github.pires.obd.commands.pressure.FuelPressureCommand;
 import com.github.pires.obd.commands.pressure.FuelRailPressureCommand;
 import com.github.pires.obd.commands.pressure.IntakeManifoldPressureCommand;
+import com.github.pires.obd.commands.temperature.AirIntakeTemperatureCommand;
 import com.github.pires.obd.commands.temperature.AmbientAirTemperatureCommand;
 import com.github.pires.obd.commands.temperature.EngineCoolantTemperatureCommand;
 
@@ -40,35 +41,22 @@ public final class OBDCommandConfig {
         final List<ObdCommand> cmds = new ArrayList<>();
 
         // Control
-        cmds.add(new ModuleVoltageCommand());
-        cmds.add(new EquivalentRatioCommand());
         cmds.add(new DistanceMILOnCommand());
-        cmds.add(new TimingAdvanceCommand());
         cmds.add(new TroubleCodesCommand());
-        cmds.add(new DistanceSinceCCCommand());
         cmds.add(new VinCommand());
 
         // Engine
-        cmds.add(new AbsoluteLoadCommand());
         cmds.add(new RPMCommand());
-        cmds.add(new RuntimeCommand());
-        cmds.add(new MassAirFlowCommand());
         cmds.add(new ThrottlePositionCommand());
 
         // Fuel
         cmds.add(new FindFuelTypeCommand());
-        cmds.add(new ConsumptionRateCommand());
         cmds.add(new FuelLevelCommand());
-        cmds.add(new AirFuelRatioCommand());
         cmds.add(new OilTempCommand());
 
-        // Pressure
-        cmds.add(new BarometricPressureCommand());
-        cmds.add(new FuelPressureCommand());
-        cmds.add(new FuelRailPressureCommand());
-        cmds.add(new IntakeManifoldPressureCommand());
 
         // Temperature
+        cmds.add(new AirIntakeTemperatureCommand());
         cmds.add(new AmbientAirTemperatureCommand());
         cmds.add(new EngineCoolantTemperatureCommand());
 
