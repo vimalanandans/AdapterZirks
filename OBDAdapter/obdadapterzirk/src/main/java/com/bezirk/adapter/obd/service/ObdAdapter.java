@@ -120,20 +120,16 @@ public class ObdAdapter {
             bezirk.sendEvent(senderId, new ResponseObdCoolantTempEvent(result));
             if (obdResponseData != null) {
                 obdQueryParameter.updateOBDResponseData(obdResponseData, result);
-              }
-        } else
-        {
+            }
+        } else {
             if (obdResponseData == null) {
-                Log.d(TAG, "PPPPP:new OBDResponseData");
                 obdResponseData = new OBDResponseData();
             }
             if (obdResponseData.getFillCounter() == parameters.size() - 1) {
                 bezirk.sendEvent(senderId, new ResponseOBDDataEvent(obdResponseData));
                 obdResponseData = null;
-                Log.d(TAG, "PPPPP:new OBDResponseData=null");
             } else {
-                if (obdQueryParameter != null ) {
-                    Log.d(TAG, "PPPPP: " + commandName + "fill counter " + obdResponseData.getFillCounter());
+                if (obdQueryParameter != null) {
                     obdQueryParameter.updateOBDResponseData(obdResponseData, result);
                     obdResponseData.incrementFillCounter();
                 }
