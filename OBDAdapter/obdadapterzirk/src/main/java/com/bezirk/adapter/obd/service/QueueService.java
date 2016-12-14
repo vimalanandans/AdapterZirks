@@ -1,6 +1,5 @@
 package com.bezirk.adapter.obd.service;
 
-import android.nfc.Tag;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -46,20 +45,17 @@ public class QueueService {
             for (; highCommandCount < highFrequencyCommands.size(); highCommandCount++) {
                 highCommand = highFrequencyCommands.get(highCommandCount);
                 commandQueue.add(highCommand);
-                if(lowCommandCount == 0)
-                    Log.d(TAG, "ALERT Queue START");
-                Log.d(TAG, "ALERT Added to Queue:"+highCommand.getName());
-                for (; lowCommandCount < lowFrequencyCommands.size(); lowCommandCount++) {
-                    lowCommand = lowFrequencyCommands.get(lowCommandCount);
-                    commandQueue.add(lowCommand);
-                    Log.d(TAG, "ALERT Added to Queue:"+lowCommand.getName() + "Lowcommand count:"+lowCommandCount);
-                    itemCount++;
+                if (lowCommandCount == 0)
+                    for (; lowCommandCount < lowFrequencyCommands.size(); lowCommandCount++) {
+                        lowCommand = lowFrequencyCommands.get(lowCommandCount);
+                        commandQueue.add(lowCommand);
+                        itemCount++;
 
-                    if (itemCount == lowCommandWindow) {
-                        break;
+                        if (itemCount == lowCommandWindow) {
+                            break;
+                        }
                     }
-                }
-                if (lowCommandCount == lowFrequencyCommands.size()-1) {
+                if (lowCommandCount == lowFrequencyCommands.size() - 1) {
                     break;
                 }
                 if (itemCount == lowCommandWindow) {
@@ -94,10 +90,10 @@ public class QueueService {
             if (obdStrQueryParams.contains(command.getName())) {
                 if (highFrequencyParams.contains(command.getName())) {
                     highFrequencyCommands.add(command);
-                    Log.d(TAG,"added H "+command.getName());
+                    Log.d(TAG, "added H " + command.getName());
                 } else {
                     lowFrequencyCommands.add(command);
-                    Log.d(TAG,"added L "+command.getName());
+                    Log.d(TAG, "added L " + command.getName());
                 }
             }
         }
