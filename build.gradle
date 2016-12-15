@@ -35,6 +35,7 @@ sonarqube {
         property "sonar.host.url","${SONARQ_HOST}"
         property "sonar.login", "${SONARQ_USER}"
         property "sonar.password", "${SONARQ_PASSWORD}"
+		property "sonar.profile", "${SONARQ_PROFILE}"
         property "sonar.projectKey", "Bezirk-Adapterzirks-Master"
         property "sonar.projectName", "Bosch Bezirk-Adapterzirk Master Branch"
         property "sonar.projectDescription", "Bosch Bezirk AdapterZirks - All - Master"
@@ -44,7 +45,6 @@ sonarqube {
         property "sonar.exclusions", "**/build/**/.class,**/build/**/*.java,**/build/**/*package-info.java"
         property "sonar.language", "java"
         property "sonar.sourceEncoding", "UTF-8"
-        property "sonar.profile", "${SONARQ_PROFILE}"
         property "sonar.android.lint.report", "./build/outputs/lint-results.xml"
     }
 }
