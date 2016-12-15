@@ -31,7 +31,7 @@ sonarqube {
         def SONARQ_HOST = project.hasProperty('sonar_host') ? "${sonar_host}" : System.getenv('SONARQUBE_HOST')
         def SONARQ_USER = project.hasProperty('sonar_login') ? "${sonar_login}" : System.getenv('SONARQUBE_USER')
         def SONARQ_PASSWORD = project.hasProperty('sonar_password') ? "${sonar_password}" : System.getenv('SONARQUBE_PASSWORD')
-        def SONARQ_PROFILE = project.hasProperty('sonar_zirk_profile') ? "${sonar_zirk_profile}" : System.getenv('SONARQUBE_PROFILE')
+        def SONARQ_PROFILE = project.hasProperty('sonar_zirk_profile') ? "${sonar_zirk_profile}" : "Sonar way"
         property "sonar.host.url","${SONARQ_HOST}"
         property "sonar.login", "${SONARQ_USER}"
         property "sonar.password", "${SONARQ_PASSWORD}"
