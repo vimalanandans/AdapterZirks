@@ -1,8 +1,23 @@
+# Eclipse artifacts
+.metadata
+target/
+bin/
+doc/
+gen/
+.settings/
+.classpath
+.project
+
 # Gradle
 .gradle
 build/
 gradle.properties
 local.properties
+
+# Android-Build gradle wrapper
+Android-Build/gradle/
+Android-Build/gradlew
+Android-Build/gradlew.bat
 
 # Database files, scan image files
 data/
@@ -23,3 +38,15 @@ data/
 
 # log files
 logs/
+
+# reports
+tools/reports/*
+
+# Object aid files(class diagrams)
+*.ucls
+
+# temp files
+tmp
+OBDAdapter/obdadapterzirk/gradle/
+OBDAdapter/obdadapterzirk/gradlew
+OBDAdapter/obdadapterzirk/gradlew.bat
