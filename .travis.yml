@@ -16,7 +16,6 @@ env:
     - ANDROID_ABI="armeabi-v7a"
     - JAVA_OPTS='-Xmx3072m'
     - SONAR_RUNNER_OPTS="-Xmx2048m -XX:MaxPermSize=1024m -XX:ReservedCodeCacheSize=512m"
-    - SONAR_TOKEN="117a7789b3a0a3f7573378a7935aca54bdb7dd30"
 #appcompat-v7
 android:
   components:
