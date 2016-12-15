@@ -31,6 +31,7 @@ sonarqube {
         def SONARQ_HOST = project.hasProperty('sonar_host') ? "${sonar_host}" : System.getenv('SONARQUBE_HOST')
         def SONARQ_USER = project.hasProperty('sonar_login') ? "${sonar_login}" : System.getenv('SONARQUBE_USER')
         def SONARQ_PASSWORD = project.hasProperty('sonar_password') ? "${sonar_password}" : System.getenv('SONARQUBE_PASSWORD')
+        def SONARQ_PROFILE = project.hasProperty('sonar_zirk_profile') ? "${sonar_zirk_profile}" : System.getenv('sonarq_zirk_profile')
         property "sonar.host.url","${SONARQ_HOST}"
         property "sonar.login", "${SONARQ_USER}"
         property "sonar.password", "${SONARQ_PASSWORD}"
@@ -43,8 +44,7 @@ sonarqube {
         property "sonar.exclusions", "**/build/**/.class,**/build/**/*.java,**/build/**/*package-info.java"
         property "sonar.language", "java"
         property "sonar.sourceEncoding", "UTF-8"
-        property "sonar.profile", "Sonar way"
-        property "sonar.qualitygate", "SonarQube way"
+        property "sonar.profile", "${SONARQ_PROFILE}"
         property "sonar.android.lint.report", "./build/outputs/lint-results.xml"
     }
 }
