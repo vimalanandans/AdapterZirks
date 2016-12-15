@@ -45,16 +45,15 @@ public class QueueService {
             for (; highCommandCount < highFrequencyCommands.size(); highCommandCount++) {
                 highCommand = highFrequencyCommands.get(highCommandCount);
                 commandQueue.add(highCommand);
-                if (lowCommandCount == 0)
-                    for (; lowCommandCount < lowFrequencyCommands.size(); lowCommandCount++) {
-                        lowCommand = lowFrequencyCommands.get(lowCommandCount);
-                        commandQueue.add(lowCommand);
-                        itemCount++;
+                for (; lowCommandCount < lowFrequencyCommands.size(); lowCommandCount++) {
+                    lowCommand = lowFrequencyCommands.get(lowCommandCount);
+                    commandQueue.add(lowCommand);
+                    itemCount++;
 
-                        if (itemCount == lowCommandWindow) {
-                            break;
-                        }
+                    if (itemCount == lowCommandWindow) {
+                        break;
                     }
+                }
                 if (lowCommandCount == lowFrequencyCommands.size() - 1) {
                     break;
                 }
@@ -90,10 +89,8 @@ public class QueueService {
             if (obdStrQueryParams.contains(command.getName())) {
                 if (highFrequencyParams.contains(command.getName())) {
                     highFrequencyCommands.add(command);
-                    Log.d(TAG, "added H " + command.getName());
                 } else {
                     lowFrequencyCommands.add(command);
-                    Log.d(TAG, "added L " + command.getName());
                 }
             }
         }

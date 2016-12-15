@@ -8,17 +8,17 @@ package com.bezirk.adapter.obd.datamodel;
 public class OBDResponseData {
 
     private int fillCounter = 0;
-    private String ambientAirTemperature;
-    private String distanceTraveledMILon;
-    private String engineCoolantTemp;
-    private String engineRPM;
+    private double ambientAirTemperature;
+    private double distanceTraveledMILon;
+    private double engineCoolantTemp;
+    private double engineRPM;
     private String vehicleIdentificationNumber;
-    private String throttlePosition;
+    private double throttlePosition;
     private String fuelType;
-    private String fuelLevel;
-    private String engineOilTemperature;
-    private String intakeAirTemperature;
-    private String vehicleSpeed;
+    private double fuelLevel;
+    private double engineOilTemperature;
+    private double intakeAirTemperature;
+    private double vehicleSpeed;
     private String troubleCodes;
 
     public String getTroubleCodes() {
@@ -41,27 +41,27 @@ public class OBDResponseData {
         this.fillCounter = fillCounter;
     }
 
-    public String getAmbientAirTemperature() {
+    public double getAmbientAirTemperature() {
         return ambientAirTemperature;
     }
 
-    public void setAmbientAirTemperature(String ambientAirTemperature) {
+    public void setAmbientAirTemperature(double ambientAirTemperature) {
         this.ambientAirTemperature = ambientAirTemperature;
     }
 
-    public String getDistanceTraveledMILon() {
+    public double getDistanceTraveledMILon() {
         return distanceTraveledMILon;
     }
 
-    public void setDistanceTraveledMILon(String distanceTraveledMILon) {
+    public void setDistanceTraveledMILon(double distanceTraveledMILon) {
         this.distanceTraveledMILon = distanceTraveledMILon;
     }
 
-    public String getEngineCoolantTemp() {
+    public double getEngineCoolantTemp() {
         return engineCoolantTemp;
     }
 
-    public void setEngineCoolantTemp(String engineCoolantTemp) {
+    public void setEngineCoolantTemp(double engineCoolantTemp) {
         this.engineCoolantTemp = engineCoolantTemp;
     }
 
@@ -73,11 +73,11 @@ public class OBDResponseData {
         this.vehicleIdentificationNumber = vehicleIdentificationNumber;
     }
 
-    public String getThrottlePosition() {
+    public double getThrottlePosition() {
         return throttlePosition;
     }
 
-    public void setThrottlePosition(String throttlePosition) {
+    public void setThrottlePosition(double throttlePosition) {
         this.throttlePosition = throttlePosition;
     }
 
@@ -89,44 +89,44 @@ public class OBDResponseData {
         this.fuelType = fuelType;
     }
 
-    public String getFuelLevel() {
+    public double getFuelLevel() {
         return fuelLevel;
     }
 
-    public void setFuelLevel(String fuelLevel) {
+    public void setFuelLevel(double fuelLevel) {
         this.fuelLevel = fuelLevel;
     }
 
 
-    public String getEngineOilTemperature() {
+    public double getEngineOilTemperature() {
         return engineOilTemperature;
     }
 
-    public void setEngineOilTemperature(String engineOilTemperature) {
+    public void setEngineOilTemperature(double engineOilTemperature) {
         this.engineOilTemperature = engineOilTemperature;
     }
 
-    public String getIntakeAirTemperature() {
+    public double getIntakeAirTemperature() {
         return intakeAirTemperature;
     }
 
-    public void setIntakeAirTemperature(String intakeAirTemperature) {
+    public void setIntakeAirTemperature(double intakeAirTemperature) {
         this.intakeAirTemperature = intakeAirTemperature;
     }
 
-    public String getEngineRPM() {
+    public double getEngineRPM() {
         return engineRPM;
     }
 
-    public void setEngineRPM(String engineRPM) {
+    public void setEngineRPM(double engineRPM) {
         this.engineRPM = engineRPM;
     }
 
-    public String getVehicleSpeed() {
+    public double getVehicleSpeed() {
         return vehicleSpeed;
     }
 
-    public void setVehicleSpeed(String vehicleSpeed) {
+    public void setVehicleSpeed(double vehicleSpeed) {
         this.vehicleSpeed = vehicleSpeed;
     }
 }
