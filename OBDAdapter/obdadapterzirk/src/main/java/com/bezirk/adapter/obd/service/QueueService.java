@@ -14,6 +14,9 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+/**
+ * This class manages and prepares a blocking queue of commands and also performs add/clear operations on the queue.
+ */
 public class QueueService {
     protected static final BlockingQueue<ObdCommand> commandQueue = new LinkedBlockingQueue<>();
     private static final String TAG = QueueService.class.getName();
@@ -25,6 +28,10 @@ public class QueueService {
     private List<ObdCommand> lowFrequencyCommands;
     private Handler handler;
 
+    /**
+     * Runnable Task to add the commands to blocking queue. Once the addCommandsToQueue is invoked,
+     * a delay is 200 milli seconds is introduced, and again the Runnable is invoked.
+     */
     private final Runnable queueRunnable = new Runnable() {
         @Override
         public void run() {
@@ -34,6 +41,16 @@ public class QueueService {
             handler.postDelayed(queueRunnable, 200);
         }
 
+        /**
+         * This method mixes the high frequency commands and low frequency commands and adds to the blocking queue
+         * High Frequency Commands are those commands for which values need to be retrieved very frequently (say once every 500ms)
+         * Ex. Vehicle Speed, RPM
+         * Low Frequency Commands are commands for which values are retrieved less frequently, because they change over a period of
+         * time (say for every 10 seconds). Ex. Coolant Temperature, Engine oil temperature.
+         *
+         * The below method adds one high frequency command followed by 2 low frequency command into the queue, repititively
+         * Ex: RPM(high) -> EngineCoolantTemp(low) -> EngineOilTemp(low) -> Speed(high) -> ErrorCode(low) -> FuelLevel(low) -> RPM(high) -> ...
+         */
         private void addCommandsToQueue() {
             Log.d(TAG, "addCommandsToQueue");
             ObdCommand lowCommand;
@@ -68,11 +85,22 @@ public class QueueService {
         }
     };
 
+    /**
+     * This method stops the addition of commands to the blocking queue by stopping the handler executing the Runnable
+     * and also clears the commands in the blocking queue.
+     * This is called, when the OBD data fetch needs to be stopped.
+     */
     public void stopQueueAddition() {
         handler.removeCallbacks(queueRunnable);
         commandQueue.clear();
     }
 
+    /**
+     * This method prepares the list of high frequency and low frequency commands. (see comments above for description on Low
+     * and high frequency commands.
+     * It also fetches the actual command objects from an Array List
+     * @param parameters List of commands to be queried
+     */
     public void prepareCommandsToQueue(List<OBDQueryParameter> parameters) {
         Log.v(TAG, "queueCommands");
         final List<String> obdStrQueryParams = new ArrayList<>();
