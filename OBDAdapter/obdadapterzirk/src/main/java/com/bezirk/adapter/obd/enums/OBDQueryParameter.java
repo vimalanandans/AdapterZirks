@@ -132,8 +132,8 @@ public enum OBDQueryParameter {
         }
     };
 
-    private final String value;
     private final static String NO_DATA = "NO DATA";
+    private final String value;
 
     OBDQueryParameter(String value) {
         this.value = value;

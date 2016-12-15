@@ -43,8 +43,7 @@ public class ObdController {
     /***
      * This method initializes the OBD connection with 4 commands. This will be a one time command for one session
      *
-     * @return boolean
-     * @throws Exception
+     * @return boolean To indicate success/failure of initialization of OBD device
      */
     public boolean initializeOBD() {
         Log.v(TAG, "Initializing OBD Device..");
@@ -75,9 +74,9 @@ public class ObdController {
      * If there is no data provided by the OBD (ecu), then the result will be "NO DATA" string
      * If the command is not supported, then it will trigger "MisunderstoodCommandException" and in turn returns "NO DATA"
      *
-     * @param command
+     * @param command The Parameter to be fetched from OBD Device
      * @return String Result from OBD query
-     * @throws Exception
+     * @throws Exception thrown, If the commands times out, or interrupted while execution
      */
     public String executeCommand(@NonNull final ObdCommand command)
             throws InterruptedException, ExecutionException, TimeoutException {
@@ -101,6 +100,7 @@ public class ObdController {
                     Log.e(TAG, "Failed to execute command: " + command.getName());
                     Log.e(TAG, e.getMessage());
                 }
+
                 return result;
             }
         };
