@@ -22,7 +22,7 @@ import java.util.List;
  * Based on the selection of commands from the user, the corresponding command object shall be retrieved from the list by
  * using the getName() method within each of the command object.
  */
-public final class OBDCommandConfig {
+public final class OBDCommandConfig { 
 
     public static List<ObdCommand> getCommands() {
         final List<ObdCommand> cmds = new ArrayList<>();
