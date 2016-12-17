@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply from: "${rootDir}/artifactory-aar-publish.gradle"
 
 group = 'com.bezirk'
-version = "0.0.7.6"
+version = "0.0.7.7"
 android {
     compileSdkVersion 24
     buildToolsVersion "24.0.2"
@@ -32,7 +32,7 @@ dependencies {
     compile(group: 'com.bezirk', name: 'HardwareEvents', version: rootProject.hardwareEventsVersion)
     compile(group: 'com.bezirk', name: 'commons', version: '3.0.0-alpha+025-snapshot')
 
-    compile 'com.github.pires:obd-java-api:1.0-RC16'
+    compile 'com.github.pires:obd-java-api:1.0'
 
     testCompile 'junit:junit:4.12'
     testCompile  group: 'org.powermock', name: 'powermock-module-testng', version: '1.6.5'

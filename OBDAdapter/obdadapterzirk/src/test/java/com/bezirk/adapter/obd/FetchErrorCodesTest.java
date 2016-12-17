@@ -80,7 +80,7 @@ public class FetchErrorCodesTest {
         String res = "P0103\n";
         res += "P0104\n";
 
-        ObdController controller = new ObdController(socket);
+        //ObdController controller = new ObdController(bezirk, socket);
         ResponseObdErrorCodesEvent responseObdErrorCodesEvent = null;
 
         try {

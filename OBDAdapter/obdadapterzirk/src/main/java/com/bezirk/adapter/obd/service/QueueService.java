@@ -20,12 +20,11 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class QueueService {
     protected static final BlockingQueue<ObdCommand> commandQueue = new LinkedBlockingQueue<>();
     private static final String TAG = QueueService.class.getName();
-    private static final List<String> highFrequencyParams = Arrays.asList(
-            OBDQueryParameter.ENGINE_RPM.getValue(),
-            OBDQueryParameter.SPEED.getValue()
+    private static final List<OBDQueryParameter> highFrequencyCommandsEnums = Arrays.asList(
+            OBDQueryParameter.ENGINE_RPM,
+            OBDQueryParameter.SPEED
     );
-    private List<ObdCommand> highFrequencyCommands;
-    private List<ObdCommand> lowFrequencyCommands;
+    private List<OBDQueryParameter> lowFrequencyCommandsEnums;
     private Handler handler;
 
     /**
@@ -53,32 +52,30 @@ public class QueueService {
          */
         private void addCommandsToQueue() {
             Log.d(TAG, "addCommandsToQueue");
-            ObdCommand lowCommand;
-            ObdCommand highCommand;
             int lowCommandCount = 0;
             int highCommandCount = 0;
             int lowCommandWindow = 2;
             int itemCount = 0;
-            for (; highCommandCount < highFrequencyCommands.size(); highCommandCount++) {
-                highCommand = highFrequencyCommands.get(highCommandCount);
-                commandQueue.add(highCommand);
-                for (; lowCommandCount < lowFrequencyCommands.size(); lowCommandCount++) {
-                    lowCommand = lowFrequencyCommands.get(lowCommandCount);
-                    commandQueue.add(lowCommand);
+            for (; highCommandCount < highFrequencyCommandsEnums.size(); highCommandCount++) {
+                OBDQueryParameter highCommandEnum = highFrequencyCommandsEnums.get(highCommandCount);
+                commandQueue.add(OBDCommandConfig.getOBDCommand(highCommandEnum));
+                for (; lowCommandCount < lowFrequencyCommandsEnums.size(); lowCommandCount++) {
+                    OBDQueryParameter lowCommandEnum = lowFrequencyCommandsEnums.get(lowCommandCount);
+                    commandQueue.add(OBDCommandConfig.getOBDCommand(lowCommandEnum));
                     itemCount++;
 
                     if (itemCount == lowCommandWindow) {
                         break;
                     }
                 }
-                if (lowCommandCount == lowFrequencyCommands.size() - 1) {
+                if (lowCommandCount == lowFrequencyCommandsEnums.size() - 1) {
                     break;
                 }
                 if (itemCount == lowCommandWindow) {
                     itemCount = 0;
                     lowCommandCount++;
                 }
-                if (highCommandCount == highFrequencyCommands.size() - 1) {
+                if (highCommandCount == highFrequencyCommandsEnums.size() - 1) {
                     highCommandCount = -1;
                 }
             }
@@ -91,37 +88,26 @@ public class QueueService {
      * This is called, when the OBD data fetch needs to be stopped.
      */
     public void stopQueueAddition() {
-        handler.removeCallbacks(queueRunnable);
         commandQueue.clear();
+        handler.removeCallbacks(queueRunnable);
     }
 
     /**
      * This method prepares the list of high frequency and low frequency commands. (see comments above for description on Low
      * and high frequency commands.
-     * It also fetches the actual command objects from an Array List
-     * @param parameters List of commands to be queried
+     *
+     * @param obdParameters List of commands to be queried
      */
-    public void prepareCommandsToQueue(List<OBDQueryParameter> parameters) {
+    public void prepareCommandsToQueue(List<OBDQueryParameter> obdParameters) {
         Log.v(TAG, "queueCommands");
-        final List<String> obdStrQueryParams = new ArrayList<>();
-
-        for (OBDQueryParameter queryParameter : parameters) {
-            obdStrQueryParams.add(queryParameter.getValue());
-        }
 
         handler = new Handler(Looper.getMainLooper());
-        highFrequencyCommands = new ArrayList<>();
-        lowFrequencyCommands = new ArrayList<>();
-
-        for (ObdCommand command : OBDCommandConfig.getCommands()) {
-            if (obdStrQueryParams.contains(command.getName())) {
-                if (highFrequencyParams.contains(command.getName())) {
-                    highFrequencyCommands.add(command);
-                } else {
-                    lowFrequencyCommands.add(command);
+        lowFrequencyCommandsEnums = new ArrayList<>();
+        for (OBDQueryParameter obdQueryParameter : obdParameters) {
+                if (!highFrequencyCommandsEnums.contains(obdQueryParameter)) {
+                    lowFrequencyCommandsEnums.add(obdQueryParameter);
                 }
             }
-        }
         new Handler().post(queueRunnable);
     }
 }

@@ -69,7 +69,7 @@ public class FetchRPMTest {
         replayAll();
         String res = "2575";
 
-        ObdController controller = new ObdController(socket);
+        //ObdController controller = new ObdController(socket);
         ResponseObdEngineRPMEvent responseObdEngineRPMEvent = null;
 
         try {

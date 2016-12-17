@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothSocket;
 import android.util.Log;
 
 import com.bezirk.adapter.obd.datamodel.OBDResponseData;
+import com.bezirk.adapter.obd.enums.OBDErrorMessages;
 import com.bezirk.adapter.obd.enums.OBDQueryParameter;
 import com.bezirk.adapter.obd.events.RequestObdStartEvent;
 import com.bezirk.adapter.obd.events.RequestObdStopEvent;
@@ -63,7 +64,7 @@ public class ObdAdapter {
     });
 
     public ObdAdapter(final Bezirk bezirk, BluetoothSocket socket) {
-        controller = new ObdController(socket);
+
         obdCommandEventSet = new EventSet(RequestObdStartEvent.class, RequestObdStopEvent.class);
         this.bezirk = bezirk;
         service = new QueueService();
@@ -87,7 +88,9 @@ public class ObdAdapter {
             }
         });
         subscribeEventSet();
-        Log.d(TAG, "Subscription Successful. Now starting Execution of Commands...");
+        Log.d(TAG, "Subscription for OBD Events Successful. Initializing ObdController...");
+
+        controller = new ObdController(bezirk, socket);
     }
 
 
@@ -153,11 +156,29 @@ public class ObdAdapter {
                 String result = controller.executeCommand(command);
                 String commandName = command.getName();
                 sendResult(commandName, result);
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            } catch (InterruptedException e) {
                 commandQueue.clear();
+                Log.e(TAG, e.getMessage());
+                Log.d(TAG, "STOP INTERRUPT while executing Commands from Queue for ResponseObdEngineRPMEvent...Now sending event for ResponseObdStatusEvent");
+                bezirk.sendEvent(senderId, new ResponseObdStatusEvent(OBDErrorMessages.STOP_INTERRUPT_ERR, false));
+                Log.d(TAG, "Now interrupting the Queue thread..");
+                Thread.currentThread().interrupt();
+                execThread.interrupt();
+                unSubscribeEventSet();
+            }
+            catch(ExecutionException e){
                 Log.e(TAG, e.getMessage(), e);
-                Log.d(TAG, "Error while executing Commands from Queue for ResponseObdEngineRPMEvent...Now sending event for ResponseObdStatusEvent");
-                bezirk.sendEvent(senderId, new ResponseObdStatusEvent(e.getMessage(), false));
+                Log.d(TAG, "EXEC ERR executing Commands from Queue for ResponseObdEngineRPMEvent...Now sending event for ResponseObdStatusEvent");
+                bezirk.sendEvent(senderId, new ResponseObdStatusEvent(OBDErrorMessages.STOP_EXECUTION_ERR, false));
+                Log.d(TAG, "Now interrupting the Queue thread..");
+                Thread.currentThread().interrupt();
+                execThread.interrupt();
+                unSubscribeEventSet();
+            }
+            catch(TimeoutException e){
+                Log.e(TAG, e.getMessage(), e);
+                Log.d(TAG, "TIME OUT ERR while executing Commands from Queue for ResponseObdEngineRPMEvent...Now sending event for ResponseObdStatusEvent");
+                bezirk.sendEvent(senderId, new ResponseObdStatusEvent(OBDErrorMessages.STOP_TIMEOUT_ERR, false));
                 Log.d(TAG, "Now interrupting the Queue thread..");
                 Thread.currentThread().interrupt();
                 execThread.interrupt();
@@ -165,7 +186,6 @@ public class ObdAdapter {
             }
         }
     }
-
 
     public void unSubscribeEventSet() {
         Log.d(TAG, "Unsubscribing to OBDCommandEventSet");
