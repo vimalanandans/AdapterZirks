@@ -35,6 +35,7 @@ import java.util.concurrent.TimeoutException;
 
 public class ObdAdapter {
     protected static final BlockingQueue<ObdCommand> commandQueue = new LinkedBlockingQueue<>();
+    private static final String LOG_INT_MSG = "Now interrupting the Queue thread..";
     private static final String TAG = ObdAdapter.class.getName();
     private final Bezirk bezirk;
     private final EventSet obdCommandEventSet;
@@ -53,7 +54,7 @@ public class ObdAdapter {
         @Override
         public void run() {
             try {
-                Log.e(TAG, "Executing the Commands in Queue...");
+                Log.v(TAG, "Executing the Commands in Queue...");
                 executeCommandsFromQueue();
             } catch (InterruptedException e) {
                 Log.d(TAG, "Execution Interrupted. Now Interrupting the executionThread..");
@@ -63,8 +64,13 @@ public class ObdAdapter {
         }
     });
 
-    public ObdAdapter(final Bezirk bezirk, BluetoothSocket socket) {
-
+    /**
+     * Constructor for initializing event set, Bezirk and initialize QueueService
+     *
+     * @param bezirk
+     * @param socket
+     */
+    public ObdAdapter(final Bezirk bezirk, final BluetoothSocket socket) {
         obdCommandEventSet = new EventSet(RequestObdStartEvent.class, RequestObdStopEvent.class);
         this.bezirk = bezirk;
         service = new QueueService();
@@ -102,40 +108,59 @@ public class ObdAdapter {
      * @param commandName The command value name as defined in the OBDQueryParameter enum
      * @param result      The result that is queried from the OBD Dongle
      */
-    public void sendResult(String commandName, String result) {
-        OBDQueryParameter obdQueryParameter = OBDQueryParameter.getOBDQueryParameter(commandName);
-        if (commandName.equals(OBDQueryParameter.TROUBLE_CODES.getValue())) {
-            bezirk.sendEvent(senderId, new ResponseObdErrorCodesEvent(result));
-            if (obdResponseData != null) {
-                obdQueryParameter.updateOBDResponseData(obdResponseData, result);
-            }
-        } else if (commandName.equals(OBDQueryParameter.ENGINE_RPM.getValue())) {
-            bezirk.sendEvent(senderId, new ResponseObdEngineRPMEvent(result));
-            if (obdResponseData != null) {
-                obdQueryParameter.updateOBDResponseData(obdResponseData, result);
-            }
-        } else if (commandName.equals(OBDQueryParameter.SPEED.getValue())) {
-            bezirk.sendEvent(senderId, new ResponseObdVehicleSpeedEvent(result));
-            if (obdResponseData != null) {
-                obdQueryParameter.updateOBDResponseData(obdResponseData, result);
-            }
-        } else if (commandName.equals(OBDQueryParameter.ENGINE_COOLANT_TEMP.getValue())) {
-            bezirk.sendEvent(senderId, new ResponseObdCoolantTempEvent(result));
-            if (obdResponseData != null) {
-                obdQueryParameter.updateOBDResponseData(obdResponseData, result);
-            }
-        } else {
-            if (obdResponseData == null) {
-                obdResponseData = new OBDResponseData();
-            }
-            if (obdResponseData.getFillCounter() == parameters.size() - 1) {
-                bezirk.sendEvent(senderId, new ResponseOBDDataEvent(obdResponseData));
-                obdResponseData = null;
-            } else {
-                if (obdQueryParameter != null) {
+    public void sendResult(final String commandName, final String result) {
+        final OBDQueryParameter obdQueryParameter = OBDQueryParameter.getOBDQueryParameter(commandName);
+
+        switch (obdQueryParameter) {
+            case TROUBLE_CODES:
+                bezirk.sendEvent(senderId, new ResponseObdErrorCodesEvent(result));
+                if (obdResponseData != null) {
                     obdQueryParameter.updateOBDResponseData(obdResponseData, result);
-                    obdResponseData.incrementFillCounter();
                 }
+                break;
+            case ENGINE_RPM:
+                bezirk.sendEvent(senderId, new ResponseObdEngineRPMEvent(result));
+                if (obdResponseData != null) {
+                    obdQueryParameter.updateOBDResponseData(obdResponseData, result);
+                }
+                break;
+            case SPEED:
+                bezirk.sendEvent(senderId, new ResponseObdVehicleSpeedEvent(result));
+                if (obdResponseData != null) {
+                    obdQueryParameter.updateOBDResponseData(obdResponseData, result);
+                }
+                break;
+            case ENGINE_COOLANT_TEMP:
+                bezirk.sendEvent(senderId, new ResponseObdCoolantTempEvent(result));
+                if (obdResponseData != null) {
+                    obdQueryParameter.updateOBDResponseData(obdResponseData, result);
+                }
+                break;
+            default:
+                setObdResponseData(obdQueryParameter, result);
+                break;
+        }
+    }
+
+    /**
+     * Method to set the values in OBDResponseData. It checks until all the attributes are
+     * filled with values, by keeping a fillCounter. Once all are set, it triggers an event
+     * and makes the obdResponseData null, for setting next series of values
+     *
+     * @param obdQueryParameter
+     * @param result
+     */
+    private void setObdResponseData(final OBDQueryParameter obdQueryParameter, String result) {
+        if (obdResponseData == null) {
+            obdResponseData = new OBDResponseData();
+        }
+        if (obdResponseData.getFillCounter() == parameters.size() - 1) {
+            bezirk.sendEvent(senderId, new ResponseOBDDataEvent(obdResponseData));
+            obdResponseData = null;
+        } else {
+            if (obdQueryParameter != null) {
+                obdQueryParameter.updateOBDResponseData(obdResponseData, result);
+                obdResponseData.incrementFillCounter();
             }
         }
     }
@@ -151,35 +176,33 @@ public class ObdAdapter {
      */
     public void executeCommandsFromQueue() throws InterruptedException {
         while (!Thread.currentThread().isInterrupted()) {
-            ObdCommand command = QueueService.commandQueue.take();
+            final ObdCommand command = QueueService.commandQueue.take();
             try {
-                String result = controller.executeCommand(command);
-                String commandName = command.getName();
+                final String result = controller.executeCommand(command);
+                final String commandName = command.getName();
                 sendResult(commandName, result);
             } catch (InterruptedException e) {
                 commandQueue.clear();
                 Log.e(TAG, e.getMessage());
                 Log.d(TAG, "STOP INTERRUPT while executing Commands from Queue for ResponseObdEngineRPMEvent...Now sending event for ResponseObdStatusEvent");
                 bezirk.sendEvent(senderId, new ResponseObdStatusEvent(OBDErrorMessages.STOP_INTERRUPT_ERR, false));
-                Log.d(TAG, "Now interrupting the Queue thread..");
+                Log.d(TAG, LOG_INT_MSG);
                 Thread.currentThread().interrupt();
                 execThread.interrupt();
                 unSubscribeEventSet();
-            }
-            catch(ExecutionException e){
-                Log.e(TAG, e.getMessage(), e);
+            } catch (ExecutionException e) {
+                Log.e(TAG, "Error while executing OBD Command", e);
                 Log.d(TAG, "EXEC ERR executing Commands from Queue for ResponseObdEngineRPMEvent...Now sending event for ResponseObdStatusEvent");
                 bezirk.sendEvent(senderId, new ResponseObdStatusEvent(OBDErrorMessages.STOP_EXECUTION_ERR, false));
-                Log.d(TAG, "Now interrupting the Queue thread..");
+                Log.d(TAG, LOG_INT_MSG);
                 Thread.currentThread().interrupt();
                 execThread.interrupt();
                 unSubscribeEventSet();
-            }
-            catch(TimeoutException e){
-                Log.e(TAG, e.getMessage(), e);
+            } catch (TimeoutException e) {
+                Log.e(TAG, "OBD Command timed out", e);
                 Log.d(TAG, "TIME OUT ERR while executing Commands from Queue for ResponseObdEngineRPMEvent...Now sending event for ResponseObdStatusEvent");
                 bezirk.sendEvent(senderId, new ResponseObdStatusEvent(OBDErrorMessages.STOP_TIMEOUT_ERR, false));
-                Log.d(TAG, "Now interrupting the Queue thread..");
+                Log.d(TAG, LOG_INT_MSG);
                 Thread.currentThread().interrupt();
                 execThread.interrupt();
                 unSubscribeEventSet();

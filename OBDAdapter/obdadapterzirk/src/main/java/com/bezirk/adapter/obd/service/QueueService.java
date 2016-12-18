@@ -47,11 +47,11 @@ public class QueueService {
          * Low Frequency Commands are commands for which values are retrieved less frequently, because they change over a period of
          * time (say for every 10 seconds). Ex. Coolant Temperature, Engine oil temperature.
          *
-         * The below method adds one high frequency command followed by 2 low frequency command into the queue, repititively
+         * The below method adds one high frequency command followed by 2 low frequency command into the queue, repetitively
          * Ex: RPM(high) -> EngineCoolantTemp(low) -> EngineOilTemp(low) -> Speed(high) -> ErrorCode(low) -> FuelLevel(low) -> RPM(high) -> ...
          */
         private void addCommandsToQueue() {
-            Log.d(TAG, "addCommandsToQueue");
+            Log.v(TAG, "addCommandsToQueue");
             int lowCommandCount = 0;
             int highCommandCount = 0;
             int lowCommandWindow = 2;
@@ -60,7 +60,7 @@ public class QueueService {
                 OBDQueryParameter highCommandEnum = highFrequencyCommandsEnums.get(highCommandCount);
                 commandQueue.add(OBDCommandConfig.getOBDCommand(highCommandEnum));
                 for (; lowCommandCount < lowFrequencyCommandsEnums.size(); lowCommandCount++) {
-                    OBDQueryParameter lowCommandEnum = lowFrequencyCommandsEnums.get(lowCommandCount);
+                    final OBDQueryParameter lowCommandEnum = lowFrequencyCommandsEnums.get(lowCommandCount);
                     commandQueue.add(OBDCommandConfig.getOBDCommand(lowCommandEnum));
                     itemCount++;
 

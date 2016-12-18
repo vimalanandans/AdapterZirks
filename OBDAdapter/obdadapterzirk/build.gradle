@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply from: "${rootDir}/artifactory-aar-publish.gradle"
 
 group = 'com.bezirk'
-version = "0.0.7.7"
+version = "0.0.7.9"
 android {
     compileSdkVersion 24
     buildToolsVersion "24.0.2"
@@ -39,5 +39,4 @@ dependencies {
     testCompile  group: 'org.powermock', name: 'powermock-api-easymock', version: '1.6.5'
     testCompile  group: 'org.powermock', name: 'powermock-api-mockito', version: '1.6.5'
     testCompile  group: 'org.easymock', name: 'easymock', version: '3.4'
-
 }

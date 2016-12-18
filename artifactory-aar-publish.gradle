@@ -19,10 +19,10 @@ publishing {
 
                     //TODO automatically find android library projects and set their type attribute to aar
                     //android libraries added as aar dependencies for transitive resolution through pom.xml
-                    if(it.moduleName == "android-comms-zyre-jni" || it.moduleName == "zyre-jni" || it.moduleName == "android-starter"){
+                    if(it.moduleName == "android-comms-zyre-jni" || it.moduleName == "zyre-jni" || it.moduleName == "android-starter"
+                    || it.moduleName == "obdadapterzirk"){
                         dependency.appendNode('type', 'aar')
                     }
-
                 }
             }
         }

@@ -16,7 +16,7 @@ public enum OBDQueryParameter {
             if (!result.equals(NO_DATA)) {
                 obdResponseData.setAmbientAirTemperature(Double.parseDouble(result));
             } else {
-                obdResponseData.setEngineOilTemperature(0);
+                obdResponseData.setEngineOilTemperature(NO_DATA_DEFAULT_VAL);
             }
 
         }
@@ -28,7 +28,7 @@ public enum OBDQueryParameter {
             if (!result.equals(NO_DATA)) {
                 obdResponseData.setDistanceTraveledMILon(Double.parseDouble(result));
             } else {
-                obdResponseData.setEngineOilTemperature(0);
+                obdResponseData.setEngineOilTemperature(NO_DATA_DEFAULT_VAL);
             }
 
         }
@@ -54,7 +54,7 @@ public enum OBDQueryParameter {
             if (!result.equals(NO_DATA)) {
                 obdResponseData.setThrottlePosition(Double.parseDouble(result));
             } else {
-                obdResponseData.setEngineOilTemperature(0);
+                obdResponseData.setEngineOilTemperature(NO_DATA_DEFAULT_VAL);
             }
         }
     },
@@ -72,7 +72,7 @@ public enum OBDQueryParameter {
             if (!result.equals(NO_DATA)) {
                 obdResponseData.setFuelLevel(Double.parseDouble(result));
             } else {
-                obdResponseData.setEngineOilTemperature(0);
+                obdResponseData.setEngineOilTemperature(NO_DATA_DEFAULT_VAL);
             }
         }
     },
@@ -83,7 +83,7 @@ public enum OBDQueryParameter {
             if (!result.equals(NO_DATA)) {
                 obdResponseData.setEngineOilTemperature(Double.parseDouble(result));
             } else {
-                obdResponseData.setEngineOilTemperature(0);
+                obdResponseData.setEngineOilTemperature(NO_DATA_DEFAULT_VAL);
             }
         }
     },
@@ -94,7 +94,7 @@ public enum OBDQueryParameter {
             if (!result.equals(NO_DATA)) {
                 obdResponseData.setIntakeAirTemperature(Double.parseDouble(result));
             } else {
-                obdResponseData.setEngineOilTemperature(0);
+                obdResponseData.setEngineOilTemperature(NO_DATA_DEFAULT_VAL);
             }
         }
     },
@@ -105,7 +105,7 @@ public enum OBDQueryParameter {
             if (!result.equals(NO_DATA)) {
                 obdResponseData.setEngineCoolantTemp(Double.parseDouble(result));
             } else {
-                obdResponseData.setEngineOilTemperature(0);
+                obdResponseData.setEngineOilTemperature(NO_DATA_DEFAULT_VAL);
             }
         }
     },
@@ -116,7 +116,7 @@ public enum OBDQueryParameter {
             if (!result.equals(NO_DATA)) {
                 obdResponseData.setEngineRPM(Double.parseDouble(result));
             } else {
-                obdResponseData.setEngineOilTemperature(0);
+                obdResponseData.setEngineOilTemperature(NO_DATA_DEFAULT_VAL);
             }
         }
     },
@@ -127,13 +127,14 @@ public enum OBDQueryParameter {
             if (!result.equals(NO_DATA)) {
                 obdResponseData.setVehicleSpeed(Double.parseDouble(result));
             } else {
-                obdResponseData.setEngineOilTemperature(0);
+                obdResponseData.setEngineOilTemperature(NO_DATA_DEFAULT_VAL);
             }
         }
     };
 
-    private final static String NO_DATA = "NO DATA";
+    private static final  String NO_DATA = "NO DATA";
     private final String value;
+    private static final double NO_DATA_DEFAULT_VAL = -999;
 
     OBDQueryParameter(String value) {
         this.value = value;

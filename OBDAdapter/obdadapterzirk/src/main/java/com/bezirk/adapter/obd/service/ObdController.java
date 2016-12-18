@@ -92,7 +92,7 @@ public class ObdController {
         Callable<String> callable = new Callable<String>() {
             @Override
             public String call() throws IOException, InterruptedException {
-                String result = null;
+                String result = "";
                 try {
                     if (sock.isConnected()) {
                         Log.d(TAG, "Now invoking Command: " + command.getName());
@@ -106,7 +106,7 @@ public class ObdController {
                     }
                 } catch (MisunderstoodCommandException | NoDataException e) {
                     result = NO_DATA;
-                    Log.e(TAG, "Failed to execute command: " + command.getName());
+                    Log.e(TAG, "Failed to execute command: No Data: " + command.getName());
                     Log.e(TAG, e.getMessage());
                 }
                 return result;
