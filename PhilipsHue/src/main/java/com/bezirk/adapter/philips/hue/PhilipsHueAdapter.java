@@ -139,7 +139,9 @@ public class PhilipsHueAdapter {
     private static Set<String> discoverBridgesNupnp() {
         String nupnpResponse = getHttpResponse("https://www.meethue.com/api/nupnp");
 
-        if (nupnpResponse.isEmpty()) return Collections.emptySet();
+        if (nupnpResponse.isEmpty()) {
+            return Collections.emptySet();
+        }
 
         final Set<String> bridgeBaseUrls = new HashSet<>();
 

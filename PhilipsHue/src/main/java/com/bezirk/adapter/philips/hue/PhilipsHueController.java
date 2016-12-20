@@ -35,7 +35,7 @@ public class PhilipsHueController {
 
         final Set<Light> foundLights = new HashSet<>();
         try {
-            JSONObject json = (JSONObject) new JSONParser().parse(result);
+            final JSONObject json = (JSONObject) new JSONParser().parse(result);
 
             for (Object key : json.keySet()) {
                 String lightId = (String) key;
@@ -80,7 +80,9 @@ public class PhilipsHueController {
     }
 
     public CurrentLightStateEvent getLightState(Light light) {
-        if (!isHueCompatible(light)) return null;
+        if (!isHueCompatible(light)) {
+            return null;
+        }
 
         final String result = sendPayload(String.format("%s%s/%s", baseBridgeUrl, "lights", light.getId()), "GET", "");
 
@@ -113,30 +115,38 @@ public class PhilipsHueController {
     }
 
     public void turnLightOn(Light light) {
-        if (!isHueCompatible(light)) return;
+        if (!isHueCompatible(light)) {
+            return;
+        }
 
-        String payload = "{\"on\":true}";
+        final String payload = "{\"on\":true}";
         sendPayload(String.format("%s%s/%s/%s", baseBridgeUrl, "lights", light.getId(), "state"), "PUT", payload);
     }
 
     public void turnLightOff(Light light) {
-        if (!isHueCompatible(light)) return;
+        if (!isHueCompatible(light)) {
+            return;
+        }
 
-        String payload = "{\"on\":false}";
+        final String payload = "{\"on\":false}";
         sendPayload(String.format("%s%s/%s/%s", baseBridgeUrl, "lights", light.getId(), "state"), "PUT", payload);
     }
 
     public void setLightBrightness(Light light, int brightnessLevel) {
-        if (!isHueCompatible(light)) return;
+        if (!isHueCompatible(light)) {
+            return;
+        }
 
-        String payload = String.format(Locale.getDefault(), "{\"bri\":%d}", brightnessLevel);
+        final String payload = String.format(Locale.getDefault(), "{\"bri\":%d}", brightnessLevel);
         sendPayload(String.format("%s%s/%s/%s", baseBridgeUrl, "lights", light.getId(), "state"), "PUT", payload);
     }
 
     public void setLightColorHSV(Light light, int h, int s, int v) {
-        if (!isHueCompatible(light)) return;
+        if (!isHueCompatible(light)) {
+            return;
+        }
 
-        String payload = String.format(Locale.getDefault(), "{\"on\":true, \"hue\":%d, \"sat\":%d, \"bri\":%d}",
+        final String payload = String.format(Locale.getDefault(), "{\"on\":true, \"hue\":%d, \"sat\":%d, \"bri\":%d}",
                 h, s, v);
         sendPayload(String.format("%s%s/%s/%s", baseBridgeUrl, "lights", light.getId(), "state"), "PUT", payload);
     }
