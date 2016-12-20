@@ -70,7 +70,7 @@ public class LightifyAdapter {
         try {
             address = InetAddress.getLocalHost().getAddress();
         } catch (UnknownHostException e) {
-            logger.error("Failed to address of local host when discovering gateways", e);
+            logger.error("Failed to fetch address of local host when discovering gateways", e);
             return gateways;
         }
 
