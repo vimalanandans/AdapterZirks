@@ -25,11 +25,9 @@ public class LightifyController {
 
     private static final byte FLAG_NODE = 0;
     private static final byte FLAG_ZONE = 2;
-
-    private int seq = 1;
-
     private final DataOutputStream dataOut;
     private final DataInputStream dataIn;
+    private int seq = 1;
 
     public LightifyController(String gatewayAddress) throws IOException {
         final Socket gatewaySocket = new Socket(InetAddress.getByName(gatewayAddress), 4000);
@@ -83,7 +81,9 @@ public class LightifyController {
                             lightId, mac, type, firmwareVersion, online, groupId, status);
                     lights.add(light);
 
-                    if (logger.isDebugEnabled()) logger.debug("Found new lightify light {}", light.toString());
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Found new lightify light {}", light.toString());
+                    }
                 } catch (UnsupportedEncodingException e) {
                     logger.error("Failed to encode lightify light id", e);
                 }
@@ -98,13 +98,17 @@ public class LightifyController {
     }
 
     public void turnLightOn(Light light) {
-        if (!isLightifyCompatible(light)) return;
+        if (!isLightifyCompatible(light)) {
+            return;
+        }
 
         setLightStatus(light, (byte) 1);
     }
 
     public void turnLightOff(Light light) {
-        if (!isLightifyCompatible(light)) return;
+        if (!isLightifyCompatible(light)) {
+            return;
+        }
 
         setLightStatus(light, (byte) 0);
     }
@@ -124,7 +128,9 @@ public class LightifyController {
     }
 
     public void setLightBrightness(Light light, int brightnessLevel) {
-        if (!isLightifyCompatible(light)) return;
+        if (!isLightifyCompatible(light)) {
+            return;
+        }
 
         final byte[] data = new byte[11];
 

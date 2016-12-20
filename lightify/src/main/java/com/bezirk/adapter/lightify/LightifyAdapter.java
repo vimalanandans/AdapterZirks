@@ -70,7 +70,7 @@ public class LightifyAdapter {
         try {
             address = InetAddress.getLocalHost().getAddress();
         } catch (UnknownHostException e) {
-            e.printStackTrace();
+            logger.error("Failed to address of local host when discovering gateways", e);
             return gateways;
         }
 
@@ -80,7 +80,9 @@ public class LightifyAdapter {
 
         for (int testOctet = 0; testOctet < 256; testOctet++) {
             // Do not self scan
-            if (testOctet == myLastOctet) continue;
+            if (testOctet == myLastOctet) {
+                continue;
+            }
 
             final int o = testOctet;
 
@@ -97,14 +99,10 @@ public class LightifyAdapter {
                         return;
                     }
 
-                    try {
-                        Socket s = new Socket(testAddress, 4000);
-
+                    try (Socket s = new Socket(testAddress, 4000)) {
                         // If we didn't get an exception opening this socket, port 4000 is
                         // open and it might be a lightify gateway.
                         gateways.add(testAddress.getHostAddress());
-
-                        s.close();
                     } catch (IOException e) {
                         // Not a potential lightify gateway
                     }
@@ -117,6 +115,7 @@ public class LightifyAdapter {
             portScanExecutor.awaitTermination(10000, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             logger.info("Interrupted port scan executor wait", e);
+            Thread.currentThread().interrupt();
         }
 
         return gateways;

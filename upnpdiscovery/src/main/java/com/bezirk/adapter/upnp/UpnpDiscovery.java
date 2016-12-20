@@ -63,6 +63,9 @@ public class UpnpDiscovery {
         return upnpResponse.substring(locationStart, endLine).trim();
     }
 
+    // The hardcoded IP address for sendPacket is a standard UPNP UDP broadcast address, thus
+    // hardcoding it is not actually a vulnerability
+    @SuppressWarnings("squid:S1313")
     public Set<String> discoverDevices() {
         final String mSearch = "M-SEARCH * HTTP/1.1\r\nHOST: 239.255.255.250:1900\r\n" +
                 "MAN: \"ssdp:discover\"\r\nMX: " + String.valueOf(upnpTimeout / 1000) +
@@ -71,11 +74,12 @@ public class UpnpDiscovery {
 
         final Set<String> deviceLocations = new HashSet<>();
 
+
         try {
             final DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length,
                     InetAddress.getByName("239.255.255.250"), 1900);
 
-            if (logger.isTraceEnabled()) logger.trace("Sent U-PNP search request:\n{}", mSearch);
+            logger.trace("Sent U-PNP search request:\n{}", mSearch);
 
             final DatagramSocket clientSocket = new DatagramSocket();
             clientSocket.setSoTimeout(upnpTimeout); // Set based on MX timeout (5 seconds)
@@ -94,23 +98,24 @@ public class UpnpDiscovery {
 
                 final String response = new String(receivePacket.getData());
 
-                if (response.length() > 0) {
-                    if (response.contains(deviceIdentifier)) {
-                        if (logger.isTraceEnabled()) {
-                            logger.trace("Accepted U-PNP response for deviceIdentifier = {}:\n{}",
-                                    deviceIdentifier, response);
-                        }
+                if (response.length() <= 0) {
+                    logger.trace("No UPNP response received");
+                    continue;
+                }
 
-                        final String deviceLocation = parseUpnpLocation(response);
-
-                        deviceLocations.add(deviceLocation);
-                    } else if (logger.isTraceEnabled()) {
-                        logger.trace("Rejected U-PNP response, does not contain " +
-                                        "deviceIdentifier = {}:\n{}",
+                if (response.contains(deviceIdentifier)) {
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("Accepted U-PNP response for deviceIdentifier = {}:\n{}",
                                 deviceIdentifier, response);
                     }
-                } else {
-                    logger.trace("No UPNP response received");
+
+                    final String deviceLocation = parseUpnpLocation(response);
+
+                    deviceLocations.add(deviceLocation);
+                } else if (logger.isTraceEnabled()) {
+                    logger.trace("Rejected U-PNP response, does not contain " +
+                                    "deviceIdentifier = {}:\n{}",
+                            deviceIdentifier, response);
                 }
             }
         } catch (IOException e) {
