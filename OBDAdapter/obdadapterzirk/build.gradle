@@ -2,13 +2,13 @@ apply plugin: 'com.android.library'
 apply from: "${rootDir}/artifactory-aar-publish.gradle"
 
 group = 'com.bezirk'
-version = "0.0.7.9"
+version = "0.0.8.0"
 android {
     compileSdkVersion 24
     buildToolsVersion "24.0.2"
 
     defaultConfig {
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 24
         versionCode 1
         versionName "1.0"
@@ -27,16 +27,7 @@ android {
 
 dependencies {
     compile 'com.android.support:appcompat-v7:24.2.1'
-    compile 'org.slf4j:slf4j-api:1.7.21'
-    compile(group: 'com.bezirk', name: 'bezirk-middleware-api', version: rootProject.bezirkVersion)
-    compile(group: 'com.bezirk', name: 'HardwareEvents', version: rootProject.hardwareEventsVersion)
-    compile(group: 'com.bezirk', name: 'commons', version: '3.0.0-alpha+025-snapshot')
+    compile(group: 'com.bezirk', name: 'bezirk-middleware-api', version: '3.0.2-3')
 
     compile 'com.github.pires:obd-java-api:1.0'
-
-    testCompile 'junit:junit:4.12'
-    testCompile  group: 'org.powermock', name: 'powermock-module-testng', version: '1.6.5'
-    testCompile  group: 'org.powermock', name: 'powermock-api-easymock', version: '1.6.5'
-    testCompile  group: 'org.powermock', name: 'powermock-api-mockito', version: '1.6.5'
-    testCompile  group: 'org.easymock', name: 'easymock', version: '3.4'
 }
