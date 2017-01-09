@@ -88,8 +88,12 @@ public class QueueService {
      * This is called, when the OBD data fetch needs to be stopped.
      */
     public void stopQueueAddition() {
-        commandQueue.clear();
-        handler.removeCallbacks(queueRunnable);
+        if(commandQueue != null) {
+            commandQueue.clear();
+        }
+        if(handler != null) {
+            handler.removeCallbacks(queueRunnable);
+        }
     }
 
     /**
