@@ -15,6 +15,7 @@ import com.github.pires.obd.commands.protocol.SelectProtocolCommand;
 import com.github.pires.obd.enums.ObdProtocols;
 import com.github.pires.obd.exceptions.MisunderstoodCommandException;
 import com.github.pires.obd.exceptions.NoDataException;
+import com.github.pires.obd.exceptions.UnableToConnectException;
 
 import java.io.IOException;
 import java.util.concurrent.Callable;
@@ -62,7 +63,13 @@ public class ObdController {
             } else {
                 Log.d(TAG, "Can't run command on a closed socket.");
             }
-        } catch (IOException e) {
+        }
+        catch (UnableToConnectException | MisunderstoodCommandException | NoDataException e) {
+            Log.e(TAG, "Failed to execute initialization command");
+            Log.e(TAG, e.getMessage());
+            return false;
+        }
+        catch (IOException e) {
             Log.e(TAG, "Error initializing communication with OBD adapter", e);
             bezirk.sendEvent(new ResponseObdStatusEvent(OBDErrorMessages.INIT_OBD_ERR, false));
             return false;
@@ -92,7 +99,7 @@ public class ObdController {
         Callable<String> callable = new Callable<String>() {
             @Override
             public String call() throws IOException, InterruptedException {
-                String result = "";
+                String result = NO_DATA;
                 try {
                     if (sock.isConnected()) {
                         Log.d(TAG, "Now invoking Command: " + command.getName());
@@ -104,7 +111,7 @@ public class ObdController {
                     } else {
                         Log.e(TAG, "Can't run command on a closed socket.");
                     }
-                } catch (MisunderstoodCommandException | NoDataException e) {
+                } catch (UnableToConnectException | MisunderstoodCommandException | NoDataException e) {
                     result = NO_DATA;
                     Log.e(TAG, "Failed to execute command: No Data: " + command.getName());
                     Log.e(TAG, e.getMessage());

@@ -6,7 +6,7 @@ publishing {
     publications {
         bezirkPublication(MavenPublication) {
 
-            artifact "${project.buildDir}/outputs/aar/${project.name}-debug.aar"
+            //artifact "${project.buildDir}/outputs/aar/${project.name}-debug.aar"
             artifact "${project.buildDir}/outputs/aar/${project.name}-release.aar"
 
             pom.withXml {

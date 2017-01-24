@@ -18,7 +18,6 @@ public enum OBDQueryParameter {
             } else {
                 obdResponseData.setAmbientAirTemperature(NO_DATA_DEFAULT_VAL);
             }
-
         }
     },
 
@@ -30,7 +29,6 @@ public enum OBDQueryParameter {
             } else {
                 obdResponseData.setDistanceTraveledMILon(NO_DATA_DEFAULT_VAL);
             }
-
         }
     },
 
@@ -147,7 +145,6 @@ public enum OBDQueryParameter {
                 return obdQueryParameter;
             }
         }
-
         return null;
     }
 
@@ -157,6 +154,5 @@ public enum OBDQueryParameter {
 
     public void updateOBDResponseData(OBDResponseData obdResponseData, String result) {
         this.updateOBDResponseData(obdResponseData, result);
-
     }
 }
