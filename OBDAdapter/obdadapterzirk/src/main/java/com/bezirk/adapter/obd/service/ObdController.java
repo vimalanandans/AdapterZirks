@@ -34,14 +34,13 @@ public class ObdController {
     private static final String TAG = ObdController.class.getName();
     private static final String NO_DATA = "NO DATA";
 
-    private final BluetoothSocket sock;
+    private BluetoothSocket sock;
     private final ExecutorService executor;
     private final Bezirk bezirk;
 
-    public ObdController(final Bezirk bezirk, BluetoothSocket sock) {
-        this.sock = sock;
+    public ObdController(final Bezirk bezirk) {
         this.bezirk = bezirk;
-        initializeOBD();
+        //initializeOBD();
 
         executor = Executors.newFixedThreadPool(10);
     }
@@ -62,6 +61,7 @@ public class ObdController {
                 new SelectProtocolCommand(ObdProtocols.AUTO).run(sock.getInputStream(), sock.getOutputStream());
             } else {
                 Log.d(TAG, "Can't run command on a closed socket.");
+                return false;
             }
         }
         catch (UnableToConnectException | MisunderstoodCommandException | NoDataException e) {
@@ -71,11 +71,11 @@ public class ObdController {
         }
         catch (IOException e) {
             Log.e(TAG, "Error initializing communication with OBD adapter", e);
-            bezirk.sendEvent(new ResponseObdStatusEvent(OBDErrorMessages.INIT_OBD_ERR, false));
+            bezirk.sendEvent(new ResponseObdStatusEvent(OBDErrorMessages.INIT_OBD_ERR, null, false));
             return false;
         } catch (InterruptedException e) {
             Log.e(TAG, "OBD initialization interrupted", e);
-            bezirk.sendEvent(new ResponseObdStatusEvent(OBDErrorMessages.INIT_OBD_ERR, false));
+            bezirk.sendEvent(new ResponseObdStatusEvent(OBDErrorMessages.INIT_OBD_ERR, null, false));
             Thread.currentThread().interrupt();
             return false;
         }
@@ -99,9 +99,9 @@ public class ObdController {
         Callable<String> callable = new Callable<String>() {
             @Override
             public String call() throws IOException, InterruptedException {
-                String result = NO_DATA;
+                String result;
                 try {
-                    if (sock.isConnected()) {
+                    if (sock != null && sock.isConnected()) {
                         Log.d(TAG, "Now invoking Command: " + command.getName());
                         command.useImperialUnits(true);
                         command.setResponseTimeDelay(new Long(100));
@@ -110,6 +110,7 @@ public class ObdController {
                         Log.d(TAG, "Fetched results of Command: " + result);
                     } else {
                         Log.e(TAG, "Can't run command on a closed socket.");
+                        throw new IOException();
                     }
                 } catch (UnableToConnectException | MisunderstoodCommandException | NoDataException e) {
                     result = NO_DATA;
@@ -132,5 +133,9 @@ public class ObdController {
             throw e;
         }
         return resultFinal;
+    }
+
+    public void setBluetoothSocket(BluetoothSocket socket){
+        this.sock = socket;
     }
 }

@@ -20,24 +20,29 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class QueueService {
     protected static final BlockingQueue<ObdCommand> commandQueue = new LinkedBlockingQueue<>();
     private static final String TAG = QueueService.class.getName();
-    private static final List<OBDQueryParameter> highFrequencyCommandsEnums = Arrays.asList(
+    private static final List<OBDQueryParameter> availableHighFrequencyCommandsEnums = Arrays.asList(
             OBDQueryParameter.ENGINE_RPM,
             OBDQueryParameter.SPEED
     );
+    private List<OBDQueryParameter> highFrequencyCommandsEnums;
     private List<OBDQueryParameter> lowFrequencyCommandsEnums;
     private Handler handler;
+    private int delayTimeOBDParameters = 200;
+    private int delayTimeErrorCode = 200;
+    public static final String ERROR_CODE = "ERROR_CODE";
+    public static final String ALL_PARAMS = "ALL_PARAMS";
 
     /**
      * Runnable Task to add the commands to blocking queue. Once the addCommandsToQueue is invoked,
      * a delay is 200 milli seconds is introduced, and again the Runnable is invoked.
      */
-    private final Runnable queueRunnable = new Runnable() {
+    private final Runnable runnableOBDParameters = new Runnable() {
         @Override
         public void run() {
             if (commandQueue.isEmpty()) {
-                addCommandsToQueue();
+                addOBDCommandsToQueue();
             }
-            handler.postDelayed(queueRunnable, 200);
+            handler.postDelayed(runnableOBDParameters, QueueService.this.delayTimeOBDParameters);
         }
 
         /**
@@ -50,35 +55,66 @@ public class QueueService {
          * The below method adds one high frequency command followed by 2 low frequency command into the queue, repetitively
          * Ex: RPM(high) -> EngineCoolantTemp(low) -> EngineOilTemp(low) -> Speed(high) -> ErrorCode(low) -> FuelLevel(low) -> RPM(high) -> ...
          */
-        private void addCommandsToQueue() {
-            Log.v(TAG, "addCommandsToQueue");
+        private void addOBDCommandsToQueue() {
+            Log.v(TAG, "addOBDCommandsToQueue");
             int lowCommandCount = 0;
             int highCommandCount = 0;
             int lowCommandWindow = 2;
             int itemCount = 0;
-            for (; highCommandCount < highFrequencyCommandsEnums.size(); highCommandCount++) {
-                OBDQueryParameter highCommandEnum = highFrequencyCommandsEnums.get(highCommandCount);
-                commandQueue.add(OBDCommandConfig.getOBDCommand(highCommandEnum));
+
+            if(highFrequencyCommandsEnums.size() == 0) {
                 for (; lowCommandCount < lowFrequencyCommandsEnums.size(); lowCommandCount++) {
                     final OBDQueryParameter lowCommandEnum = lowFrequencyCommandsEnums.get(lowCommandCount);
                     commandQueue.add(OBDCommandConfig.getOBDCommand(lowCommandEnum));
-                    itemCount++;
-
-                    if (itemCount == lowCommandWindow) {
-                        break;
-                    }
-                }
-                if (lowCommandCount == lowFrequencyCommandsEnums.size() - 1) {
-                    break;
-                }
-                if (itemCount == lowCommandWindow) {
-                    itemCount = 0;
-                    lowCommandCount++;
-                }
-                if (highCommandCount == highFrequencyCommandsEnums.size() - 1) {
-                    highCommandCount = -1;
                 }
             }
+            else
+            {
+                for (; highCommandCount < highFrequencyCommandsEnums.size(); highCommandCount++) {
+                    OBDQueryParameter highCommandEnum = highFrequencyCommandsEnums.get(highCommandCount);
+                    commandQueue.add(OBDCommandConfig.getOBDCommand(highCommandEnum));
+                    for (; lowCommandCount < lowFrequencyCommandsEnums.size(); lowCommandCount++) {
+                        final OBDQueryParameter lowCommandEnum = lowFrequencyCommandsEnums.get(lowCommandCount);
+                        commandQueue.add(OBDCommandConfig.getOBDCommand(lowCommandEnum));
+                        itemCount++;
+
+                        if (itemCount == lowCommandWindow) {
+                            lowCommandCount++;
+                            break;
+                        }
+                    }
+/*                    if (lowCommandCount == lowFrequencyCommandsEnums.size() - 1) {
+                        break;
+                    }*/
+                    if (lowCommandCount < lowFrequencyCommandsEnums.size() - 1){
+                        if (itemCount == lowCommandWindow) {
+                            itemCount = 0;
+                        }
+                        if (highCommandCount == highFrequencyCommandsEnums.size() - 1) {
+                            highCommandCount = -1;
+                        }
+                    }
+                }
+            }
+        }
+    };
+
+    /**
+     * Runnable Task to add the commands to blocking queue. Once the addCommandsToQueue is invoked,
+     * a delay is 200 milli seconds is introduced, and again the Runnable is invoked.
+     */
+    private final Runnable runnableErrorCode = new Runnable() {
+        @Override
+        public void run() {
+            //if (commandQueue.isEmpty()) {
+                addErrorCodeCommandToQueue();
+            //}
+            handler.postDelayed(runnableErrorCode, QueueService.this.delayTimeErrorCode);
+        }
+
+        private void addErrorCodeCommandToQueue() {
+            Log.v(TAG, "addErrorCodeCommandToQueue");
+            commandQueue.add(OBDCommandConfig.getOBDCommand(OBDQueryParameter.TROUBLE_CODES));
         }
     };
 
@@ -87,13 +123,18 @@ public class QueueService {
      * and also clears the commands in the blocking queue.
      * This is called, when the OBD data fetch needs to be stopped.
      */
-    public void stopQueueAddition() {
-        if(commandQueue != null) {
-            commandQueue.clear();
+    public boolean stopQueueAddition(String attribute) {
+        boolean isStopped = false;
+        if (handler != null) {
+            if (attribute.equals(ERROR_CODE)) {
+                handler.removeCallbacks(runnableErrorCode);
+                isStopped = true;
+            } else if (attribute.equals(ALL_PARAMS)) {
+                handler.removeCallbacks(runnableOBDParameters);
+                isStopped = true;
+            }
         }
-        if(handler != null) {
-            handler.removeCallbacks(queueRunnable);
-        }
+        return isStopped;
     }
 
     /**
@@ -102,16 +143,28 @@ public class QueueService {
      *
      * @param obdParameters List of commands to be queried
      */
-    public void prepareCommandsToQueue(List<OBDQueryParameter> obdParameters) {
+    public void queueOBDCommands(List<OBDQueryParameter> obdParameters, int delayTime) {
         Log.v(TAG, "queueCommands");
-
+        this.delayTimeOBDParameters = delayTime;
         handler = new Handler(Looper.getMainLooper());
         lowFrequencyCommandsEnums = new ArrayList<>();
+        highFrequencyCommandsEnums = new ArrayList<>();
+
         for (OBDQueryParameter obdQueryParameter : obdParameters) {
-                if (!highFrequencyCommandsEnums.contains(obdQueryParameter)) {
-                    lowFrequencyCommandsEnums.add(obdQueryParameter);
-                }
+            if (availableHighFrequencyCommandsEnums.contains(obdQueryParameter)) {
+                highFrequencyCommandsEnums.add(obdQueryParameter);
             }
-        new Handler().post(queueRunnable);
+            else{
+                lowFrequencyCommandsEnums.add(obdQueryParameter);
+            }
+        }
+        new Handler().post(runnableOBDParameters);
+    }
+
+    public void queueErrorCodeCommand(int delayTime) {
+        Log.v(TAG, "queueCommands");
+        this.delayTimeErrorCode = delayTime;
+        handler = new Handler(Looper.getMainLooper());
+        new Handler().post(runnableErrorCode);
     }
 }
