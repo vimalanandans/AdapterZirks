@@ -128,7 +128,6 @@ public class ObdController {
             resultFinal = task.get(25000, TimeUnit.MILLISECONDS);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             task.cancel(true);
-            executor.shutdownNow();
             Log.e(TAG, "Failed to complete execution of command: " + command.getName());
             throw e;
         }
